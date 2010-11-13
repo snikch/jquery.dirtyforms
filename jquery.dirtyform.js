@@ -20,7 +20,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			bindDialog : function(){
 				$('#facebox .cancel, #facebox .close').click(decidingCancel);
 				$('#facebox .continue').click(decidingContinue);
-				$(document).bind('decidingcancelled.dirtyform', function(){
+				$(document).bind('decidingcancelled.dirtyforms', function(){
 					$(document).trigger('close.facebox');
 				});				
 			},
@@ -207,13 +207,13 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 	decidingCancel = function(ev){
 		ev.preventDefault();
-		$(document).trigger('decidingcancelled.dirtyform');
+		$(document).trigger('decidingcancelled.dirtyforms');
 		settings.deciding = settings.currentForm = settings.decidingEvent = false;
 	}
 
 	decidingContinue = function(ev){
 		ev.preventDefault();
-		$(document).trigger('decidingcontinued.dirtyform');
+		$(document).trigger('decidingcontinued.dirtyforms');
 		refire(settings.decidingEvent);
 	}
 
