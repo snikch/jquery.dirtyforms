@@ -10,7 +10,7 @@ Oh, and it's pretty easy to use.
 
 Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack.
 
-The .live() method is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM, hidden, then have the event triggered on it). 
+The .live() method is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it). 
 
 Status
 ---------------------------------
@@ -40,12 +40,19 @@ Options
 The following options are available to set via $.DirtyForms.OPTIONNAME = OPTIONVALUE
 
 debug: set to true to log messages to the firebug console (or alert if you don't have firebug)
+
 message: The dialog message to be sent
+
 title: The modal dialog title
+
 dirtyClass: The class applied to elements when they're considered dirty
+
 listeningClass: The class applied to elements that are having their inputs monitored for change
-helpers: An array for helper objects. See helpers below
+
+helpers: An array for helper objects. See Helpers below
+
 bindDialog and dialog: See Dialogs below
+
 
 Public Methods
 ---------------------------------
