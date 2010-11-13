@@ -14,7 +14,7 @@ The .live() method is used to attach click and submit handlers so even elements 
 
 Status
 ---------------------------------
-Work in progress, still not browser tested nor feature complete.
+Work in progress, still not browser tested nor feature complete (form stash not working).
 
 Usage
 ---------------------------------
