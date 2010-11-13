@@ -3,13 +3,13 @@
 if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 (function($){
- 	// Public General Plugin methods $.DirtyForms 
+	// Public General Plugin methods $.DirtyForms 
 	$.extend({
-    	DirtyForms: {
-      		debug : false, 	
+		DirtyForms: {
+			debug : false, 	
 			message : 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
-    		title : 'Are you sure you want to do that?',
-      		dirtyClass : 'dirty',
+			title : 'Are you sure you want to do that?',
+			dirtyClass : 'dirty',
 			listeningClass : 'dirtylisten',
 			ignoreClass : 'ignoredirty',
 			helpers : [],
