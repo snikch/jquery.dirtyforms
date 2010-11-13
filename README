@@ -12,6 +12,10 @@ Existing solutions were not flexible enough, so I wrote this to make sure that a
 
 The .live() method is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM, hidden, then have the event triggered on it). 
 
+Status
+---------------------------------
+Work in progress, still not browser tested nor feature complete.
+
 Usage
 ---------------------------------
 	// Enable for all forms
@@ -23,6 +27,39 @@ Usage
 	// Enable Debugging
 	$.DirtyForms.debug = true;
 
+	// Two custom selectors are available
+	// Select all forms that are dirty
+	$('form:dirty');
+
+	// Select all forms that are being watched for changes
+	$('form:dirtylistening');
+
+
+Options
+---------------------------------
+The following options are available to set via $.DirtyForms.OPTIONNAME = OPTIONVALUE
+
+debug: set to true to log messages to the firebug console (or alert if you don't have firebug)
+message: The dialog message to be sent
+title: The modal dialog title
+dirtyClass: The class applied to elements when they're considered dirty
+listeningClass: The class applied to elements that are having their inputs monitored for change
+helpers: An array for helper objects. See helpers below
+bindDialog and dialog: See Dialogs below
+
+Public Methods
+---------------------------------
+$.DirtyForms.isDirty() will return true if any watched elements are considered dirty
+	if($.DirtyForms.isDirty())
+
+$.fn.dirtyForms() will start watching the supplied elements for descendant input changes
+	$('form').dirtyForms();
+
+$.fn.isDirty() will return true if the provided element is considered dirty
+	if($('form#accountform').isDirty())
+
+$.fn.setDirty() will set the provided element as dirty
+	$('form#accountform').setDirty();
 
 Helpers
 ---------------------------------
@@ -68,5 +105,12 @@ Triggers
 You can attach callbacks to the decidingcancelled.dirtyforms and decidingcontinued.dirtyforms custom events. These events are called when the cancel, or continue method on the modal dialog is called (when the user clicks either continue, or cancel).
 
 These triggers are not available when used with the browser fallback dialog method.
+
+Selectors
+---------------------------------
+
+:dirty will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
+
+:dirtylistening will select all elements that has the listening class attached. This should be all forms that are currently listening for change
 
 
