@@ -2,12 +2,16 @@
 (function($){
 	// Create a new object, with an isDirty method
 	var tinymce = {
-		isDirty : function(form){
+		isNodeDirty : function(form){
 			var isDirty = false;
+			//..alert('in finder');
 			// Search for all tinymce elements inside the given form
-			$(':tinymce', form).each(function(){
+			$(form).find(':tinymce').each(function(){
+
+				dirtylog('Checking node ' + $(this).attr('id'));
 				if($(this).tinymce().isDirty()){
 					isDirty = true;
+					dirtylog('Node was totally dirty.');
 					return true;
 				}
 			});	

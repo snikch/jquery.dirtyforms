@@ -2,8 +2,11 @@
 (function($){
 	// Create a new object, with an isDirty method
 	var alwaysDirty = {
-		isDirty : function(form){
+		isDirty : function(){
 			return true; 
+		},
+		isNodeDirty : function(node){
+			// Perform dirty check on a given node (usually a form element)			  
 		}
 	}
 	// Push the new object onto the helpers array

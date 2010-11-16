@@ -3,28 +3,42 @@
 if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 (function($){
-	// Public General Plugin methods $.DirtyForms 
+	// Public General Plugin methods $.DirtyForms
 	$.extend({
 		DirtyForms: {
-			debug : false, 	
+			debug : false,
 			message : 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
 			title : 'Are you sure you want to do that?',
 			dirtyClass : 'dirty',
 			listeningClass : 'dirtylisten',
 			ignoreClass : 'ignoredirty',
 			helpers : [],
-			dialog : function(message, title){
-				var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium blue alignright continue">Continue</a><a href="#" class="ignoredirty button medium darkgrey alignright cancel">Stop</a>';
-				$.facebox(content);		 
+			dialog : {
+				refire : function(content){
+					var rebox = function(){
+						$.facebox(content);
+						$(document).unbind('afterClose.facebox', rebox);
+					}
+					$(document).bind('afterClose.facebox', rebox);
+				},
+				fire : function(message, title){
+					var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium blue alignright continue">Continue</a><a href="#" class="ignoredirty button medium darkgrey alignright cancel">Stop</a>';
+					$.facebox(content);
+				},
+				bind : function(){
+					$('#facebox .cancel, #facebox .close, #facebox_overlay').click(decidingCancel);
+					$('#facebox .continue').click(decidingContinue);
+					$(document).bind('decidingcancelled.dirtyforms', function(){
+						$(document).trigger('close.facebox');
+					});
+				},
+				stash : function(){
+					var fb = $('#facebox .content');
+					return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
+					   false :
+					   fb.clone(true);
+				}
 			},
-			bindDialog : function(){
-				$('#facebox .cancel, #facebox .close').click(decidingCancel);
-				$('#facebox .continue').click(decidingContinue);
-				$(document).bind('decidingcancelled.dirtyforms', function(){
-					$(document).trigger('close.facebox');
-				});				
-			},
-		
 
 			isDirty : function(){
 				dirtylog('Core isDirty is starting ');
@@ -36,15 +50,13 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					}
 				});
 
-				
-
 				$.each($.DirtyForms.helpers, function(key,obj){
 					if("isDirty" in obj){
 						if(obj.isDirty()){
 							isDirty = true;
 							return true;
 						}
-					}	
+					}
 				});
 
 				dirtylog('Core isDirty is returning ' + isDirty);
@@ -54,36 +66,34 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 		}
 	});
-	
+
 	// Create a custom selector $('form:dirty')
 	$.extend($.expr[":"], {
 		dirtylistening : function(a){
-			return $(a).hasClass($.DirtyForms.listeningClass);		 
+			return $(a).hasClass($.DirtyForms.listeningClass);
 		},
 		dirty : function(a){
-			return $(a).hasClass($.DirtyForms.dirtyClass);	
+			return $(a).hasClass($.DirtyForms.dirtyClass);
 		}
 	});
 
-	// Public Element methods $('form').dirtyForm();		
+	// Public Element methods $('form').dirtyForm();
 	$.fn.dirtyForms = function(){
 		var core = $.DirtyForms;
 		var thisForm = this;
 
 		dirtylog('Adding forms to watch');
 		bindExit();
-		
+
 		return this.each(function(e){
 			dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
 			$(this).addClass(core.listeningClass);
 			$('input:text, input:password, input:checkbox, input:radio, textarea, select', this).change(function(){
 				$(this).setDirty();
 			});
-				
-		
 		});
 	}
-	
+
 	$.fn.setDirty = function(){
 		dirtylog('setDirty called');
 		return this.each(function(e){
@@ -94,12 +104,22 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	// Returns true if any of the supplied elements are dirty
 	$.fn.isDirty = function(){
 		var isDirty = false;
+		var node = this;
 		this.each(function(e){
 			if($(this).hasClass($.DirtyForms.dirtyClass)){
 				isDirty = true;
 				return true;
 			}
 		});
+		$.each($.DirtyForms.helpers, function(key,obj){
+			if("isNodeDirty" in obj){
+				if(obj.isNodeDirty(node)){
+					isDirty = true;
+					return true;
+				}
+			}
+		});
+
 		dirtylog('isDirty returned ' + isDirty);
 		return isDirty;
 	}
@@ -108,12 +128,13 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	var settings = $.extend({
 		exitBound : false,
 		formStash : false,
+		dialogStash : false,
 		deciding : false,
 		currentForm : false,
 		hasFirebug : "console" in window && "firebug" in window.console
 	}, $.DirtyForms);
 
-	dirtylog = function(msg){		
+	dirtylog = function(msg){
 		if(!$.DirtyForms.debug) return;
 		msg = "[DirtyForms] " + msg;
 		settings.hasFirebug ? console.log(msg) : alert(msg);
@@ -127,16 +148,16 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	}
 
 	aBindFn = function(ev){
-		 bindFn(ev);	  
+		 bindFn(ev);
 	}
 
 	formBindFn = function(ev){
 		settings.currentForm = this;
-		bindFn(ev);	  
+		bindFn(ev);
 	}
 
 	beforeunloadBindFn = function(ev){
-		var result = bindFn(ev);	
+		var result = bindFn(ev);
 
 		if(result && settings.doubleunloadfix != true){
 			dirtylog('Before unload will be called, resetting');
@@ -155,7 +176,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 		if(ev.type == 'beforeunload' && settings.doubleunloadfix){
 			dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
-			settings.doubleunloadfix = false;	
+			settings.doubleunloadfix = false;
 			return false;
 		}
 
@@ -192,27 +213,50 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		settings.deciding = true;
 		settings.decidingEvent = ev;
 		dirtylog('Setting deciding active');
+
+		if(settings.dialog !== false)
+		{
+			dirtylog('Saving dialog content');
+			settings.dialogStash =settings.dialog.stash();
+			dirtylog(settings.dialogStash);
+		}
+
+		// Callback for page access in current state
+		$(document).trigger('defer.dirtyforms');
+
 		if(ev.type == 'beforeunload'){
 			//clearUnload();
 			dirtylog('Returning to beforeunload browser handler with: ' + settings.message);
 			return settings.message;
-		}else{	
+		}else{
 			ev.preventDefault();
 		}
 
+		settings.formStash = $(ev.target).is('form') ?
+		   	$(ev.target).clone(true).hide() :
+			false;
+
 		dirtylog('Deferring to the dialog');
-		settings.dialog(settings.message, settings.title);
-		settings.bindDialog();
+		settings.dialog.fire(settings.message, settings.title);
+		settings.dialog.bind();
 	}
 
 	decidingCancel = function(ev){
 		ev.preventDefault();
 		$(document).trigger('decidingcancelled.dirtyforms');
+		if(settings.dialog !== false && settings.dialogStash !== false)
+		{
+			dirtylog('Refiring the dialog with stashed content');
+			settings.dialog.refire(settings.dialogStash.html());
+			settings.dialogStash = false;
+		}
+		settings.dialogStash = false;
 		settings.deciding = settings.currentForm = settings.decidingEvent = false;
 	}
 
 	decidingContinue = function(ev){
 		ev.preventDefault();
+		settings.dialogStash = false;
 		$(document).trigger('decidingcontinued.dirtyforms');
 		refire(settings.decidingEvent);
 	}
@@ -221,10 +265,8 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		// I'd like to just be able to unbind this but there seems
 		// to be a bug in jQuery which doesn't unbind onbeforeunload
 		dirtylog('Clearing the beforeunload event');
-	//	$(window).unbind('beforeunload', beforeunloadBindFn);
-					  
+		//$(window).unbind('beforeunload', beforeunloadBindFn);
 		window.onbeforeunload = null;
-						
 	}
 
 	refire = function(e){

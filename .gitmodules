@@ -1,0 +1,3 @@
+[submodule "lib/facebox"]
+	path = lib/facebox
+	url = git@github.com:snikch/facebox.git
