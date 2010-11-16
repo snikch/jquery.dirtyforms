@@ -92,14 +92,24 @@ Currently only the isDirty and isNodeDirty methods are available to helpers.
 
 Dialogs
 ---------------------------------
-The default facebox dialog can be overriden by setting two new methods, dialog and bindDialog, on the $.DirtyForms object.
+The default facebox dialog can be overriden by setting a new dialog object.
 
-	// These are the default functions
-	dialog : function(message, title){
+The dialog object REQUIRES you to set four methods and a property.
+
+Methods: fire, refire, bind, stash
+Property: selector
+
+	// Selector is a selector string for dialog content. Used to determin if event targets are inside a dialog
+	selector : '#facebox .content'
+
+
+	// Fire starts the dialog
+	fire : function(message, title){
 		var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty continue">Continue</a><a href="#" class="ignoredirty cancel">Stop</a>';
 		$.facebox(content);		 
 	},
-	bindDialog : function(){
+	// Bind binds the continue and cancel functions to the correct links
+	bind : function(){
 		$('#facebox .cancel, #facebox .close').click(decidingCancel);
 		$('#facebox .continue').click(decidingContinue);
 		$(document).bind('decidingcancelled.dirtyform', function(){
@@ -107,7 +117,36 @@ The default facebox dialog can be overriden by setting two new methods, dialog a
 		});				
 	},
 
-dialog accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the binddialog method you will see that we bind the 'decidingCancel' method to the .cancel link and the .close link, and we bind 'decidingContinue' to the .continue link. You must bind both decidingCancel and decidingContinue in the bindDialog method.
+	// Refire handles closing an existing dialog AND fires a new one
+	refire : function(content){
+		var rebox = function(){
+			$.facebox(content);
+			$(document).unbind('afterClose.facebox', rebox);
+		}
+		$(document).bind('afterClose.facebox', rebox);
+	},
+
+	// Stash returns the current contents of a dialog to be refired after the confirmation
+	// Use to store the current dialog, when it's about to be replaced with the confirmation dialog. This function can return false if you don't wish to stash anything.
+		stash : function(){
+			var fb = $('#facebox .content');
+			return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
+			   false :
+			   fb.clone(true);
+		},
+
+fire accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the binddialog method you will see that we bind the 'decidingCancel' method to the .cancel link and the .close link, and we bind 'decidingContinue' to the .continue link. You must bind both decidingCancel and decidingContinue in the bindDialog method.
+
+If you don't want to use a dialog at all, simply pass in false instead of an object.
+
+	$.DirtyForms.dialog = {
+		selector : '#mylightbox .body',
+		fire : function (){ ... },
+		refire : function (){ ... },
+		stash : function (){ ... },
+		bind : function (){ ... }
+	}
+
 
 Triggers
 ---------------------------------
@@ -115,6 +154,8 @@ Triggers
 You can attach callbacks to the decidingcancelled.dirtyforms and decidingcontinued.dirtyforms custom events. These events are called when the cancel, or continue method on the modal dialog is called (when the user clicks either continue, or cancel).
 
 These triggers are not available when used with the browser fallback dialog method.
+
+Also available is defer.dirtyforms for accessing elements on the page prior to the dialog box alerting the user is called, and beforeRefire.dirtyforms, called before the original event is refired after a user chooses to leave the page (useful if you need to do things like save data back to fields which is normally part of event propagation - ala tinyMce).
 
 Selectors
 ---------------------------------

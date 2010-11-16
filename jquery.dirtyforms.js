@@ -229,9 +229,10 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			//clearUnload();
 			dirtylog('Returning to beforeunload browser handler with: ' + settings.message);
 			return settings.message;
-		}else{
-			ev.preventDefault();
 		}
+		if(!settings.dialog) return;
+
+		ev.preventDefault();
 
 		if($(ev.target).is('form') && $(ev.target).parents(settings.dialog.selector).length > 0){
 			dirtylog('Stashing form');
