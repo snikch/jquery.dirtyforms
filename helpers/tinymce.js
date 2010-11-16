@@ -21,5 +21,11 @@
 	}
 	// Push the new object onto the helpers array
 	$.DirtyForms.helpers.push(tinymce);
+
+	// Create a pre refire binding to trigger the tinymce save
+	$(document).bind('beforeRefire.dirtyforms', function(){
+		// This is no longer needed, but kept here to remind me.
+		//	tinyMCE.triggerSave();
+	});
 })(jQuery);
 

@@ -37,7 +37,8 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
 					   false :
 					   fb.clone(true);
-				}
+				},
+				selector : '#facebox .content'
 			},
 
 			isDirty : function(){
@@ -232,9 +233,12 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			ev.preventDefault();
 		}
 
-		settings.formStash = $(ev.target).is('form') ?
-		   	$(ev.target).clone(true).hide() :
-			false;
+		if($(ev.target).is('form') && $(ev.target).parents(settings.dialog.selector).length > 0){
+			dirtylog('Stashing form');
+			settings.formStash = $(ev.target).clone(true).hide();
+		}else{
+			settings.formStash = false;
+		}
 
 		dirtylog('Deferring to the dialog');
 		settings.dialog.fire(settings.message, settings.title);
@@ -270,6 +274,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	}
 
 	refire = function(e){
+		$(document).trigger('beforeRefire.dirtyforms');
 		switch(e.type){
 			case 'click':
 				dirtylog("Refiring click event");
