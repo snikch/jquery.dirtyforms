@@ -132,13 +132,18 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		dialogStash : false,
 		deciding : false,
 		currentForm : false,
-		hasFirebug : "console" in window && "firebug" in window.console
+		hasFirebug : "console" in window && "firebug" in window.console,
+		hasConsoleLog: "console" in window && "log" in window.console
 	}, $.DirtyForms);
 
 	dirtylog = function(msg){
 		if(!$.DirtyForms.debug) return;
 		msg = "[DirtyForms] " + msg;
-		settings.hasFirebug ? console.log(msg) : alert(msg);
+		settings.hasFirebug ?
+			console.log(msg) :
+			settings.hasConsoleLog ?
+				window.console.log(msg) :
+				alert(msg);
 	}
 	bindExit = function(){
 		if(settings.exitBound) return;
