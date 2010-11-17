@@ -14,7 +14,7 @@ The .live() method is used to attach click and submit handlers so even elements 
 
 Status
 ---------------------------------
-Work in progress, still not browser tested nor feature complete (form stash not working).
+Work in progress, still not browser tested but is feature complete.
 
 Usage
 ---------------------------------
@@ -51,7 +51,7 @@ listeningClass: The class applied to elements that are having their inputs monit
 
 helpers: An array for helper objects. See Helpers below
 
-bindDialog and dialog: See Dialogs below
+dialog: See Dialogs below
 
 
 Public Methods
