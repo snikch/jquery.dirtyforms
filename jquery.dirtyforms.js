@@ -275,7 +275,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		// I'd like to just be able to unbind this but there seems
 		// to be a bug in jQuery which doesn't unbind onbeforeunload
 		dirtylog('Clearing the beforeunload event');
-		//$(window).unbind('beforeunload', beforeunloadBindFn);
+		$(window).unbind('beforeunload', beforeunloadBindFn);
 		window.onbeforeunload = null;
 	}
 
