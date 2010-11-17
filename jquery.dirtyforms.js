@@ -19,6 +19,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 						$.facebox(content);
 						$(document).unbind('afterClose.facebox', rebox);
 					}
+					$('#facebox_overlay').remove();
 					$(document).bind('afterClose.facebox', rebox);
 				},
 				fire : function(message, title){
@@ -33,10 +34,10 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					});
 				},
 				stash : function(){
-					var fb = $('#facebox .content');
+					var fb = $('#facebox');
 					return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
 					   false :
-					   fb.clone(true);
+					   $('#facebox .content').clone(true);
 				},
 				selector : '#facebox .content'
 			},
