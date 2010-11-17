@@ -15,21 +15,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			helpers : [],
 			dialog : {
 				refire : function(content, ev){
-						dirtylog('in refirec func');
-					ev.stopImmediatePropagation();
-					ev.preventDefault();
-				//	$.facebox.settings.overlay = false;
-				//	var rebox = function(){
-					//	$.facebox.settings.overlay = overlay;
-
-						$.facebox(content);
-					//	$(document).unbind('afterClose.facebox', rebox);
-				//	}
-				   //	$("#facebox_overlay").removeClass("facebox_overlayBG")
-     			//	 $("#facebox_overlay").addClass("facebox_hide")
-
-				//	$('#facebox_overlay').remove();
-				//	$(document).bind('afterClose.facebox', rebox);
+					$.facebox(content);
 				},
 				fire : function(message, title){
 					var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium blue alignright continue">Continue</a><a href="#" class="ignoredirty button medium darkgrey alignright cancel">Stop</a>';
