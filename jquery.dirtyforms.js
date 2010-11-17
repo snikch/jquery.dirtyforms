@@ -130,6 +130,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		formStash : false,
 		dialogStash : false,
 		deciding : false,
+		decidingEvent : false,
 		currentForm : false,
 		hasFirebug : "console" in window && "firebug" in window.console,
 		hasConsoleLog: "console" in window && "log" in window.console
@@ -177,7 +178,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	}
 
 	bindFn = function(ev){
-		dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class'));
+		dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class') + ' and id: ' + ev.target.id);
 
 		if(ev.type == 'beforeunload' && settings.doubleunloadfix){
 			dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
@@ -298,9 +299,11 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					target = settings.formStash;
 					$('body').append(target);
 				}
-				else
+				else{
 					target = $(e.target);
-				dirtylog(settings.formStash);
+					if(!target.is('form'))
+						target = target.closest('form');
+				}
 				target.trigger(e.type);
 				break;
 		}
