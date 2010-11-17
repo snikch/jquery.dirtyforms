@@ -14,13 +14,22 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			ignoreClass : 'ignoredirty',
 			helpers : [],
 			dialog : {
-				refire : function(content){
-					var rebox = function(){
+				refire : function(content, ev){
+						dirtylog('in refirec func');
+					ev.stopImmediatePropagation();
+					ev.preventDefault();
+				//	$.facebox.settings.overlay = false;
+				//	var rebox = function(){
+					//	$.facebox.settings.overlay = overlay;
+
 						$.facebox(content);
-						$(document).unbind('afterClose.facebox', rebox);
-					}
-					$('#facebox_overlay').remove();
-					$(document).bind('afterClose.facebox', rebox);
+					//	$(document).unbind('afterClose.facebox', rebox);
+				//	}
+				   //	$("#facebox_overlay").removeClass("facebox_overlayBG")
+     			//	 $("#facebox_overlay").addClass("facebox_hide")
+
+				//	$('#facebox_overlay').remove();
+				//	$(document).bind('afterClose.facebox', rebox);
 				},
 				fire : function(message, title){
 					var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium blue alignright continue">Continue</a><a href="#" class="ignoredirty button medium darkgrey alignright cancel">Stop</a>';
@@ -30,7 +39,10 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					$('#facebox .cancel, #facebox .close, #facebox_overlay').click(decidingCancel);
 					$('#facebox .continue').click(decidingContinue);
 					$(document).bind('decidingcancelled.dirtyforms', function(){
-						$(document).trigger('close.facebox');
+					 	// Hacky way of manually removing the fuck out of Facebox
+						$("#facebox").remove();
+					 	$('#facebox_overlay').remove();
+					 	$.facebox.settings.inited = false;
 					});
 				},
 				stash : function(){
@@ -258,8 +270,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		if(settings.dialog !== false && settings.dialogStash !== false)
 		{
 			dirtylog('Refiring the dialog with stashed content');
-			settings.dialog.refire(settings.dialogStash.html());
-			settings.dialogStash = false;
+			settings.dialog.refire(settings.dialogStash.html(), ev);
 		}
 		settings.dialogStash = false;
 		settings.deciding = settings.currentForm = settings.decidingEvent = false;
