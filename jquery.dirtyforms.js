@@ -18,7 +18,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					$.facebox(content);
 				},
 				fire : function(message, title){
-					var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium blue alignright continue">Continue</a><a href="#" class="ignoredirty button medium darkgrey alignright cancel">Stop</a>';
+					var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium red continue">Continue</a><a href="#" class="ignoredirty button medium cancel">Stop</a>';
 					$.facebox(content);
 				},
 				bind : function(){
