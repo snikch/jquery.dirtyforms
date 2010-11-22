@@ -199,8 +199,12 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			return false;
 		}
 
-		if(!settings.isDirty())
-		{
+		if(ev.isDefaultPrevented()){
+			dirtylog('Leaving: Event has been stopped elsewhere');
+			return false;
+		}
+
+		if(!settings.isDirty()){
 			dirtylog('Leaving: Not dirty');
 			if(!ev.isDefaultPrevented()){
 				clearUnload();
