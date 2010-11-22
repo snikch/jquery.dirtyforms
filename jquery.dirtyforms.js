@@ -242,6 +242,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		if(!settings.dialog) return;
 
 		ev.preventDefault();
+		ev.stopImmediatePropagation();
 
 		if($(ev.target).is('form') && $(ev.target).parents(settings.dialog.selector).length > 0){
 			dirtylog('Stashing form');
