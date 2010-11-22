@@ -258,12 +258,13 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 	decidingCancel = function(ev){
 		ev.preventDefault();
+		$(document).trigger('decidingcancelled.dirtyforms');
 		if(settings.dialog !== false && settings.dialogStash !== false)
 		{
 			dirtylog('Refiring the dialog with stashed content');
 			settings.dialog.refire(settings.dialogStash.html(), ev);
 		}
-		$(document).trigger('decidingcancelled.dirtyforms');
+		$(document).trigger('decidingcancelledAfter.dirtyforms');
 		settings.dialogStash = false;
 		settings.deciding = settings.currentForm = settings.decidingEvent = false;
 	}
