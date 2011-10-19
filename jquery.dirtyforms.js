@@ -292,8 +292,9 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 				var event = new jQuery.Event('click');
 				$(e.target).trigger(event);
 				if(!event.isDefaultPrevented()){
-					dirtylog('Sending location to ' + $(e.target).attr('href'));
-					location.href = $(e.target).attr('href');
+					var anchor = $(e.target).closest('[href]');
+					dirtylog('Sending location to ' + anchor.attr('href'));
+					location.href = anchor.attr('href');
 					return;
 				}
 				break;
