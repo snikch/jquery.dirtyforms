@@ -252,7 +252,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		}
 
 		dirtylog('Deferring to the dialog');
-		settings.dialog.fire(settings.message, settings.title);
+		settings.dialog.fire($.DirtyForms.message, $.DirtyForms.title);
 		settings.dialog.bind();
 	}
 
