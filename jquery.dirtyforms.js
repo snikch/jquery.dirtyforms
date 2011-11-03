@@ -61,9 +61,6 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 				dirtylog('Core isDirty is returning ' + isDirty);
 				return isDirty;
-			},
-			reload: function(){
-			
 			}
 
 
@@ -128,7 +125,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	}
 
 	// Private Properties and Methods
-	var settings = $.DirtyForms = $.extend({
+	var settings = $.extend({
 		exitBound : false,
 		formStash : false,
 		dialogStash : false,
