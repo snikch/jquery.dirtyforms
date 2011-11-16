@@ -125,7 +125,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	}
 
 	// Private Properties and Methods
-	var settings = $.extend({
+	var settings = $.DirtyForms = $.extend({
 		exitBound : false,
 		formStash : false,
 		dialogStash : false,
