@@ -89,9 +89,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		return this.each(function(e){
 			dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
 			$(this).addClass(core.listeningClass);
-			$('input:text, input:password, input:checkbox, input:radio, textarea, select', this).change(function(){
-				$(this).setDirty();
-			});
+			$('input, textarea, select', this).focus(onFocus);
 		});
 	}
 
@@ -106,6 +104,10 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	$.fn.isDirty = function(){
 		var isDirty = false;
 		var node = this;
+		if (focusedIsDirty()) {
+			isDirty = true;
+			return true;
+		}
 		this.each(function(e){
 			if($(this).hasClass($.DirtyForms.dirtyClass)){
 				isDirty = true;
@@ -134,8 +136,23 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		decidingEvent : false,
 		currentForm : false,
 		hasFirebug : "console" in window && "firebug" in window.console,
-		hasConsoleLog: "console" in window && "log" in window.console
+		hasConsoleLog: "console" in window && "log" in window.console,
+		focused: {"element": false, "value": false}
 	}, $.DirtyForms);
+
+	onFocus = function() {
+		element = $(this);
+		if (focusedIsDirty()) {
+			element.setDirty();
+		}
+		settings.focused['element'] = element;
+		settings.focused['value']	= element.val();
+	}
+	focusedIsDirty = function() {
+		/** Check, whether the value of focused element has changed */
+		return settings.focused["element"] &&
+			(settings.focused["element"].val() !== settings.focused["value"]);
+	}
 
 	dirtylog = function(msg){
 		if(!$.DirtyForms.debug) return;
