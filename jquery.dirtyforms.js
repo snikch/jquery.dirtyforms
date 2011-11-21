@@ -22,14 +22,15 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 					$.facebox(content);
 				},
 				bind : function(){
-					$('#facebox .cancel, #facebox .close, #facebox_overlay').click(decidingCancel);
-					$('#facebox .continue').click(decidingContinue);
-					$(document).bind('decidingcancelled.dirtyforms', function(){
-					 	// Hacky way of manually removing the fuck out of Facebox
-						$("#facebox").remove();
-					 	$('#facebox_overlay').remove();
-					 	$.facebox.settings.inited = false;
-					});
+					var close = function(decision) {
+						return function(e) {
+							e.preventDefault();
+							$(document).trigger('close.facebox');
+							decision(e);
+						};
+					};
+					$('#facebox .cancel, #facebox .close, #facebox_overlay').click(close(decidingCancel));
+					$('#facebox .continue').click(close(decidingContinue));
 				},
 				stash : function(){
 					var fb = $('#facebox');
@@ -274,6 +275,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		settings.dialogStash = false;
 		$(document).trigger('decidingcontinued.dirtyforms');
 		refire(settings.decidingEvent);
+		settings.deciding = settings.currentForm = settings.decidingEvent = false;
 	}
 
 	clearUnload = function(){
