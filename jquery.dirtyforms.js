@@ -288,6 +288,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 	}
 
 	decidingContinue = function(ev){
+		window.onbeforeunload = null; // fix for chrome
 		ev.preventDefault();
 		settings.dialogStash = false;
 		$(document).trigger('decidingcontinued.dirtyforms');

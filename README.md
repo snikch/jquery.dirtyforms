@@ -6,7 +6,9 @@ Dirty Forms will alert a user when they attempt to leave a page without submitti
 
 Oh, and it's pretty easy to use.
 	
-	$('form').dirtyForms();
+```javascript
+$('form').dirtyForms();
+```
 
 Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack.
 
@@ -18,22 +20,23 @@ Feature complete, browser tested - about to go into a production environment for
 
 Usage
 ---------------------------------
-	// Enable for all forms
-	$('form').dirtyForms();
+```javascript
+// Enable for all forms
+$('form').dirtyForms();
 
-	// Enable for just forms of class 'sodirty'
-	$('form.sodirty').dirtyForms();
+// Enable for just forms of class 'sodirty'
+$('form.sodirty').dirtyForms();
 
-	// Enable Debugging
-	$.DirtyForms.debug = true;
+// Enable Debugging
+$.DirtyForms.debug = true;
 
-	// Two custom selectors are available
-	// Select all forms that are dirty
-	$('form:dirty');
+// Two custom selectors are available
+// Select all forms that are dirty
+$('form:dirty');
 
-	// Select all forms that are being watched for changes
-	$('form:dirtylistening');
-
+// Select all forms that are being watched for changes
+$('form:dirtylistening');
+```
 
 Options
 ---------------------------------
@@ -76,19 +79,21 @@ This is useful when you're using replacement inputs or textarea, such as with ti
 
 Currently only the isDirty and isNodeDirty methods are available to helpers.
 
-	// Example helper, the form is always considered dirty
-	// Create a new object, with an isDirty method
-	var alwaysDirty = {
-		isDirty : function(){
-			// General catch all is dirty check	
-		},
-		isNodeDirty : function(node){
-			// Logic here to determine if the given node is dirty, return true if it is
-			return true; 
-		}
+```javascript
+// Example helper, the form is always considered dirty
+// Create a new object, with an isDirty method
+var alwaysDirty = {
+	isDirty : function(){
+		// General catch all is dirty check	
+	},
+	isNodeDirty : function(node){
+		// Logic here to determine if the given node is dirty, return true if it is
+		return true; 
 	}
-	// Push the new object onto the helpers array
-	$.DirtyForms.helpers.push(alwaysDirty);
+}
+// Push the new object onto the helpers array
+$.DirtyForms.helpers.push(alwaysDirty);
+```
 
 Dialogs
 ---------------------------------
@@ -97,56 +102,60 @@ The default facebox dialog can be overriden by setting a new dialog object.
 The dialog object REQUIRES you to set four methods and a property.
 
 Methods: fire, refire, bind, stash
+
 Property: selector
 
-	// Selector is a selector string for dialog content. Used to determin if event targets are inside a dialog
-	selector : '#facebox .content'
+```javascript
+// Selector is a selector string for dialog content. Used to determin if event targets are inside a dialog
+selector : '#facebox .content',
 
 
-	// Fire starts the dialog
-	fire : function(message, title){
-		var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty continue">Continue</a><a href="#" class="ignoredirty cancel">Stop</a>';
-		$.facebox(content);		 
-	},
-	// Bind binds the continue and cancel functions to the correct links
-	bind : function(){
-		$('#facebox .cancel, #facebox .close').click(decidingCancel);
-		$('#facebox .continue').click(decidingContinue);
-		$(document).bind('decidingcancelled.dirtyform', function(){
-			$(document).trigger('close.facebox');
-		});				
-	},
+// Fire starts the dialog
+fire : function(message, title){
+	var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty continue">Continue</a><a href="#" class="ignoredirty cancel">Stop</a>';
+	$.facebox(content);		 
+},
+// Bind binds the continue and cancel functions to the correct links
+bind : function(){
+	$('#facebox .cancel, #facebox .close').click(decidingCancel);
+	$('#facebox .continue').click(decidingContinue);
+	$(document).bind('decidingcancelled.dirtyform', function(){
+		$(document).trigger('close.facebox');
+	});				
+},
 
-	// Refire handles closing an existing dialog AND fires a new one
-	refire : function(content){
-		var rebox = function(){
-			$.facebox(content);
-			$(document).unbind('afterClose.facebox', rebox);
-		}
-		$(document).bind('afterClose.facebox', rebox);
-	},
+// Refire handles closing an existing dialog AND fires a new one
+refire : function(content){
+	var rebox = function(){
+		$.facebox(content);
+		$(document).unbind('afterClose.facebox', rebox);
+	}
+	$(document).bind('afterClose.facebox', rebox);
+},
 
-	// Stash returns the current contents of a dialog to be refired after the confirmation
-	// Use to store the current dialog, when it's about to be replaced with the confirmation dialog. This function can return false if you don't wish to stash anything.
-		stash : function(){
-			var fb = $('#facebox .content');
-			return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
-			   false :
-			   fb.clone(true);
-		},
+// Stash returns the current contents of a dialog to be refired after the confirmation
+// Use to store the current dialog, when it's about to be replaced with the confirmation dialog. This function can return false if you don't wish to stash anything.
+	stash : function(){
+		var fb = $('#facebox .content');
+		return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
+		   false :
+		   fb.clone(true);
+	}
+```
 
 fire accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the binddialog method you will see that we bind the 'decidingCancel' method to the .cancel link and the .close link, and we bind 'decidingContinue' to the .continue link. You must bind both decidingCancel and decidingContinue in the bindDialog method.
 
 If you don't want to use a dialog at all, simply pass in false instead of an object.
 
-	$.DirtyForms.dialog = {
-		selector : '#mylightbox .body',
-		fire : function (){ ... },
-		refire : function (){ ... },
-		stash : function (){ ... },
-		bind : function (){ ... }
-	}
-
+```javascript
+$.DirtyForms.dialog = {
+	selector : '#mylightbox .body',
+	fire : function (){ ... },
+	refire : function (){ ... },
+	stash : function (){ ... },
+	bind : function (){ ... }
+}
+```
 
 Triggers
 ---------------------------------
