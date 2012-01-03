@@ -1,6 +1,6 @@
 // Copyright 2010 Mal Curtis
 
-if (typeof jQuery == 'undefined') throw("jQuery Required");
+if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 (function($){
 	// Public General Plugin methods $.DirtyForms
@@ -44,6 +44,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 			isDirty : function(){
 				dirtylog('Core isDirty is starting ');
 				var isDirty = false;
+				if (settings.disabled) return false;
 				$(':dirtylistening').each(function(){
 					if($(this).isDirty()){
 						isDirty = true;
@@ -62,9 +63,10 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 				dirtylog('Core isDirty is returning ' + isDirty);
 				return isDirty;
+			},
+			disable : function(){
+				settings.disabled = true;
 			}
-
-
 		}
 	});
 
@@ -129,6 +131,7 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 
 	// Private Properties and Methods
 	var settings = $.DirtyForms = $.extend({
+		disabled : false,
 		exitBound : false,
 		formStash : false,
 		dialogStash : false,
