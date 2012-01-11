@@ -71,6 +71,9 @@ $.fn.isDirty() will return true if the provided element is considered dirty
 $.fn.setDirty() will set the provided element as dirty
 	$('form#accountform').setDirty();
 
+$.fn.cleanDirty() will mark the provided form as clean
+	$('form#accountform').cleanDirty();
+
 Helpers
 ---------------------------------
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
