@@ -127,6 +127,17 @@ if (typeof jQuery == 'undefined') throw("jQuery Required");
 		return isDirty;
 	}
 
+    // "Cleans" this dirty form by essentially forgetting that it is dirty
+    $.fn.cleanDirty = function(){
+        dirtylog('cleanDirty called');
+        settings.focused = {element: false, value: false};
+
+        return this.each(function(e){
+			$(this).removeClass($.DirtyForms.dirtyClass).parents('form').removeClass($.DirtyForms.dirtyClass).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+        });
+    }
+
+
 	// Private Properties and Methods
 	var settings = $.DirtyForms = $.extend({
 		exitBound : false,
