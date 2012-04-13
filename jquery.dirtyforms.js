@@ -220,9 +220,22 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	}
 	var bindExit = function(){
 		if(settings.exitBound) return;
-		$('a').live('click',aBindFn);
-		$('form').live('submit',formBindFn);
+
+    // We need a separate set of processes for when the form is
+    // running inside of an iframe. We need the livaquery library
+    // in order to dynamically bind to elements within the iframe.
+    if (top !== window && $.livequery) {
+      $('a').livequery('click', aBindFn);
+      $('form').livequery('submit', formBindFn);
+      $(top.document).contents().find('a').bind('click', aBindFn);
+      $(top.window).bind('beforeunload', beforeunloadBindFn);
+    }
+    else {
+      $('a').live('click',aBindFn);
+      $('form').live('submit',formBindFn);
+    }
 		$(window).bind('beforeunload', beforeunloadBindFn);
+
 		settings.exitBound = true;
 	}
 
