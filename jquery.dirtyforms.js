@@ -166,12 +166,28 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			element.setDirty();
 		}
 		settings.focused['element'] = element;
-		settings.focused['value']	= element.val();
+		settings.focused['value']	= elementValue(element);
 	}
 	focusedIsDirty = function() {
 		/** Check, whether the value of focused element has changed */
 		return settings.focused["element"] &&
-			(settings.focused["element"].val() !== settings.focused["value"]);
+			(elementValue(settings.focused["element"]) !== settings.focused["value"]);
+	}
+	
+	var elementValue = function(element) {
+		// Bug fix - val() doesn't return the state of a checkbox or radio
+		if (element.attr('type') !== 'checkbox' && element.attr('type') !== 'radio') {
+			var value = element.val();
+			if (value !== null) {
+				if (typeof value.join !== 'undefined') {
+					// For multi-select, convert the array to a string
+					return value.join();
+				}
+			}
+			return value;
+		} else {
+			return element.is(':checked');
+		}
 	}
 
 	dirtylog = function(msg){
