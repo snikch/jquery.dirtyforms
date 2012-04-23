@@ -1,4 +1,6 @@
-// Copyright 2010 Mal Curtis
+/*! 
+	Copyright 2010 Mal Curtis
+*/
 
 if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
