@@ -6,19 +6,30 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 	var tinymce = {
 		isNodeDirty : function(form){
 			var isDirty = false;
-			//..alert('in finder');
-			// Search for all tinymce elements inside the given form
-			$(form).find(':tinymce').each(function(){
+			if (formHasTinyMCE(form)) {
+				//..alert('in finder');
+				// Search for all tinymce elements inside the given form
+				$(form).find(':tinymce').each(function(){
 
-				dirtylog('Checking node ' + $(this).attr('id'));
-				if($(this).tinymce().isDirty()){
-					isDirty = true;
-					dirtylog('Node was totally dirty.');
-					return true;
-				}
-			});	
-					 
+					$.DirtyForms.dirtylog('Checking node ' + $(this).attr('id'));
+					if($(this).tinymce().isDirty()){
+						isDirty = true;
+						$.DirtyForms.dirtylog('Node was totally dirty.');
+						return true;
+					}
+				});	
+			}	 
 			return isDirty;
+		}
+	}
+	// Fix: tinymce throws an error if the selector doesn't match anything
+	// (such as when there are no textareas on the current page)
+	var formHasTinyMCE = function(form) {
+		try {
+			return $(form).find(':tinymce').length > 0;
+		}
+		catch(e) {
+			return false;
 		}
 	}
 	// Push the new object onto the helpers array
@@ -33,5 +44,3 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 		$(this).addClass($.DirtyForms.ignoreClass);
 	});
 })(jQuery);
-
-

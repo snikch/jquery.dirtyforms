@@ -52,6 +52,8 @@ dirtyClass: The class applied to elements when they're considered dirty
 
 listeningClass: The class applied to elements that are having their inputs monitored for change
 
+ignoreClass: The class applied to elements that you wish to allow the action to be continue even when the form is dirty
+
 helpers: An array for helper objects. See Helpers below
 
 dialog: See Dialogs below
@@ -74,6 +76,15 @@ $.fn.setDirty() will set the provided element as dirty
 $.fn.cleanDirty() will mark the provided form as clean
 	$('form#accountform').cleanDirty();
 
+$.DirtyForms.decidingContinue() should be called from the dialog to refire the event and continue following the link or button that was clicked. An event object is required to be passed as a parameter.
+	$.DirtyForms.decidingContinue(event)
+	
+$.DirtyForms.decidingCancel() should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. An event object is required to be passed as a parameter.
+	$.DirtyForms.decidingCancel(event)
+
+$.DirtyForms.isDeciding() will return true if the dialog has fired and neither $.DirtyForms.decidingCancel() or $.DirtyForms.decidingContinue() has yet been called
+	if($.DirtyForms.isDeciding())
+	
 Helpers
 ---------------------------------
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
@@ -109,7 +120,7 @@ Methods: fire, refire, bind, stash
 Property: selector
 
 ```javascript
-// Selector is a selector string for dialog content. Used to determin if event targets are inside a dialog
+// Selector is a selector string for dialog content. Used to determine if event targets are inside a dialog
 selector : '#facebox .content',
 
 
@@ -120,8 +131,8 @@ fire : function(message, title){
 },
 // Bind binds the continue and cancel functions to the correct links
 bind : function(){
-	$('#facebox .cancel, #facebox .close').click(decidingCancel);
-	$('#facebox .continue').click(decidingContinue);
+	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
+	$('#facebox .continue').click($.DirtyForms.decidingContinue);
 	$(document).bind('decidingcancelled.dirtyform', function(){
 		$(document).trigger('close.facebox');
 	});				
@@ -146,7 +157,52 @@ refire : function(content){
 	}
 ```
 
-fire accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the binddialog method you will see that we bind the 'decidingCancel' method to the .cancel link and the .close link, and we bind 'decidingContinue' to the .continue link. You must bind both decidingCancel and decidingContinue in the bindDialog method.
+fire accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the binddialog method you will see that we bind the '$.DirtyForms.decidingCancel' method to the .cancel link and the .close link, and we bind '$.DirtyForms.decidingContinue' to the .continue link. You must bind both $.DirtyForms.decidingCancel and $.DirtyForms.decidingContinue in the bindDialog method.
+
+If the dialog has an extra action (such as a close button or closes as a result of the ESC key) and you need a catch-all decision when the dialog is closed (such as the case with jQueryUI's 'dialogclose' event), the $.DirtyForms.isDeciding() method can be called to check whether it is safe to call $.DirtyForms.decidingCancel() explicitly. Here is an example of setting up a jQueryUI dialog with dirtyForms:
+
+```javascript
+$.DirtyForms.dialog = {
+	selector: '#unsavedChanges',
+	fire: function(message, dlgTitle) {
+		$('#unsavedChanges').dialog({title: dlgTitle, width: 350});
+		$('#unsavedChanges').html(message);
+	},
+	refire: function(content) {
+		return false;
+	},
+	stash: function() {
+		return false;
+	},
+	bind: function() {
+		$('#unsavedChanges').dialog('option', 'buttons', 
+			[
+				{
+					text: "Go Back",
+					click: function(e) {
+						$.DirtyForms.decidingCancel(e);
+						$(this).dialog('close');
+					}
+				},
+				{
+					text: "Continue",
+					click: function(e) {
+						$.DirtyForms.decidingContinue(e);
+						$(this).dialog('close');
+					}
+				}
+			] 
+		).bind('dialogclose', function(e) {
+			// Check whether a decision has been made, if not default
+			// to decidingCancel()
+			if ($.DirtyForms.isDeciding()) {
+				$.DirtyForms.decidingCancel(e);
+			}
+		});
+	}
+}
+```
+
 
 If you don't want to use a dialog at all, simply pass in false instead of an object.
 
