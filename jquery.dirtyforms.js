@@ -68,6 +68,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			},
 			disable : function(){
 				settings.disabled = true;
+			},
+			
+			isDeciding : function(){
+				return settings.deciding;
 			}
 		}
 	});
