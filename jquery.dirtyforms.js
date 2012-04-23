@@ -72,6 +72,18 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			
 			isDeciding : function(){
 				return settings.deciding;
+			},
+			
+			decidingContinue : function(e){
+				decidingContinue(e);
+			},
+			
+			decidingCancel : function(e){
+				decidingCancel(e);
+			},
+			
+			dirtylog : function(msg){
+				dirtylog(msg);
 			}
 		}
 	});
@@ -160,7 +172,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		focused: {"element": false, "value": false}
 	}, $.DirtyForms);
 
-	onFocus = function() {
+	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
 			element.setDirty();
@@ -168,7 +180,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.focused['element'] = element;
 		settings.focused['value']	= elementValue(element);
 	}
-	focusedIsDirty = function() {
+	var focusedIsDirty = function() {
 		/** Check, whether the value of focused element has changed */
 		return settings.focused["element"] &&
 			(elementValue(settings.focused["element"]) !== settings.focused["value"]);
@@ -190,7 +202,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		}
 	}
 
-	dirtylog = function(msg){
+	var dirtylog = function(msg){
 		if(!$.DirtyForms.debug) return;
 		msg = "[DirtyForms] " + msg;
 		settings.hasFirebug ?
@@ -199,7 +211,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				window.console.log(msg) :
 				alert(msg);
 	}
-	bindExit = function(){
+	var bindExit = function(){
 		if(settings.exitBound) return;
 		$('a').live('click',aBindFn);
 		$('form').live('submit',formBindFn);
@@ -207,16 +219,16 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.exitBound = true;
 	}
 
-	aBindFn = function(ev){
+	var aBindFn = function(ev){
 		 bindFn(ev);
 	}
 
-	formBindFn = function(ev){
+	var formBindFn = function(ev){
 		settings.currentForm = this;
 		bindFn(ev);
 	}
 
-	beforeunloadBindFn = function(ev){
+	var beforeunloadBindFn = function(ev){
 		var result = bindFn(ev);
 
 		if(result && settings.doubleunloadfix != true){
@@ -242,7 +254,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		}
 	}
 
-	bindFn = function(ev){
+	var bindFn = function(ev){
 		dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class') + ' and id: ' + ev.target.id);
 
 		if(ev.type == 'beforeunload' && settings.doubleunloadfix){
@@ -321,7 +333,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.dialog.bind();
 	}
 
-	decidingCancel = function(ev){
+	var decidingCancel = function(ev){
 		ev.preventDefault();
 		$(document).trigger('decidingcancelled.dirtyforms');
 		if(settings.dialog !== false && settings.dialogStash !== false)
@@ -334,7 +346,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.deciding = settings.currentForm = settings.decidingEvent = false;
 	}
 
-	decidingContinue = function(ev){
+	var decidingContinue = function(ev){
 		window.onbeforeunload = null; // fix for chrome
 		ev.preventDefault();
 		settings.dialogStash = false;
@@ -343,7 +355,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.deciding = settings.currentForm = settings.decidingEvent = false;
 	}
 
-	clearUnload = function(){
+	var clearUnload = function(){
 		// I'd like to just be able to unbind this but there seems
 		// to be a bug in jQuery which doesn't unbind onbeforeunload
 		dirtylog('Clearing the beforeunload event');
@@ -351,7 +363,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		window.onbeforeunload = null;
 	}
 
-	refire = function(e){
+	var refire = function(e){
 		$(document).trigger('beforeRefire.dirtyforms');
 		switch(e.type){
 			case 'click':

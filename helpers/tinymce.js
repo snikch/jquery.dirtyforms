@@ -11,10 +11,10 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 				// Search for all tinymce elements inside the given form
 				$(form).find(':tinymce').each(function(){
 
-					dirtylog('Checking node ' + $(this).attr('id'));
+					$.DirtyForms.dirtylog('Checking node ' + $(this).attr('id'));
 					if($(this).tinymce().isDirty()){
 						isDirty = true;
-						dirtylog('Node was totally dirty.');
+						$.DirtyForms.dirtylog('Node was totally dirty.');
 						return true;
 					}
 				});	
