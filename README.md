@@ -91,7 +91,7 @@ Dirty Forms was created because the similar plugins that existed were not flexib
 
 This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file.
 
-Currently only the isDirty and isNodeDirty methods are available to helpers.
+Currently only the isDirty, isNodeDirty, cleanDirty, and cleanDirtyNode methods are available to helpers.
 
 ```javascript
 // Example helper, the form is always considered dirty

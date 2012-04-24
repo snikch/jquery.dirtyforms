@@ -157,6 +157,18 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
     $.fn.cleanDirty = function(){
         dirtylog('cleanDirty called');
 		
+		// Clean helpers
+		$.each($.DirtyForms.helpers, function(key,obj){
+			$('form').each(function(i,node) {
+				if("cleanDirtyNode" in obj){
+					obj.cleanDirtyNode(node);
+				}
+			});
+			if("cleanDirty" in obj){
+				obj.cleanDirty();
+			}
+		});
+		
         settings.focused = {element: false, value: false};
 
         return this.each(function(e){

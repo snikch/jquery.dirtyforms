@@ -20,6 +20,17 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 				});	
 			}	 
 			return isDirty;
+		},
+		cleanDirtyNode : function(form){
+			if (formHasTinyMCE(form)) {
+				// Search for all tinymce elements inside the given form
+				$(form).find(':tinymce').each(function(){
+					$.DirtyForms.dirtylog('Resetting isDirty on node ' + $(this).attr('id'));
+					if($(this).tinymce().isDirty()){
+						$(this).tinymce().isNotDirty = 1; //Force not dirty state
+					}
+				});
+			}
 		}
 	}
 	// Fix: tinymce throws an error if the selector doesn't match anything
