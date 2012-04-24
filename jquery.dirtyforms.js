@@ -109,7 +109,13 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		return this.each(function(e){
 			dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
 			$(this).addClass(core.listeningClass);
-			$('input, textarea, select', this).focus(onFocus);
+			$(this).find('input, textarea')
+				// exclude most HTML 4 inputs, allow most HTML 5 (and 6?) inputs
+				.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
+					"input[type='image'],input[type='submit'],input[type='reset']," + 
+					"input[type='file'],input[type='hidden'],input[type='search']")
+				.focus(onFocus);
+			$(this).find("input[type='checkbox'],input[type='radio'],select").change(onCheckedChange);
 		});
 	}
 
@@ -150,6 +156,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
     // "Cleans" this dirty form by essentially forgetting that it is dirty
     $.fn.cleanDirty = function(){
         dirtylog('cleanDirty called');
+		
         settings.focused = {element: false, value: false};
 
         return this.each(function(e){
@@ -172,34 +179,22 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		focused: {"element": false, "value": false}
 	}, $.DirtyForms);
 
+	var onCheckedChange = function() {
+		$(this).setDirty();
+	}
+	
 	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
 			element.setDirty();
 		}
 		settings.focused['element'] = element;
-		settings.focused['value']	= elementValue(element);
+		settings.focused['value']	= element.val();
 	}
 	var focusedIsDirty = function() {
 		/** Check, whether the value of focused element has changed */
 		return settings.focused["element"] &&
-			(elementValue(settings.focused["element"]) !== settings.focused["value"]);
-	}
-	
-	var elementValue = function(element) {
-		// Bug fix - val() doesn't return the state of a checkbox or radio
-		if (element.attr('type') !== 'checkbox' && element.attr('type') !== 'radio') {
-			var value = element.val();
-			if (value !== null) {
-				if (typeof value.join !== 'undefined') {
-					// For multi-select, convert the array to a string
-					return value.join();
-				}
-			}
-			return value;
-		} else {
-			return element.is(':checked');
-		}
+			(settings.focused["element"].val() !== settings.focused["value"]);
 	}
 
 	var dirtylog = function(msg){
