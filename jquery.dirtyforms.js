@@ -55,6 +55,14 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				});
 
 				$.each($.DirtyForms.helpers, function(key,obj){
+					$('form').each(function(i,node) {
+						if("isNodeDirty" in obj){
+							if(obj.isNodeDirty(node)) {
+								isDirty = true;
+								return true;
+							}
+						}
+					});
 					if("isDirty" in obj){
 						if(obj.isDirty()){
 							isDirty = true;
