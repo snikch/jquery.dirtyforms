@@ -45,51 +45,75 @@ installed in order to properly respond to events.
 
 Options
 ---------------------------------
-The following options are available to set via $.DirtyForms.OPTIONNAME = OPTIONVALUE
+The following options are available to set via $.DirtyForms.OPTIONNAME = OPTIONVALUE or get via OPTIONVALUE = $.DirtyForms.OPTIONNAME
 
-debug: set to true to log messages to the firebug console (or alert if you don't have firebug)
+debug: set to true to log messages to the firebug console (or alert if you don't have firebug).
 
-message: The dialog message to be sent
+message: The dialog message to be sent.
 
-title: The modal dialog title
+title: The modal dialog title.
 
-dirtyClass: The class applied to elements when they're considered dirty
+dirtyClass: The class applied to elements when they're considered dirty.
 
-listeningClass: The class applied to elements that are having their inputs monitored for change
+listeningClass: The class applied to elements that are having their inputs monitored for change.
 
-ignoreClass: The class applied to elements that you wish to allow the action to be continue even when the form is dirty
+ignoreClass: The class applied to elements that you wish to allow the action to be continue even when the form is dirty.
 
-helpers: An array for helper objects. See Helpers below
+helpers: An array for helper objects. See Helpers below.
 
-dialog: See Dialogs below
+dialog: See Dialogs below.
 
 
 Public Methods
 ---------------------------------
-$.DirtyForms.isDirty() will return true if any watched elements are considered dirty
-	if($.DirtyForms.isDirty())
+$.DirtyForms.isDirty() will return true if any watched elements are considered dirty.
+    if($.DirtyForms.isDirty())
 
-$.fn.dirtyForms() will start watching the supplied elements for descendant input changes
-	$('form').dirtyForms();
+$.fn.dirtyForms() will start watching the supplied elements for descendant input changes.
+    $('form').dirtyForms();
 
-$.fn.isDirty() will return true if the provided element is considered dirty
-	if($('form#accountform').isDirty())
+$.fn.dirtyForms('isDirty') will return true if the provided element is considered dirty.
+    if($('form#accountform').dirtyForms('isDirty'))
 
-$.fn.setDirty() will set the provided element as dirty
-	$('form#accountform').setDirty();
+$.fn.dirtyForms('setDirty') will set the provided element as dirty.
+    $('form#accountform').dirtyForms('setDirty');
 
-$.fn.cleanDirty() will mark the provided form as clean
-	$('form#accountform').cleanDirty();
+$.fn.dirtyForms('setClean') will mark the provided form as clean.
+    $('form#accountform').dirtyForms('setClean');
 
 $.DirtyForms.decidingContinue() should be called from the dialog to refire the event and continue following the link or button that was clicked. An event object is required to be passed as a parameter.
-	$.DirtyForms.decidingContinue(event)
+    $.DirtyForms.decidingContinue(event)
 	
 $.DirtyForms.decidingCancel() should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. An event object is required to be passed as a parameter.
-	$.DirtyForms.decidingCancel(event)
+    $.DirtyForms.decidingCancel(event)
 
-$.DirtyForms.isDeciding() will return true if the dialog has fired and neither $.DirtyForms.decidingCancel() or $.DirtyForms.decidingContinue() has yet been called
-	if($.DirtyForms.isDeciding())
+$.DirtyForms.isDeciding() will return true if the dialog has fired and neither $.DirtyForms.decidingCancel() or $.DirtyForms.decidingContinue() has yet been called.
+    if($.DirtyForms.isDeciding())
+
 	
+Obsolete Public Methods
+---------------------------------
+IMPORTANT: These methods have been completely removed from the public interface to avoid collisions with other JavaScript code. This is a BREAKING CHANGE. Please update your code before getting the current version.
+	
+decidingContinue()
+    Please use $.DirtyForms.decidingContinue() instead
+
+decidingCancel()
+    Please use $.DirtyForms.decidingCancel() instead
+
+The following methods have been deprecated and will eventually be removed from dirtyForms. Please update your code to access the new methods as shown here. This was done to conform to jQuery plugin authoring guidelines (http://docs.jquery.com/Plugins/Authoring).
+
+$.fn.isDirty() -- former syntax: $('form#accountform').isDirty()
+    Please use $('form#accountform').dirtyForms('isDirty') instead
+
+$.fn.setDirty() -- former syntax: $('form#accountform').setDirty()
+    Please use $('form#accountform').dirtyForms('setDirty') instead
+
+$.fn.cleanDirty() -- former syntax: $('form#accountform').cleanDirty()
+    Please use $('form#accountform').dirtyForms('setClean') instead
+
+
+
 Helpers
 ---------------------------------
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.

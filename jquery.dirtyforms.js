@@ -105,85 +105,109 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return $(a).hasClass($.DirtyForms.dirtyClass);
 		}
 	});
+	
+	// NEW Public Element methods ( $('form').dirtyForms('methodName', params) )
+	var methods = {
+		init : function() { 
+			var core = $.DirtyForms;
 
-	// Public Element methods $('form').dirtyForm();
-	$.fn.dirtyForms = function(){
-		var core = $.DirtyForms;
-		var thisForm = this;
+			dirtylog('Adding forms to watch');
+			bindExit();
 
-		dirtylog('Adding forms to watch');
-		bindExit();
-
-		return this.each(function(e){
-			dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-			$(this).addClass(core.listeningClass);
-			$(this).find('input, textarea')
-				// exclude most HTML 4 inputs, allow most HTML 5 (and 6?) inputs
-				.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
-					"input[type='image'],input[type='submit'],input[type='reset']," + 
-					"input[type='file'],input[type='hidden'],input[type='search']")
-				.focus(onFocus);
-			$(this).find("input[type='checkbox'],input[type='radio'],select").change(onCheckedChange);
-		});
-	}
-
-	$.fn.setDirty = function(){
-		dirtylog('setDirty called');
-		return this.each(function(e){
-			$(this).addClass($.DirtyForms.dirtyClass).parents('form').addClass($.DirtyForms.dirtyClass);
-		});
-	}
-
-	// Returns true if any of the supplied elements are dirty
-	$.fn.isDirty = function(){
-		var isDirty = false;
-		var node = this;
-		if (focusedIsDirty()) {
-			isDirty = true;
-			return true;
-		}
-		this.each(function(e){
-			if($(this).hasClass($.DirtyForms.dirtyClass)){
+			return this.each(function(e){
+				dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
+				$(this).addClass(core.listeningClass);
+				// include all inputs HTML 5 and future included
+				$(this).find('input, textarea')
+					// exclude HTML 4 but text and password, but include HTML 5 except search
+					.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
+						"input[type='image'],input[type='submit'],input[type='reset']," + 
+						"input[type='file'],input[type='hidden'],input[type='search']")
+					.focus(onFocus);
+				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onCheckedChange);
+			});
+		},
+		// Returns true if any of the supplied elements are dirty
+		isDirty : function() { 
+			var isDirty = false;
+			var node = this;
+			if (focusedIsDirty()) {
 				isDirty = true;
 				return true;
 			}
-		});
-		$.each($.DirtyForms.helpers, function(key,obj){
-			if("isNodeDirty" in obj){
-				if(obj.isNodeDirty(node)){
+			this.each(function(e){
+				if($(this).hasClass($.DirtyForms.dirtyClass)){
 					isDirty = true;
 					return true;
 				}
-			}
-		});
-
-		dirtylog('isDirty returned ' + isDirty);
-		return isDirty;
-	}
-
-    // "Cleans" this dirty form by essentially forgetting that it is dirty
-    $.fn.cleanDirty = function(){
-        dirtylog('cleanDirty called');
-		
-		// Clean helpers
-		$.each($.DirtyForms.helpers, function(key,obj){
-			$('form').each(function(i,node) {
-				if("cleanDirtyNode" in obj){
-					obj.cleanDirtyNode(node);
+			});
+			$.each($.DirtyForms.helpers, function(key,obj){
+				if("isNodeDirty" in obj){
+					if(obj.isNodeDirty(node)){
+						isDirty = true;
+						return true;
+					}
 				}
 			});
-			if("cleanDirty" in obj){
-				obj.cleanDirty();
-			}
-		});
+
+			dirtylog('isDirty returned ' + isDirty);
+			return isDirty;
+		},
+		// Marks the element(s) that match the selector dirty
+		setDirty : function() {
+			dirtylog('setDirty called');
+			return this.each(function(e){
+				$(this).addClass($.DirtyForms.dirtyClass).parents('form').addClass($.DirtyForms.dirtyClass);
+			});
+		},
+		// "Cleans" this dirty form by essentially forgetting that it is dirty
+		setClean : function() { 
+			dirtylog('cleanDirty called');
 		
-        settings.focused = {element: false, value: false};
+			// Clean helpers
+			$.each($.DirtyForms.helpers, function(key,obj){
+				$('form').each(function(i,node) {
+					if("cleanDirtyNode" in obj){
+						obj.cleanDirtyNode(node);
+					}
+				});
+				if("cleanDirty" in obj){
+					obj.cleanDirty();
+				}
+			});
+			
+			settings.focused = {element: false, value: false};
 
-        return this.each(function(e){
-			$(this).removeClass($.DirtyForms.dirtyClass).parents('form').removeClass($.DirtyForms.dirtyClass).find(':dirty').removeClass($.DirtyForms.dirtyClass);
-        });
+			return this.each(function(e){
+				$(this).removeClass($.DirtyForms.dirtyClass).parents('form').removeClass($.DirtyForms.dirtyClass).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+			});
+		}
+		
+		// ADD NEW METHODS HERE
+	};
+
+	$.fn.dirtyForms = function( method ) {
+		// Method calling logic
+		if ( methods[method] ) {
+			return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+		} else if ( typeof method === 'object' || ! method ) {
+			return methods.init.apply( this, arguments );
+		} else {
+			$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+		}
+	};
+
+	// Deprecated Methods for Backward Compatibility
+	// DO NOT ADD MORE METHODS LIKE THESE, ADD METHODS WHERE INDICATED ABOVE
+	$.fn.setDirty = function(){
+		return this.dirtyForms('setDirty');
+	}
+	$.fn.isDirty = function(){
+		return this.dirtyForms('isDirty');
+	}
+    $.fn.cleanDirty = function(){
+		return this.dirtyForms('setClean');
     }
-
 
 	// Private Properties and Methods
 	var settings = $.DirtyForms = $.extend({
@@ -200,13 +224,13 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	}, $.DirtyForms);
 
 	var onCheckedChange = function() {
-		$(this).setDirty();
+		$(this).dirtyForms('setDirty');
 	}
 	
 	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
-			element.setDirty();
+			element.dirtyForms('setDirty');
 		}
 		settings.focused['element'] = element;
 		settings.focused['value']	= element.val();
@@ -317,7 +341,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return false;
 		}
 
-		if(ev.type == 'submit' && $(ev.target).isDirty()){
+		if(ev.type == 'submit' && $(ev.target).dirtyForms('isDirty')){
 			dirtylog('Leaving: Form submitted is a dirty form');
 			if(!ev.isDefaultPrevented()){
 				clearUnload();
