@@ -284,15 +284,15 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 	var bindFn = function(ev){
 		dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class') + ' and id: ' + ev.target.id);
-
+		
 		if(ev.type == 'beforeunload' && settings.doubleunloadfix){
 			dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
 			settings.doubleunloadfix = false;
 			return false;
 		}
 
-		if($(ev.target).hasClass(settings.ignoreClass)){
-			dirtylog('Leaving: Element has ignore class');
+		if($(ev.target).hasClass(settings.ignoreClass) || isDifferentTarget(ev)){
+			dirtylog('Leaving: Element has ignore class or has target=\'_blank\'');
 			if(!ev.isDefaultPrevented()){
 				clearUnload();
 			}
@@ -359,6 +359,14 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		dirtylog('Deferring to the dialog');
 		settings.dialog.fire($.DirtyForms.message, $.DirtyForms.title);
 		settings.dialog.bind();
+	}
+	
+	var isDifferentTarget = function(ev){
+		var aTarget = $(ev.target).attr('target');
+		if (typeof aTarget === 'string') {
+			aTarget = aTarget.toLowerCase();
+		}
+		return (aTarget === '_blank');
 	}
 
 	var decidingCancel = function(ev){
