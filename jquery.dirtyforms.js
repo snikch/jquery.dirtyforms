@@ -56,6 +56,13 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 				$.each($.DirtyForms.helpers, function(key,obj){
 					$('form').each(function(i,node) {
+						if("isDirty" in obj){
+							if(obj.isDirty(node)){
+								isDirty = true;
+								return true;
+							}
+						}
+						// For backward compatibility, we call isNodeDirty (deprecated)
 						if("isNodeDirty" in obj){
 							if(obj.isNodeDirty(node)) {
 								isDirty = true;
@@ -63,17 +70,13 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 							}
 						}
 					});
-					if("isDirty" in obj){
-						if(obj.isDirty()){
-							isDirty = true;
-							return true;
-						}
-					}
+
 				});
 
 				dirtylog('Core isDirty is returning ' + isDirty);
 				return isDirty;
 			},
+			
 			disable : function(){
 				settings.disabled = true;
 			},
@@ -142,6 +145,13 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				}
 			});
 			$.each($.DirtyForms.helpers, function(key,obj){
+				if("isDirty" in obj){
+					if(obj.isDirty(node)){
+						isDirty = true;
+						return true;
+					}
+				}
+				// For backward compatibility, we call isNodeDirty (deprecated)
 				if("isNodeDirty" in obj){
 					if(obj.isNodeDirty(node)){
 						isDirty = true;
@@ -161,35 +171,30 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			});
 		},
 		// "Cleans" this dirty form by essentially forgetting that it is dirty
-		setClean : function() { 
-			dirtylog('cleanDirty called');
-		
-			// Clean helpers
-			$.each($.DirtyForms.helpers, function(key,obj){
-				$('form').each(function(i,node) {
-					if("cleanDirtyNode" in obj){
-						obj.cleanDirtyNode(node);
-					}
-				});
-				if("cleanDirty" in obj){
-					obj.cleanDirty();
-				}
-			});
-			
+		setClean : function() {
+			dirtylog('setClean called');
 			settings.focused = {element: false, value: false};
 
 			return this.each(function(e){
+				var node = this;
 				$(this).removeClass($.DirtyForms.dirtyClass).parents('form').removeClass($.DirtyForms.dirtyClass).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+				
+				// Clean helpers
+				$.each($.DirtyForms.helpers, function(key,obj){
+					if("setClean" in obj){
+						obj.setClean(node);
+					}
+				});
 			});
 		}
 		
 		// ADD NEW METHODS HERE
 	};
 
-	$.fn.dirtyForms = function( method ) {
+	$.fn.dirtyForms = function(method) {
 		// Method calling logic
 		if ( methods[method] ) {
-			return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+			return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
 		} else if ( typeof method === 'object' || ! method ) {
 			return methods.init.apply( this, arguments );
 		} else {

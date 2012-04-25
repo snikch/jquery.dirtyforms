@@ -4,13 +4,12 @@
 if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 	// Create a new object, with an isDirty method
 	var tinymce = {
-		isNodeDirty : function(form){
+		isDirty : function(form){
 			var isDirty = false;
 			if (formHasTinyMCE(form)) {
 				//..alert('in finder');
 				// Search for all tinymce elements inside the given form
 				$(form).find(':tinymce').each(function(){
-
 					$.DirtyForms.dirtylog('Checking node ' + $(this).attr('id'));
 					if($(this).tinymce().isDirty()){
 						isDirty = true;
@@ -21,12 +20,12 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 			}	 
 			return isDirty;
 		},
-		cleanDirtyNode : function(form){
+		setClean : function(form){
 			if (formHasTinyMCE(form)) {
 				// Search for all tinymce elements inside the given form
 				$(form).find(':tinymce').each(function(){
-					$.DirtyForms.dirtylog('Resetting isDirty on node ' + $(this).attr('id'));
 					if($(this).tinymce().isDirty()){
+						$.DirtyForms.dirtylog('Resetting isDirty on node ' + $(this).attr('id'));
 						$(this).tinymce().isNotDirty = 1; //Force not dirty state
 					}
 				});
@@ -47,10 +46,10 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 	$.DirtyForms.helpers.push(tinymce);
 
 	// Create a pre refire binding to trigger the tinymce save
-	$(document).bind('beforeRefire.dirtyforms', function(){
-		// This is no longer needed, but kept here to remind me.
-		//	tinyMCE.triggerSave();
-	});
+	//$(document).bind('beforeRefire.dirtyforms', function(){
+	//      This is no longer needed, but kept here to remind me.
+	//      tinyMCE.triggerSave();
+	//});
 	$('.mceEditor a, .mceEditor span, .mceEditor img, .mceMenu a, .mceMenu span').livequery(function(){
 		$(this).addClass($.DirtyForms.ignoreClass);
 	});

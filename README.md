@@ -120,22 +120,31 @@ Dirty Forms was created because the similar plugins that existed were not flexib
 
 This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file.
 
-Currently only the isDirty, isNodeDirty, cleanDirty, and cleanDirtyNode methods are available to helpers.
+Currently only the isDirty(node) and setClean(node) methods are available for use within helpers. The node parameter is typically an individual form element. The node parameter can be safely ignored if you wish to indicate or reset dirty status for the entire page.
+
+IMPORTANT: The former isNodeDirty() method has been deprecated. Please update any custom helpers to use isDirty(node). This change was made to make helpers easier to understand and use.
 
 ```javascript
 // Example helper, the form is always considered dirty
-// Create a new object, with an isDirty method
-var alwaysDirty = {
-	isDirty : function(){
-		// General catch all is dirty check
-	},
-	isNodeDirty : function(node){
-		// Logic here to determine if the given node is dirty, return true if it is
-		return true;
+(function($){
+	// Create a new object, with an isDirty method
+	var alwaysDirty = {
+		isDirty : function(node){
+			// Perform dirty check on a given node (usually a form element)	
+			return true; 
+		},
+		setClean : function(node){
+			// Perform logic to reset the node so the isDirty function will return true
+			// the next time it is called for this node.
+		}
+		// NOTE: To make code that sets the entire page
+		//       (rather than just a given form element)  
+		//       dirty or clean, simply ignore the node parameter.
 	}
-}
-// Push the new object onto the helpers array
-$.DirtyForms.helpers.push(alwaysDirty);
+	// Push the new object onto the helpers array
+	$.DirtyForms.helpers.push(alwaysDirty);
+})(jQuery);
+
 ```
 
 Dialogs
