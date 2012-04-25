@@ -44,37 +44,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			},
 
 			isDirty : function(){
-				dirtylog('Core isDirty is starting ');
-				var isDirty = false;
-				if (settings.disabled) return false;
-				$(':dirtylistening').each(function(){
-					if($(this).isDirty()){
-						isDirty = true;
-						return true;
-					}
-				});
-
-				$.each($.DirtyForms.helpers, function(key,obj){
-					$('form').each(function(i,node) {
-						if("isDirty" in obj){
-							if(obj.isDirty(node)){
-								isDirty = true;
-								return true;
-							}
-						}
-						// For backward compatibility, we call isNodeDirty (deprecated)
-						if("isNodeDirty" in obj){
-							if(obj.isNodeDirty(node)) {
-								isDirty = true;
-								return true;
-							}
-						}
-					});
-
-				});
-
-				dirtylog('Core isDirty is returning ' + isDirty);
-				return isDirty;
+				return $(':dirtylistening').dirtyForms('isDirty');
 			},
 			
 			disable : function(){
@@ -109,7 +79,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		}
 	});
 	
-	// NEW Public Element methods ( $('form').dirtyForms('methodName', params) )
+	// Public Element methods ( $('form').dirtyForms('methodName', args) )
 	var methods = {
 		init : function() { 
 			var core = $.DirtyForms;
@@ -120,20 +90,21 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return this.each(function(e){
 				dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
 				$(this).addClass(core.listeningClass);
-				// include all inputs HTML 5 and future included
+				// include all inputs, HTML 5 and future included
 				$(this).find('input, textarea')
-					// exclude HTML 4 but text and password, but include HTML 5 except search
+					// exclude all HTML 4 except text and password, but include HTML 5 except search
 					.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
 						"input[type='image'],input[type='submit'],input[type='reset']," + 
 						"input[type='file'],input[type='hidden'],input[type='search']")
 					.focus(onFocus);
-				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onCheckedChange);
+				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onSelectionChange);
 			});
 		},
 		// Returns true if any of the supplied elements are dirty
 		isDirty : function() { 
 			var isDirty = false;
 			var node = this;
+			if (settings.disabled) return false;
 			if (focusedIsDirty()) {
 				isDirty = true;
 				return true;
@@ -198,7 +169,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		} else if ( typeof method === 'object' || ! method ) {
 			return methods.init.apply( this, arguments );
 		} else {
-			$.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+			$.error( 'Method ' +  method + ' does not exist on jQuery.dirtyForms' );
 		}
 	};
 
@@ -228,7 +199,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		focused: {"element": false, "value": false}
 	}, $.DirtyForms);
 
-	var onCheckedChange = function() {
+	var onSelectionChange = function() {
 		$(this).dirtyForms('setDirty');
 	}
 	
@@ -241,7 +212,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.focused['value']	= element.val();
 	}
 	var focusedIsDirty = function() {
-		/** Check, whether the value of focused element has changed */
+		// Check, whether the value of focused element has changed
 		return settings.focused["element"] &&
 			(settings.focused["element"].val() !== settings.focused["value"]);
 	}
@@ -258,19 +229,18 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	var bindExit = function(){
 		if(settings.exitBound) return;
 
-    // We need a separate set of processes for when the form is
-    // running inside of an iframe. We need the livaquery library
-    // in order to dynamically bind to elements within the iframe.
-    if (top !== window && $.livequery) {
-      $('a').livequery('click', aBindFn);
-      $('form').livequery('submit', formBindFn);
-      $(top.document).contents().find('a').bind('click', aBindFn);
-      $(top.window).bind('beforeunload', beforeunloadBindFn);
-    }
-    else {
-      $('a').live('click',aBindFn);
-      $('form').live('submit',formBindFn);
-    }
+		// We need a separate set of processes for when the form is
+		// running inside of an iframe. We need the livequery library
+		// in order to dynamically bind to elements within the iframe.
+		if (top !== window && $.livequery) {
+			$('a').livequery('click', aBindFn);
+			$('form').livequery('submit', formBindFn);
+			$(top.document).contents().find('a').bind('click', aBindFn);
+			$(top.window).bind('beforeunload', beforeunloadBindFn);
+		} else {
+			$('a').live('click',aBindFn);
+			$('form').live('submit',formBindFn);
+		}
 		$(window).bind('beforeunload', beforeunloadBindFn);
 
 		settings.exitBound = true;
