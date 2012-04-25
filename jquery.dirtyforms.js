@@ -98,6 +98,8 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 						"input[type='file'],input[type='hidden'],input[type='search']")
 					.focus(onFocus);
 				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onSelectionChange);
+				$(this).find("input[type='reset']").click(onReset);
+				
 			});
 		},
 		// Returns true if any of the supplied elements are dirty
@@ -199,6 +201,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		focused: {"element": false, "value": false}
 	}, $.DirtyForms);
 
+	var onReset = function() {
+		$(this).parents('form').dirtyForms('setClean');
+	}
+	
 	var onSelectionChange = function() {
 		$(this).dirtyForms('setDirty');
 	}
