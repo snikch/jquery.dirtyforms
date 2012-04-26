@@ -290,3 +290,20 @@ Selectors
 **:dirty** will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
 
 **:dirtylistening** will select all elements that has the listening class attached. This should be all forms that are currently listening for change
+
+Contributors
+---------------------------------
+
+[Mal Curtis (snikch)](https://github.com/snikch)
+
+[Shad Storhaug (NightOwl888)](https://github.com/NightOwl888)
+
+[Mark Campbell (Nitrodist)](https://github.com/Nitrodist)
+
+[ssmiley483](https://github.com/ssmiley483)
+
+[Greg (gmcrist)](https://github.com/gmcrist)
+
+[Samuel (hleumas)](https://github.com/hleumas)
+
+
