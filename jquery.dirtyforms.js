@@ -88,6 +88,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			bindExit();
 
 			return this.each(function(e){
+				if (! $(this).is('form')) return;
 				dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
 				$(this).addClass(core.listeningClass);
 				// include all inputs, HTML 5 and future included
@@ -96,7 +97,8 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 					.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
 						"input[type='image'],input[type='submit'],input[type='reset']," + 
 						"input[type='file'],input[type='hidden'],input[type='search']")
-					.focus(onFocus);
+					.focus(onFocus)
+					.change(onFocus);
 				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onSelectionChange);
 				$(this).find("input[type='reset']").click(onReset);
 				
@@ -150,7 +152,20 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 			return this.each(function(e){
 				var node = this;
-				$(this).removeClass($.DirtyForms.dirtyClass).parents('form').removeClass($.DirtyForms.dirtyClass).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+				
+				// remove the current dirty class
+				$(node).removeClass($.DirtyForms.dirtyClass)
+				
+				if ($(node).is('form')) {
+					// remove all dirty classes from children
+					$(node).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+				} else {
+					// if this is last dirty child, set form clean
+					var $form = $(node).parents('form');
+					if ($form.find(':dirty').length == 0) {
+						$form.removeClass($.DirtyForms.dirtyClass);
+					}
+				}
 				
 				// Clean helpers
 				$.each($.DirtyForms.helpers, function(key,obj){
@@ -212,7 +227,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
-			element.dirtyForms('setDirty');
+			settings.focused['element'].dirtyForms('setDirty');
 		}
 		settings.focused['element'] = element;
 		settings.focused['value']	= element.val();
