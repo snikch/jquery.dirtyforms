@@ -1,4 +1,4 @@
-/*! 
+/*!
 	Copyright 2010 Mal Curtis
 */
 
@@ -44,44 +44,25 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			},
 
 			isDirty : function(){
-				dirtylog('Core isDirty is starting ');
-				var isDirty = false;
-				if (settings.disabled) return false;
-				$(':dirtylistening').each(function(){
-					if($(this).isDirty()){
-						isDirty = true;
-						return true;
-					}
-				});
-
-				$.each($.DirtyForms.helpers, function(key,obj){
-					if("isDirty" in obj){
-						if(obj.isDirty()){
-							isDirty = true;
-							return true;
-						}
-					}
-				});
-
-				dirtylog('Core isDirty is returning ' + isDirty);
-				return isDirty;
+				return $(':dirtylistening').dirtyForms('isDirty');
 			},
+
 			disable : function(){
 				settings.disabled = true;
 			},
-			
+
 			isDeciding : function(){
 				return settings.deciding;
 			},
-			
+
 			decidingContinue : function(e){
 				decidingContinue(e);
 			},
-			
+
 			decidingCancel : function(e){
 				decidingCancel(e);
 			},
-			
+
 			dirtylog : function(msg){
 				dirtylog(msg);
 			}
@@ -98,65 +79,128 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		}
 	});
 
-	// Public Element methods $('form').dirtyForm();
-	$.fn.dirtyForms = function(){
-		var core = $.DirtyForms;
-		var thisForm = this;
+	// Public Element methods ( $('form').dirtyForms('methodName', args) )
+	var methods = {
+		init : function() {
+			var core = $.DirtyForms;
 
-		dirtylog('Adding forms to watch');
-		bindExit();
+			dirtylog('Adding forms to watch');
+			bindExit();
 
-		return this.each(function(e){
-			dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-			$(this).addClass(core.listeningClass);
-			$('input, textarea, select', this).focus(onFocus);
-		});
-	}
+			return this.each(function(e){
+				if (! $(this).is('form')) return;
+				dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
+				$(this).addClass(core.listeningClass);
+				// include all inputs, HTML 5 and future included
+				$(this).find('input, textarea')
+					// exclude all HTML 4 except text and password, but include HTML 5 except search
+					.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
+						"input[type='image'],input[type='submit'],input[type='reset']," +
+						"input[type='file'],input[type='hidden'],input[type='search']")
+					.focus(onFocus)
+					.change(onFocus);
+				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onSelectionChange);
+				$(this).find("input[type='reset']").click(onReset);
 
-	$.fn.setDirty = function(){
-		dirtylog('setDirty called');
-		return this.each(function(e){
-			$(this).addClass($.DirtyForms.dirtyClass).parents('form').addClass($.DirtyForms.dirtyClass);
-		});
-	}
-
-	// Returns true if any of the supplied elements are dirty
-	$.fn.isDirty = function(){
-		var isDirty = false;
-		var node = this;
-		if (focusedIsDirty()) {
-			isDirty = true;
-			return true;
-		}
-		this.each(function(e){
-			if($(this).hasClass($.DirtyForms.dirtyClass)){
+			});
+		},
+		// Returns true if any of the supplied elements are dirty
+		isDirty : function() {
+			var isDirty = false;
+			var node = this;
+			if (settings.disabled) return false;
+			if (focusedIsDirty()) {
 				isDirty = true;
 				return true;
 			}
-		});
-		$.each($.DirtyForms.helpers, function(key,obj){
-			if("isNodeDirty" in obj){
-				if(obj.isNodeDirty(node)){
+			this.each(function(e){
+				if($(this).hasClass($.DirtyForms.dirtyClass)){
 					isDirty = true;
 					return true;
 				}
-			}
-		});
+			});
+			$.each($.DirtyForms.helpers, function(key,obj){
+				if("isDirty" in obj){
+					if(obj.isDirty(node)){
+						isDirty = true;
+						return true;
+					}
+				}
+				// For backward compatibility, we call isNodeDirty (deprecated)
+				if("isNodeDirty" in obj){
+					if(obj.isNodeDirty(node)){
+						isDirty = true;
+						return true;
+					}
+				}
+			});
 
-		dirtylog('isDirty returned ' + isDirty);
-		return isDirty;
+			dirtylog('isDirty returned ' + isDirty);
+			return isDirty;
+		},
+		// Marks the element(s) that match the selector dirty
+		setDirty : function() {
+			dirtylog('setDirty called');
+			return this.each(function(e){
+				$(this).addClass($.DirtyForms.dirtyClass).parents('form').addClass($.DirtyForms.dirtyClass);
+			});
+		},
+		// "Cleans" this dirty form by essentially forgetting that it is dirty
+		setClean : function() {
+			dirtylog('setClean called');
+			settings.focused = {element: false, value: false};
+
+			return this.each(function(e){
+				var node = this;
+
+				// remove the current dirty class
+				$(node).removeClass($.DirtyForms.dirtyClass)
+
+				if ($(node).is('form')) {
+					// remove all dirty classes from children
+					$(node).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+				} else {
+					// if this is last dirty child, set form clean
+					var $form = $(node).parents('form');
+					if ($form.find(':dirty').length == 0) {
+						$form.removeClass($.DirtyForms.dirtyClass);
+					}
+				}
+
+				// Clean helpers
+				$.each($.DirtyForms.helpers, function(key,obj){
+					if("setClean" in obj){
+						obj.setClean(node);
+					}
+				});
+			});
+		}
+
+		// ADD NEW METHODS HERE
+	};
+
+	$.fn.dirtyForms = function(method) {
+		// Method calling logic
+		if ( methods[method] ) {
+			return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
+		} else if ( typeof method === 'object' || ! method ) {
+			return methods.init.apply( this, arguments );
+		} else {
+			$.error( 'Method ' +  method + ' does not exist on jQuery.dirtyForms' );
+		}
+	};
+
+	// Deprecated Methods for Backward Compatibility
+	// DO NOT ADD MORE METHODS LIKE THESE, ADD METHODS WHERE INDICATED ABOVE
+	$.fn.setDirty = function(){
+		return this.dirtyForms('setDirty');
 	}
-
-    // "Cleans" this dirty form by essentially forgetting that it is dirty
+	$.fn.isDirty = function(){
+		return this.dirtyForms('isDirty');
+	}
     $.fn.cleanDirty = function(){
-        dirtylog('cleanDirty called');
-        settings.focused = {element: false, value: false};
-
-        return this.each(function(e){
-			$(this).removeClass($.DirtyForms.dirtyClass).parents('form').removeClass($.DirtyForms.dirtyClass).find(':dirty').removeClass($.DirtyForms.dirtyClass);
-        });
+		return this.dirtyForms('setClean');
     }
-
 
 	// Private Properties and Methods
 	var settings = $.DirtyForms = $.extend({
@@ -172,34 +216,26 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		focused: {"element": false, "value": false}
 	}, $.DirtyForms);
 
+	var onReset = function() {
+		$(this).parents('form').dirtyForms('setClean');
+	}
+
+	var onSelectionChange = function() {
+		$(this).dirtyForms('setDirty');
+	}
+
 	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
-			element.setDirty();
+			settings.focused['element'].dirtyForms('setDirty');
 		}
 		settings.focused['element'] = element;
-		settings.focused['value']	= elementValue(element);
+		settings.focused['value']	= element.val();
 	}
 	var focusedIsDirty = function() {
-		/** Check, whether the value of focused element has changed */
+		// Check, whether the value of focused element has changed
 		return settings.focused["element"] &&
-			(elementValue(settings.focused["element"]) !== settings.focused["value"]);
-	}
-	
-	var elementValue = function(element) {
-		// Bug fix - val() doesn't return the state of a checkbox or radio
-		if (element.attr('type') !== 'checkbox' && element.attr('type') !== 'radio') {
-			var value = element.val();
-			if (value !== null) {
-				if (typeof value.join !== 'undefined') {
-					// For multi-select, convert the array to a string
-					return value.join();
-				}
-			}
-			return value;
-		} else {
-			return element.is(':checked');
-		}
+			(settings.focused["element"].val() !== settings.focused["value"]);
 	}
 
 	var dirtylog = function(msg){
@@ -214,6 +250,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	var bindExit = function(){
 		if(settings.exitBound) return;
 
+<<<<<<< HEAD
     // We need a separate set of processes for when the form is
     // running inside of an iframe. We need the livaquery library
     // in order to dynamically bind to elements within the iframe.
@@ -227,6 +264,20 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
       $('a').live('click',aBindFn);
       $('form').live('submit',formBindFn);
     }
+=======
+		// We need a separate set of processes for when the form is
+		// running inside of an iframe. We need the livequery library
+		// in order to dynamically bind to elements within the iframe.
+		if (top !== window && $.livequery) {
+			$('a').livequery('click', aBindFn);
+			$('form').livequery('submit', formBindFn);
+			$(top.document).contents().find('a').bind('click', aBindFn);
+			$(top.window).bind('beforeunload', beforeunloadBindFn);
+		} else {
+			$('a').live('click',aBindFn);
+			$('form').live('submit',formBindFn);
+		}
+>>>>>>> 6399845cf4199fce7cf95b4ab4aa974fbc1c4496
 		$(window).bind('beforeunload', beforeunloadBindFn);
 
 		settings.exitBound = true;
@@ -252,7 +303,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.doubleunloadfix = true;
 		setTimeout(function(){settings.doubleunloadfix = false;},200);
 
-		// Bug Fix: Only return the result if it is a string, 
+		// Bug Fix: Only return the result if it is a string,
 		// otherwise don't return anything.
 		if (typeof(result) == 'string'){
 			ev = ev || window.event;
@@ -276,8 +327,8 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return false;
 		}
 
-		if($(ev.target).hasClass(settings.ignoreClass)){
-			dirtylog('Leaving: Element has ignore class');
+		if($(ev.target).hasClass(settings.ignoreClass) || isDifferentTarget(ev)){
+			dirtylog('Leaving: Element has ignore class or has target=\'_blank\'');
 			if(!ev.isDefaultPrevented()){
 				clearUnload();
 			}
@@ -302,7 +353,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return false;
 		}
 
-		if(ev.type == 'submit' && $(ev.target).isDirty()){
+		if(ev.type == 'submit' && $(ev.target).dirtyForms('isDirty')){
 			dirtylog('Leaving: Form submitted is a dirty form');
 			if(!ev.isDefaultPrevented()){
 				clearUnload();
@@ -344,6 +395,14 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		dirtylog('Deferring to the dialog');
 		settings.dialog.fire($.DirtyForms.message, $.DirtyForms.title);
 		settings.dialog.bind();
+	}
+
+	var isDifferentTarget = function(ev){
+		var aTarget = $(ev.target).attr('target');
+		if (typeof aTarget === 'string') {
+			aTarget = aTarget.toLowerCase();
+		}
+		return (aTarget === '_blank');
 	}
 
 	var decidingCancel = function(ev){
