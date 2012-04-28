@@ -59,6 +59,8 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 
 **ignoreClass**: The class applied to elements that you wish to allow the action to be continue even when the form is dirty.
 
+**choiceContinue**: Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until *choiceCommit()* is called.
+
 **helpers**: An array for helper objects. See Helpers below.
 
 **dialog**: See Dialogs below.
@@ -80,6 +82,9 @@ Public Methods
 
 **$.fn.dirtyForms('setClean')** will mark the provided form as clean.  
     *Syntax:* ***$('form#accountform').dirtyForms('setClean');***
+
+**$.DirtyForms.choiceCommit()** should be called after the dialog is closed to commit the choice that was specified in *$.DirtyForms.choiceContinue*. This method will cascade the call to either *$.DirtyForms.decidingContinue()* or *$.DirtyForms.decidingCancel()* automatically, so there is no need to use them in conjunction with this method. An event object is required to be passed as a parameter.  
+    *Syntax:* ***$.DirtyForms.choiceCommit(event);***
 
 **$.DirtyForms.decidingContinue()** should be called from the dialog to refire the event and continue following the link or button that was clicked. An event object is required to be passed as a parameter.  
     *Syntax:* ***$.DirtyForms.decidingContinue(event);***
@@ -191,7 +196,7 @@ fire : function(message, title){
 bind : function(){
 	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
 	$('#facebox .continue').click($.DirtyForms.decidingContinue);
-	$(document).bind('decidingcancelled.dirtyform', function(){
+	$(document).bind('decidingcancelled.dirtyforms', function(){
 		$(document).trigger('close.facebox');
 	});
 },
@@ -218,50 +223,50 @@ stash : function(){
 
 **fire** accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the **bind** method you will see that we bind the *$.DirtyForms.decidingCancel* method to the .cancel link and the .close link, and we bind *$.DirtyForms.decidingContinue* to the .continue link. You must bind both *$.DirtyForms.decidingCancel* and *$.DirtyForms.decidingContinue* in the **bind** method.
 
-If the dialog has an extra action (such as a close button or closes as a result of the ESC key) and you need a catch-all decision when the dialog is closed (such as the case with jQuery UI's 'dialogclose' event), the **$.DirtyForms.isDeciding()** method can be called to check whether it is safe to call **$.DirtyForms.decidingCancel()** explicitly. Here is an example of setting up a jQuery UI dialog with dirtyForms:
+Alternatively, another pattern is supported for modal dialogs where the continuing execution of the event is not allowed until after the dialog is closed (such as when using jQuery UI dialog in modal mode). The pattern uses a boolean property named **$.DirtyForms.choiceContinue** to indicate the dialog choice and a method named **$.DirtyForms.choiceCommit()** to execute the choice. Here is an example of that pattern in action using a modal jQuery UI dialog:
 
 ```javascript
 $.DirtyForms.dialog = {
 	selector: '#unsavedChanges',
 	fire: function(message, dlgTitle) {
-		$('#unsavedChanges').dialog({title: dlgTitle, width: 350});
+		$('#unsavedChanges').dialog({title: dlgTitle, width: 350, modal: true});
 		$('#unsavedChanges').html(message);
+	},
+	bind: function() {
+		$('#unsavedChanges').dialog('option', 'buttons', 
+			[
+				{
+					text: "Stay Here",
+					click: function(e) {
+						$.DirtyForms.choiceContinue = false;
+						$(this).dialog('close');
+					}
+				},
+				{
+					text: "Leave This Page",
+					click: function(e) {
+						$.DirtyForms.choiceContinue = true;
+						$(this).dialog('close');
+					}
+				}
+			] 
+		).bind('dialogclose', function(e) {
+			// Execute the choice after the modal dialog closes
+			$.DirtyForms.choiceCommit(e);
+		});
 	},
 	refire: function(content) {
 		return false;
 	},
 	stash: function() {
 		return false;
-	},
-	bind: function() {
-		$('#unsavedChanges').dialog('option', 'buttons', 
-			[
-				{
-					text: "Go Back",
-					click: function(e) {
-						$.DirtyForms.decidingCancel(e);
-						$(this).dialog('close');
-					}
-				},
-				{
-					text: "Continue",
-					click: function(e) {
-						$.DirtyForms.decidingContinue(e);
-						$(this).dialog('close');
-					}
-				}
-			] 
-		).bind('dialogclose', function(e) {
-			// Check whether a decision has been made, if not default
-			// to decidingCancel()
-			if ($.DirtyForms.isDeciding()) {
-				$.DirtyForms.decidingCancel(e);
-			}
-		});
 	}
 }
 ```
 
+Note that calling *$.DirtyForms.choiceContinue = false;* isn't strictly necessary as false is the default, but is shown in the example to make it more clear. Also note that a choice will always be committed using this method whether the user clicks a button or uses the "X" icon to close the dialog because 'dialogclose' is called in every case the dialog is closed.
+
+The *$.DirtyForms.choiceCommit()* method automatically calls either *$.DirtyForms.decidingCancel()* or *$.DirtyForms.decidingContinue()* depending on the state of *$.DirtyForms.choiceContinue*, so there is no need to call them manually.
 
 If you don't want to use a dialog at all, simply pass in false instead of an object.
 
@@ -277,6 +282,20 @@ $.DirtyForms.dialog = {
 
 Triggers
 ---------------------------------
+**decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
+
+**decidingcancelledAfter.dirtyforms**: Raised when the *decidingCancel()* method is called after it runs all actions.
+
+**decidingcontinued.dirtyforms**: Raised when the *decidingContinue()* method is called before it runs any actions.
+
+**choicecommit.dirtyforms**: Raised when the *choiceCommit* method is called before it runs any actions.
+
+**choicecommitAfter.dirtyforms**: Raised when the *choiceCommit* method is called after it runs all actions.
+
+**defer.dirtyforms**: Raised prior to showing the dialog box to the user.
+
+**beforeRefire.dirtyforms**: Raised before the original event is refired after a user chooses to leave the page.
+
 
 You can attach callbacks to the **decidingcancelled.dirtyforms** and **decidingcontinued.dirtyforms** custom events. These events are called when the cancel, or continue method on the modal dialog is called (when the user clicks either continue, or cancel).
 

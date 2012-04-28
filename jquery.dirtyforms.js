@@ -14,6 +14,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			dirtyClass : 'dirty',
 			listeningClass : 'dirtylisten',
 			ignoreClass : 'ignoredirty',
+			choiceContinue : false,
 			helpers : [],
 			dialog : {
 				refire : function(content, ev){
@@ -49,6 +50,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			
 			disable : function(){
 				settings.disabled = true;
+			},
+			
+			choiceCommit : function(e){
+				choiceCommit(e);
 			},
 			
 			isDeciding : function(){
@@ -387,6 +392,18 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			aTarget = aTarget.toLowerCase();
 		}
 		return (aTarget === '_blank');
+	}
+	
+	var choiceCommit = function(ev){
+		if (settings.deciding) {
+			$(document).trigger('choicecommit.dirtyforms');
+			if ($.DirtyForms.choiceContinue) {
+				decidingContinue(ev);
+			} else {
+				decidingCancel(ev);
+			}
+			$(document).trigger('choicecommitAfter.dirtyforms');
+		}
 	}
 
 	var decidingCancel = function(ev){
