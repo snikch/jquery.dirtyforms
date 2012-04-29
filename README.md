@@ -49,7 +49,7 @@ $('form:dirtylistening');
 Options
 ---------------------------------
 The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**
- 
+
 **debug**: set to true to log messages to the firebug console (or alert if you don't have firebug).
 
 **message**: The dialog message to be sent.
@@ -71,19 +71,19 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 
 Public Methods
 ---------------------------------
-**$.DirtyForms.isDirty()** will return true if any watched elements are considered dirty.  
+**$.DirtyForms.isDirty()** will return true if any watched elements are considered dirty.
     *Syntax:* ***if($.DirtyForms.isDirty())***
 
-**$.fn.dirtyForms()** will start watching the supplied elements for descendant input changes.  
+**$.fn.dirtyForms()** will start watching the supplied elements for descendant input changes.
     *Syntax:* ***$('form').dirtyForms();***
 
-**$.fn.dirtyForms('isDirty')** will return true if the provided element is considered dirty.  
+**$.fn.dirtyForms('isDirty')** will return true if the provided element is considered dirty.
     *Syntax:* ***if($('form#accountform').dirtyForms('isDirty'))***
 
-**$.fn.dirtyForms('setDirty')** will set the provided element as dirty.  
+**$.fn.dirtyForms('setDirty')** will set the provided element as dirty.
     *Syntax:* ***$('form#accountform').dirtyForms('setDirty');***
 
-**$.fn.dirtyForms('setClean')** will mark the provided form as clean.  
+**$.fn.dirtyForms('setClean')** will mark the provided form or element as clean.  
     *Syntax:* ***$('form#accountform').dirtyForms('setClean');***
 
 **$.DirtyForms.choiceCommit()** should be called after the dialog is closed to commit the choice that was specified in *$.DirtyForms.choiceContinue*. This method will cascade the call to either *$.DirtyForms.decidingContinue()* or *$.DirtyForms.decidingCancel()* automatically, so there is no need to use them in conjunction with this method. An event object is required to be passed as a parameter.  
@@ -95,29 +95,29 @@ Public Methods
 **$.DirtyForms.decidingCancel()** should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. An event object is required to be passed as a parameter.  
     *Syntax:* ***$.DirtyForms.decidingCancel(event);***
 
-**$.DirtyForms.isDeciding()** will return true if the dialog has fired and neither *$.DirtyForms.decidingCancel()* or *$.DirtyForms.decidingContinue()* has yet been called.  
+**$.DirtyForms.isDeciding()** will return true if the dialog has fired and neither *$.DirtyForms.decidingCancel()* or *$.DirtyForms.decidingContinue()* has yet been called.
     *Syntax:* ***if($.DirtyForms.isDeciding())***
 
-	
+
 Obsolete Public Methods
 ---------------------------------
-**IMPORTANT**: These methods have been completely removed from the public interface to avoid collisions with other JavaScript code. This is a **breaking change**. Please update your code before getting the current version.
- 	
-*decidingContinue()*  
+**IMPORTANT**: The following methods have been completely removed from the public interface to avoid collisions with other JavaScript code. This is a **breaking change**. Please update your code before getting the current version.
+
+*decidingContinue()*
     Please use ***$.DirtyForms.decidingContinue()*** instead
 
-*decidingCancel()*  
+*decidingCancel()*
     Please use ***$.DirtyForms.decidingCancel()*** instead
- 
+
 The following methods have been deprecated and will eventually be removed from dirtyForms. Please update your code to access the new methods as shown here. This was done to conform to jQuery plugin authoring guidelines (http://docs.jquery.com/Plugins/Authoring).
- 
-*$.fn.isDirty()* -- former syntax: *$('form#accountform').isDirty()*  
+
+*$.fn.isDirty()* -- former syntax: *$('form#accountform').isDirty()*
     Please use ***$('form#accountform').dirtyForms('isDirty')*** instead
 
-*$.fn.setDirty()* -- former syntax: *$('form#accountform').setDirty()*  
+*$.fn.setDirty()* -- former syntax: *$('form#accountform').setDirty()*
     Please use ***$('form#accountform').dirtyForms('setDirty')*** instead
 
-*$.fn.cleanDirty()* -- former syntax: *$('form#accountform').cleanDirty()*  
+*$.fn.cleanDirty()* -- former syntax: *$('form#accountform').cleanDirty()*
     Please use ***$('form#accountform').dirtyForms('setClean')*** instead
 
 
@@ -138,17 +138,17 @@ Currently only the **isDirty(node)** and **setClean(node)** methods are availabl
 	// Create a new object, with an isDirty method
 	var alwaysDirty = {
 		isDirty : function(node){
-			// Perform dirty check on a given node (usually a form element)	
-			return true; 
+			// Perform dirty check on a given node (usually a form element)
+			return true;
 		},
 		setClean : function(node){
 			// Perform logic to reset the node so the isDirty function will return true
 			// the next time it is called for this node.
-			
+
 		}
-		// To ensure full support with jQuery selectors, 
-		// make sure to run the action on all descendent 
-		// children of the node parameter. This is 
+		// To ensure full support with jQuery selectors,
+		// make sure to run the action on all descendent
+		// children of the node parameter. This is
 		// accomplished easily by using the .find() jQuery
 		// method.
 		//
@@ -160,7 +160,7 @@ Currently only the **isDirty(node)** and **setClean(node)** methods are availabl
 		// Run desired action against $(node) to handle the case
 		// of a selector for a specific DOM element
 		// if ($(node).hasClass('.mySelector')) { doSomething(node); }
-      
+
 	}
 	// Push the new object onto the helpers array
 	$.DirtyForms.helpers.push(alwaysDirty);
@@ -180,22 +180,22 @@ Methods:
 - **bind**
 - **stash**
 
-Property: 
+Property:
 
 - **selector**
 
-	
-```javascript  
-// Selector is a selector string for dialog content. Used to determine if event targets are inside a dialog  
+
+```javascript
+// Selector is a selector string for dialog content. Used to determine if event targets are inside a dialog
 selector : '#facebox .content',
 
 
-// Fire starts the dialog  
+// Fire starts the dialog
 fire : function(message, title){
 	var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty continue">Continue</a><a href="#" class="ignoredirty cancel">Stop</a>';
 	$.facebox(content);
 },
-// Bind binds the continue and cancel functions to the correct links  
+// Bind binds the continue and cancel functions to the correct links
 bind : function(){
 	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
 	$('#facebox .continue').click($.DirtyForms.decidingContinue);
@@ -204,7 +204,7 @@ bind : function(){
 	});
 },
 
-// Refire handles closing an existing dialog AND fires a new one  
+// Refire handles closing an existing dialog AND fires a new one
 refire : function(content){
 	var rebox = function(){
 		$.facebox(content);
@@ -214,8 +214,8 @@ refire : function(content){
 },
 
 // Stash returns the current contents of a dialog to be refired after the confirmation
-// Use to store the current dialog, when it's about to be replaced with the confirmation dialog. 
-// This function can return false if you don't wish to stash anything.  
+// Use to store the current dialog, when it's about to be replaced with the confirmation dialog.
+// This function can return false if you don't wish to stash anything.
 stash : function(){
 	var fb = $('#facebox .content');
 	return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
@@ -236,7 +236,7 @@ $.DirtyForms.dialog = {
 		$('#unsavedChanges').html(message);
 	},
 	bind: function() {
-		$('#unsavedChanges').dialog('option', 'buttons', 
+		$('#unsavedChanges').dialog('option', 'buttons',
 			[
 				{
 					text: "Stay Here",
@@ -312,3 +312,20 @@ Selectors
 **:dirty** will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
 
 **:dirtylistening** will select all elements that has the listening class attached. This should be all forms that are currently listening for change
+
+Contributors
+---------------------------------
+
+[Mal Curtis (snikch)](https://github.com/snikch)
+
+[Shad Storhaug (NightOwl888)](https://github.com/NightOwl888)
+
+[Mark Campbell (Nitrodist)](https://github.com/Nitrodist)
+
+[ssmiley483](https://github.com/ssmiley483)
+
+[Greg (gmcrist)](https://github.com/gmcrist)
+
+[Samuel (hleumas)](https://github.com/hleumas)
+
+

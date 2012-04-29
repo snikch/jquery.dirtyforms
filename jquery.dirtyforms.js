@@ -1,4 +1,4 @@
-/*! 
+/*!
 	Copyright 2010 Mal Curtis
 */
 
@@ -47,7 +47,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			isDirty : function(){
 				return $(':dirtylistening').dirtyForms('isDirty');
 			},
-			
+
 			disable : function(){
 				settings.disabled = true;
 			},
@@ -59,15 +59,15 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			isDeciding : function(){
 				return settings.deciding;
 			},
-			
+
 			decidingContinue : function(e){
 				decidingContinue(e);
 			},
-			
+
 			decidingCancel : function(e){
 				decidingCancel(e);
 			},
-			
+
 			dirtylog : function(msg){
 				dirtylog(msg);
 			}
@@ -83,10 +83,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return $(a).hasClass($.DirtyForms.dirtyClass);
 		}
 	});
-	
+
 	// Public Element methods ( $('form').dirtyForms('methodName', args) )
 	var methods = {
-		init : function() { 
+		init : function() {
 			var core = $.DirtyForms;
 
 			dirtylog('Adding forms to watch');
@@ -102,7 +102,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 					"[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
 				var selectionSelector = "input[type='checkbox'],input[type='radio'],select";
 				var resetSelector = "input[type='reset']";
-				
+
 				// For jQuery 1.7+, use on()
 				if (typeof $(document).on === 'function') {
 					$(this).on('focus change',inputSelector,onFocus);
@@ -116,7 +116,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			});
 		},
 		// Returns true if any of the supplied elements are dirty
-		isDirty : function() { 
+		isDirty : function() {
 			var isDirty = false;
 			var node = this;
 			if (settings.disabled) return false;
@@ -163,10 +163,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 			return this.each(function(e){
 				var node = this;
-				
+
 				// remove the current dirty class
 				$(node).removeClass($.DirtyForms.dirtyClass)
-				
+
 				if ($(node).is('form')) {
 					// remove all dirty classes from children
 					$(node).find(':dirty').removeClass($.DirtyForms.dirtyClass);
@@ -177,7 +177,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 						$form.removeClass($.DirtyForms.dirtyClass);
 					}
 				}
-				
+
 				// Clean helpers
 				$.each($.DirtyForms.helpers, function(key,obj){
 					if("setClean" in obj){
@@ -186,7 +186,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				});
 			});
 		}
-		
+
 		// ADD NEW METHODS HERE
 	};
 
@@ -230,11 +230,11 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	var onReset = function() {
 		$(this).parents('form').dirtyForms('setClean');
 	}
-	
+
 	var onSelectionChange = function() {
 		$(this).dirtyForms('setDirty');
 	}
-	
+
 	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
@@ -308,7 +308,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.doubleunloadfix = true;
 		setTimeout(function(){settings.doubleunloadfix = false;},200);
 
-		// Bug Fix: Only return the result if it is a string, 
+		// Bug Fix: Only return the result if it is a string,
 		// otherwise don't return anything.
 		if (typeof(result) == 'string'){
 			ev = ev || window.event;
@@ -325,7 +325,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 	var bindFn = function(ev){
 		dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class') + ' and id: ' + ev.target.id);
-		
+
 		if(ev.type == 'beforeunload' && settings.doubleunloadfix){
 			dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
 			settings.doubleunloadfix = false;
@@ -401,7 +401,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		settings.dialog.fire($.DirtyForms.message, $.DirtyForms.title);
 		settings.dialog.bind();
 	}
-	
+
 	var isDifferentTarget = function(ev){
 		var aTarget = $(ev.target).attr('target');
 		if (typeof aTarget === 'string') {
