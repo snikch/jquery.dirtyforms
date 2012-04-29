@@ -12,11 +12,19 @@ $('form').dirtyForms();
 
 Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack.
 
-The .live() method is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
+The jQuery .on() method (or .delegate() method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
 
 Status
 ---------------------------------
 Feature complete, browser tested - about to go into a production environment for more testing.
+
+Prerequisites
+---------------------------------
+Must have jQuery version 1.4.2 or higher. 
+
+When using the TinyMCE helper, the [livequery plugin](https://github.com/brandonaaron/livequery/downloads "livequery plugin") is required, as well as the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE").
+
+**Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog continue function to fail in dirtyForms.
 
 Usage
 ---------------------------------
@@ -37,11 +45,6 @@ $('form:dirty');
 // Select all forms that are being watched for changes
 $('form:dirtylistening');
 ```
-
-**NOTE**: If your form will be running inside of an iframe, you will need to have the
-jQuery livequery library (http://brandonaaron.net/code/livequery/docs)
-installed in order to properly respond to events.
-
 
 Options
 ---------------------------------
