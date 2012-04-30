@@ -1,9 +1,9 @@
 // TinyMCE helper, checks to see if TinyMCE editors in the given form are dirty
 
 (function($){
-if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 	// Create a new object, with an isDirty method
 	var tinymce = {
+		ignoreAnchorSelector : '.mceEditor a,.mceMenu a',
 		isDirty : function(form){
 			var isDirty = false;
 			if (formHasTinyMCE(form)) {
@@ -50,7 +50,4 @@ if (typeof $.fn.livequery == 'undefined') throw("Live Query plugin Required");
 	//      This is no longer needed, but kept here to remind me.
 	//      tinyMCE.triggerSave();
 	//});
-	$('.mceEditor a, .mceEditor span, .mceEditor img, .mceMenu a, .mceMenu span').livequery(function(){
-		$(this).addClass($.DirtyForms.ignoreClass);
-	});
 })(jQuery);

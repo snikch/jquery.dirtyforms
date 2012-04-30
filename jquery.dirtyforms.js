@@ -258,6 +258,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				window.console.log(msg) :
 				alert(msg);
 	}
+	
 	var bindExit = function(){
 		if(settings.exitBound) return;
 
@@ -287,9 +288,23 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 		settings.exitBound = true;
 	}
+	
+	var getIgnoreAnchorSelector = function(){
+		var result = '';
+		$.each($.DirtyForms.helpers, function(key,obj){
+			if("ignoreAnchorSelector" in obj){
+				if (result.length > 0) { result += ','; }
+				result += obj.ignoreAnchorSelector;
+			}
+		});
+		return result;
+	}
 
 	var aBindFn = function(ev){
-		 bindFn(ev);
+		// Filter out any anchors the helpers wish to exclude
+		if (!$(this).is(getIgnoreAnchorSelector())) {
+			bindFn(ev);
+		}
 	}
 
 	var formBindFn = function(ev){

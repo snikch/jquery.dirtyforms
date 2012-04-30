@@ -22,7 +22,7 @@ Prerequisites
 ---------------------------------
 Must have jQuery version 1.4.2 or higher. 
 
-When using the TinyMCE helper, the [livequery plugin](https://github.com/brandonaaron/livequery/downloads "livequery plugin") is required, as well as the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE").
+When using the TinyMCE helper, the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE") is required.
 
 **Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog continue function to fail in dirtyForms.
 
@@ -127,7 +127,16 @@ Dirty Forms was created because the similar plugins that existed were not flexib
 
 This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file.
 
-Currently only the **isDirty(node)** and **setClean(node)** methods are available for use within helpers. The node parameter is typically an individual form element. To respect the way jQuery selectors work, all children of the node as well as the node itself should have your custom **isDirty()** and **setClean()** logic applied.
+**MEMBERS (All Optional)**
+
+**isDirty(node)** - method - Should return the dirty status of the helper.
+
+**setClean(node)** - method - Should reset the dirty status of the helper so *isDirty(node)* will return false the next time it is called.
+
+**ignoreAnchorSelector** - property - A jQuery selector of any anchor elements to exclude from activating the dialog. Non-anchors will be ignored. This works similarly to putting the ignoreClass on a specific anchor, but will always ignore the anchors if your helper is included.
+
+
+The node parameter is typically an individual form element. To respect the way jQuery selectors work, all children of the node as well as the node itself should have your custom **isDirty()** and **setClean()** logic applied.
 
 **IMPORTANT**: Support for the former *isNodeDirty(node)* method has been deprecated. Please update any custom helpers to use **isDirty(node)**. This change was made to make helpers easier to understand and use.
 
@@ -137,6 +146,8 @@ Currently only the **isDirty(node)** and **setClean(node)** methods are availabl
 (function($){
 	// Create a new object, with an isDirty method
 	var alwaysDirty = {
+		// Ignored anchors will not activate the dialog
+		ignoreAnchorSelector : '.editor a, a.toolbar',
 		isDirty : function(node){
 			// Perform dirty check on a given node (usually a form element)
 			return true;
