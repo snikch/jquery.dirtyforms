@@ -12,11 +12,19 @@ $('form').dirtyForms();
 
 Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack.
 
-The .live() method is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
+The jQuery .on() method (or .delegate() method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
 
 Status
 ---------------------------------
 Feature complete, browser tested - about to go into a production environment for more testing.
+
+Prerequisites
+---------------------------------
+Must have jQuery version 1.4.2 or higher. 
+
+When using the TinyMCE helper, the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE") is required.
+
+**Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog continue function to fail in dirtyForms.
 
 Usage
 ---------------------------------
@@ -38,11 +46,6 @@ $('form:dirty');
 $('form:dirtylistening');
 ```
 
-**NOTE**: If your form will be running inside of an iframe, you will need to have the
-jQuery livequery library (http://brandonaaron.net/code/livequery/docs)
-installed in order to properly respond to events.
-
-
 Options
 ---------------------------------
 The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**
@@ -58,6 +61,8 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 **listeningClass**: The class applied to elements that are having their inputs monitored for change.
 
 **ignoreClass**: The class applied to elements that you wish to allow the action to be continue even when the form is dirty.
+
+**choiceContinue**: Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until *choiceCommit()* is called.
 
 **helpers**: An array for helper objects. See Helpers below.
 
@@ -78,13 +83,16 @@ Public Methods
 **$.fn.dirtyForms('setDirty')** will set the provided element as dirty.
     *Syntax:* ***$('form#accountform').dirtyForms('setDirty');***
 
-**$.fn.dirtyForms('setClean')** will mark the provided form as clean.
+**$.fn.dirtyForms('setClean')** will mark the provided form or element as clean.  
     *Syntax:* ***$('form#accountform').dirtyForms('setClean');***
 
-**$.DirtyForms.decidingContinue()** should be called from the dialog to refire the event and continue following the link or button that was clicked. An event object is required to be passed as a parameter.
-    *Syntax:* ***$.DirtyForms.decidingContinue(event);***
+**$.DirtyForms.choiceCommit()** should be called after the dialog is closed to commit the choice that was specified in *$.DirtyForms.choiceContinue*. This method will cascade the call to either *$.DirtyForms.decidingContinue()* or *$.DirtyForms.decidingCancel()* automatically, so there is no need to use them in conjunction with this method. An event object is required to be passed as a parameter.  
+    *Syntax:* ***$.DirtyForms.choiceCommit(event);***
 
-**$.DirtyForms.decidingCancel()** should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. An event object is required to be passed as a parameter.
+**$.DirtyForms.decidingContinue()** should be called from the dialog to refire the event and continue following the link or button that was clicked. An event object is required to be passed as a parameter.  
+    *Syntax:* ***$.DirtyForms.decidingContinue(event);***
+	
+**$.DirtyForms.decidingCancel()** should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. An event object is required to be passed as a parameter.  
     *Syntax:* ***$.DirtyForms.decidingCancel(event);***
 
 **$.DirtyForms.isDeciding()** will return true if the dialog has fired and neither *$.DirtyForms.decidingCancel()* or *$.DirtyForms.decidingContinue()* has yet been called.
@@ -93,7 +101,7 @@ Public Methods
 
 Obsolete Public Methods
 ---------------------------------
-**IMPORTANT**: These methods have been completely removed from the public interface to avoid collisions with other JavaScript code. This is a **breaking change**. Please update your code before getting the current version.
+**IMPORTANT**: The following methods have been completely removed from the public interface to avoid collisions with other JavaScript code. This is a **breaking change**. Please update your code before getting the current version.
 
 *decidingContinue()*
     Please use ***$.DirtyForms.decidingContinue()*** instead
@@ -119,7 +127,16 @@ Dirty Forms was created because the similar plugins that existed were not flexib
 
 This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file.
 
-Currently only the **isDirty(node)** and **setClean(node)** methods are available for use within helpers. The node parameter is typically an individual form element. To respect the way jQuery selectors work, all children of the node as well as the node itself should have your custom **isDirty()** and **setClean()** logic applied.
+**MEMBERS (All Optional)**
+
+**isDirty(node)** - method - Should return the dirty status of the helper.
+
+**setClean(node)** - method - Should reset the dirty status of the helper so *isDirty(node)* will return false the next time it is called.
+
+**ignoreAnchorSelector** - property - A jQuery selector of any anchor elements to exclude from activating the dialog. Non-anchors will be ignored. This works similarly to putting the ignoreClass on a specific anchor, but will always ignore the anchors if your helper is included.
+
+
+The node parameter is typically an individual form element. To respect the way jQuery selectors work, all children of the node as well as the node itself should have your custom **isDirty()** and **setClean()** logic applied.
 
 **IMPORTANT**: Support for the former *isNodeDirty(node)* method has been deprecated. Please update any custom helpers to use **isDirty(node)**. This change was made to make helpers easier to understand and use.
 
@@ -129,6 +146,8 @@ Currently only the **isDirty(node)** and **setClean(node)** methods are availabl
 (function($){
 	// Create a new object, with an isDirty method
 	var alwaysDirty = {
+		// Ignored anchors will not activate the dialog
+		ignoreAnchorSelector : '.editor a, a.toolbar',
 		isDirty : function(node){
 			// Perform dirty check on a given node (usually a form element)
 			return true;
@@ -191,7 +210,7 @@ fire : function(message, title){
 bind : function(){
 	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
 	$('#facebox .continue').click($.DirtyForms.decidingContinue);
-	$(document).bind('decidingcancelled.dirtyform', function(){
+	$(document).bind('decidingcancelled.dirtyforms', function(){
 		$(document).trigger('close.facebox');
 	});
 },
@@ -218,50 +237,50 @@ stash : function(){
 
 **fire** accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the **bind** method you will see that we bind the *$.DirtyForms.decidingCancel* method to the .cancel link and the .close link, and we bind *$.DirtyForms.decidingContinue* to the .continue link. You must bind both *$.DirtyForms.decidingCancel* and *$.DirtyForms.decidingContinue* in the **bind** method.
 
-If the dialog has an extra action (such as a close button or closes as a result of the ESC key) and you need a catch-all decision when the dialog is closed (such as the case with jQuery UI's 'dialogclose' event), the **$.DirtyForms.isDeciding()** method can be called to check whether it is safe to call **$.DirtyForms.decidingCancel()** explicitly. Here is an example of setting up a jQuery UI dialog with dirtyForms:
+Alternatively, another pattern is supported for modal dialogs where the continuing execution of the event is not allowed until after the dialog is closed (such as when using jQuery UI dialog in modal mode). The pattern uses a boolean property named **$.DirtyForms.choiceContinue** to indicate the dialog choice and a method named **$.DirtyForms.choiceCommit()** to execute the choice. Here is an example of that pattern in action using a modal jQuery UI dialog:
 
 ```javascript
 $.DirtyForms.dialog = {
 	selector: '#unsavedChanges',
 	fire: function(message, dlgTitle) {
-		$('#unsavedChanges').dialog({title: dlgTitle, width: 350});
+		$('#unsavedChanges').dialog({title: dlgTitle, width: 350, modal: true});
 		$('#unsavedChanges').html(message);
+	},
+	bind: function() {
+		$('#unsavedChanges').dialog('option', 'buttons',
+			[
+				{
+					text: "Stay Here",
+					click: function(e) {
+						$.DirtyForms.choiceContinue = false;
+						$(this).dialog('close');
+					}
+				},
+				{
+					text: "Leave This Page",
+					click: function(e) {
+						$.DirtyForms.choiceContinue = true;
+						$(this).dialog('close');
+					}
+				}
+			] 
+		).bind('dialogclose', function(e) {
+			// Execute the choice after the modal dialog closes
+			$.DirtyForms.choiceCommit(e);
+		});
 	},
 	refire: function(content) {
 		return false;
 	},
 	stash: function() {
 		return false;
-	},
-	bind: function() {
-		$('#unsavedChanges').dialog('option', 'buttons',
-			[
-				{
-					text: "Go Back",
-					click: function(e) {
-						$.DirtyForms.decidingCancel(e);
-						$(this).dialog('close');
-					}
-				},
-				{
-					text: "Continue",
-					click: function(e) {
-						$.DirtyForms.decidingContinue(e);
-						$(this).dialog('close');
-					}
-				}
-			]
-		).bind('dialogclose', function(e) {
-			// Check whether a decision has been made, if not default
-			// to decidingCancel()
-			if ($.DirtyForms.isDeciding()) {
-				$.DirtyForms.decidingCancel(e);
-			}
-		});
 	}
 }
 ```
 
+Note that calling *$.DirtyForms.choiceContinue = false;* isn't strictly necessary as false is the default, but is shown in the example to make it more clear. Also note that a choice will always be committed using this method whether the user clicks a button or uses the "X" icon to close the dialog because 'dialogclose' is called in every case the dialog is closed.
+
+The *$.DirtyForms.choiceCommit()* method automatically calls either *$.DirtyForms.decidingCancel()* or *$.DirtyForms.decidingContinue()* depending on the state of *$.DirtyForms.choiceContinue*, so there is no need to call them manually.
 
 If you don't want to use a dialog at all, simply pass in false instead of an object.
 
@@ -277,6 +296,20 @@ $.DirtyForms.dialog = {
 
 Triggers
 ---------------------------------
+**decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
+
+**decidingcancelledAfter.dirtyforms**: Raised when the *decidingCancel()* method is called after it runs all actions.
+
+**decidingcontinued.dirtyforms**: Raised when the *decidingContinue()* method is called before it runs any actions.
+
+**choicecommit.dirtyforms**: Raised when the *choiceCommit* method is called before it runs any actions.
+
+**choicecommitAfter.dirtyforms**: Raised when the *choiceCommit* method is called after it runs all actions.
+
+**defer.dirtyforms**: Raised prior to showing the dialog box to the user.
+
+**beforeRefire.dirtyforms**: Raised before the original event is refired after a user chooses to leave the page.
+
 
 You can attach callbacks to the **decidingcancelled.dirtyforms** and **decidingcontinued.dirtyforms** custom events. These events are called when the cancel, or continue method on the modal dialog is called (when the user clicks either continue, or cancel).
 

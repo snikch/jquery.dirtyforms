@@ -14,6 +14,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			dirtyClass : 'dirty',
 			listeningClass : 'dirtylisten',
 			ignoreClass : 'ignoredirty',
+			choiceContinue : false,
 			helpers : [],
 			dialog : {
 				refire : function(content, ev){
@@ -50,7 +51,11 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			disable : function(){
 				settings.disabled = true;
 			},
-
+			
+			choiceCommit : function(e){
+				choiceCommit(e);
+			},
+			
 			isDeciding : function(){
 				return settings.deciding;
 			},
@@ -91,17 +96,23 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				if (! $(this).is('form')) return;
 				dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
 				$(this).addClass(core.listeningClass);
-				// include all inputs, HTML 5 and future included
-				$(this).find('input, textarea')
-					// exclude all HTML 4 except text and password, but include HTML 5 except search
-					.not("input[type='checkbox'],input[type='radio'],input[type='button']," +
-						"input[type='image'],input[type='submit'],input[type='reset']," +
-						"input[type='file'],input[type='hidden'],input[type='search']")
-					.focus(onFocus)
-					.change(onFocus);
-				$(this).find("input[type='checkbox'],input[type='radio'],select").change(onSelectionChange);
-				$(this).find("input[type='reset']").click(onReset);
+				
+				// exclude all HTML 4 except text and password, but include HTML 5 except search
+				var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
+					"[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
+				var selectionSelector = "input[type='checkbox'],input[type='radio'],select";
+				var resetSelector = "input[type='reset']";
 
+				// For jQuery 1.7+, use on()
+				if (typeof $(document).on === 'function') {
+					$(this).on('focus change',inputSelector,onFocus);
+					$(this).on('change',selectionSelector,onSelectionChange);
+					$(this).on('click',resetSelector,onReset);
+				} else { // For jQuery 1.4.2 - 1.7, use delegate()
+					$(this).delegate(inputSelector,'focus change',onFocus);
+					$(this).delegate(selectionSelector,'change',onSelectionChange);
+					$(this).delegate(resetSelector,'click',onReset);
+				}
 			});
 		},
 		// Returns true if any of the supplied elements are dirty
@@ -247,28 +258,53 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 				window.console.log(msg) :
 				alert(msg);
 	}
+	
 	var bindExit = function(){
 		if(settings.exitBound) return;
 
-		// We need a separate set of processes for when the form is
-		// running inside of an iframe. We need the livequery library
-		// in order to dynamically bind to elements within the iframe.
-		if (top !== window && $.livequery) {
-			$('a').livequery('click', aBindFn);
-			$('form').livequery('submit', formBindFn);
-			$(top.document).contents().find('a').bind('click', aBindFn);
-			$(top.window).bind('beforeunload', beforeunloadBindFn);
-		} else {
-			$('a').live('click',aBindFn);
-			$('form').live('submit',formBindFn);
+		var inIframe = (top !== self);
+		
+		// For jQuery 1.7+, use on()
+		if (typeof $(document).on === 'function') {
+			$(document).on('click','a',aBindFn);
+			$(document).on('submit','form',formBindFn);
+			if (inIframe) {
+				$(top.document).on('click','a',aBindFn);
+				$(top.document).on('submit','form',formBindFn);
+			}
+		} else { // For jQuery 1.4.2 - 1.7, use delegate()
+			$(document).delegate('a','click',aBindFn);
+			$(document).delegate('form','submit',formBindFn);
+			if (inIframe) {
+				$(top.document).delegate('a','click',aBindFn);
+				$(top.document).delegate('form','submit',formBindFn);
+			}
 		}
+		
 		$(window).bind('beforeunload', beforeunloadBindFn);
+		if (inIframe) {
+			$(top.window).bind('beforeunload', beforeunloadBindFn);
+		}
 
 		settings.exitBound = true;
 	}
+	
+	var getIgnoreAnchorSelector = function(){
+		var result = '';
+		$.each($.DirtyForms.helpers, function(key,obj){
+			if("ignoreAnchorSelector" in obj){
+				if (result.length > 0) { result += ','; }
+				result += obj.ignoreAnchorSelector;
+			}
+		});
+		return result;
+	}
 
 	var aBindFn = function(ev){
-		 bindFn(ev);
+		// Filter out any anchors the helpers wish to exclude
+		if (!$(this).is(getIgnoreAnchorSelector())) {
+			bindFn(ev);
+		}
 	}
 
 	var formBindFn = function(ev){
@@ -387,6 +423,18 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			aTarget = aTarget.toLowerCase();
 		}
 		return (aTarget === '_blank');
+	}
+	
+	var choiceCommit = function(ev){
+		if (settings.deciding) {
+			$(document).trigger('choicecommit.dirtyforms');
+			if ($.DirtyForms.choiceContinue) {
+				decidingContinue(ev);
+			} else {
+				decidingCancel(ev);
+			}
+			$(document).trigger('choicecommitAfter.dirtyforms');
+		}
 	}
 
 	var decidingCancel = function(ev){
