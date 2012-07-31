@@ -22,7 +22,7 @@ Prerequisites
 ---------------------------------
 Must have jQuery version 1.4.2 or higher. 
 
-When using the TinyMCE helper, the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE") is required.
+When using the TinyMCE helper, the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE") is required. Likewise when using the CkEditor helper, the [jQuery plugin for CkEditor](http://ckeditor.com/blog/CKEditor_for_jQuery "jQuery plugin for CkEditor") is required.
 
 **Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog continue function to fail in dirtyForms.
 
@@ -125,7 +125,7 @@ Helpers
 ---------------------------------
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
 
-This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file.
+This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file. Same goes for helpers/ckeditor.js.
 
 **MEMBERS (All Optional)**
 
