@@ -2,6 +2,7 @@
 
 (function($){
   var ckeditor = {
+    ignoreAnchorSelector: '.cke_dialog_ui_button, .cke_tpl_list a',
     isDirty: function(form){
       editors = ckeditors(form);
       $.DirtyForms.dirtylog('Checking ' + editors.length + ' ckeditors for dirtyness.');
