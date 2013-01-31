@@ -12,7 +12,7 @@
       return dirty > 0;
     },
     setClean: function(form){
-      ckeditors.each(function() { this.resetDirty() });
+      ckeditors(form).each(function() { this.resetDirty() });
     }
   }
   var ckeditors = function(form) {
