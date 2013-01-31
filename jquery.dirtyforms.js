@@ -51,6 +51,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			disable : function(){
 				settings.disabled = true;
 			},
+
+			ignoreParentDocs : function(){
+				settings.watchParentDocs = false;
+			},
 			
 			choiceCommit : function(e){
 				choiceCommit(e);
@@ -215,6 +219,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 	// Private Properties and Methods
 	var settings = $.DirtyForms = $.extend({
+		watchParentDocs: true,
 		disabled : false,
 		exitBound : false,
 		formStash : false,
@@ -268,21 +273,21 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		if (typeof $(document).on === 'function') {
 			$(document).on('click','a',aBindFn);
 			$(document).on('submit','form',formBindFn);
-			if (inIframe) {
+			if (settings.watchParentDocs && inIframe) {
 				$(top.document).on('click','a',aBindFn);
 				$(top.document).on('submit','form',formBindFn);
 			}
 		} else { // For jQuery 1.4.2 - 1.7, use delegate()
 			$(document).delegate('a','click',aBindFn);
 			$(document).delegate('form','submit',formBindFn);
-			if (inIframe) {
+			if (settings.watchParentDocs && inIframe) {
 				$(top.document).delegate('a','click',aBindFn);
 				$(top.document).delegate('form','submit',formBindFn);
 			}
 		}
 		
 		$(window).bind('beforeunload', beforeunloadBindFn);
-		if (inIframe) {
+		if (settings.watchParentDocs && inIframe) {
 			$(top.window).bind('beforeunload', beforeunloadBindFn);
 		}
 
