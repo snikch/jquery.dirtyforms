@@ -310,6 +310,8 @@ Triggers
 
 **beforeRefire.dirtyforms**: Raised before the original event is refired after a user chooses to leave the page.
 
+**beforeunload.dirtyforms**: Non-cancelable event, raised prior leaving the page which may happen either as result of user selection if forms were dirty, or due to a normal page exit of no changes were made.
+
 
 You can attach callbacks to the **decidingcancelled.dirtyforms** and **decidingcontinued.dirtyforms** custom events. These events are called when the cancel, or continue method on the modal dialog is called (when the user clicks either continue, or cancel).
 
