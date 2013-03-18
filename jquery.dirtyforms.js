@@ -470,10 +470,12 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 		dirtylog('Clearing the beforeunload event');
 		$(window).unbind('beforeunload', beforeunloadBindFn);
 		window.onbeforeunload = null;
+		$(document).trigger('beforeunload.dirtyforms');
 	}
 
 	var refire = function(e){
 		$(document).trigger('beforeRefire.dirtyforms');
+		$(document).trigger('beforeunload.dirtyforms');
 		switch(e.type){
 			case 'click':
 				dirtylog("Refiring click event");
