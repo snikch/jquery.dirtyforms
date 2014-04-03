@@ -344,6 +344,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	}
 
 	var bindFn = function(ev){
+		if(ev.currentTarget.tagName == "A" && !ev.currentTarget.href) {
+	        	return false;
+	    	}
+	    
 		dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class') + ' and id: ' + ev.target.id);
 
 		if(ev.type == 'beforeunload' && settings.doubleunloadfix){
