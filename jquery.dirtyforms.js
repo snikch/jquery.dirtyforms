@@ -306,8 +306,10 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	}
 
 	var aBindFn = function(ev){
+		var a = $(this);
+		
 		// Filter out any anchors the helpers wish to exclude
-		if (!$(this).is(getIgnoreAnchorSelector())) {
+		if (!a.is(getIgnoreAnchorSelector()) && typeof a.attr('href') != 'undefined') {
 			bindFn(ev);
 		}
 	}
