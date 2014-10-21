@@ -237,6 +237,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	}
 
 	var onSelectionChange = function() {
+		if ($(this).hasClass($.DirtyForms.ignoreClass)) return;
 		$(this).dirtyForms('setDirty');
 	}
 
