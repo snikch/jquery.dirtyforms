@@ -1,0 +1,25 @@
+{
+  "name": "jquery.dirtyforms",
+  "main": "jquery.dirtyforms.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/nickcoyne/jquery.dirtyforms",
+  "authors": [
+    "Mal Curtis <mal@mal.co.nz>"
+  ],
+  "description": "This is a bower enabled fork of jquery.dirtyforms",
+  "keywords": [
+    "dirty",
+    "forms"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "lib",
+    "helpers",
+    "README.md"
+  ]
+}
