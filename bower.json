@@ -23,6 +23,6 @@
     "README.md"
   ],
   "dependencies": {
-    "lib/facebox": "git://github.com/nickcoyne/facebox"
+    "lib/facebox": "git@github.com/nickcoyne/facebox.git"
   }
 }
