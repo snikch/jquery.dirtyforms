@@ -23,6 +23,6 @@
     "README.md"
   ],
   "dependencies": {
-    "facebox": "https://github.com/nickcoyne/facebox.git"
+    "facebox": "https://github.com/nickcoyne/facebox.git#cssified"
   }
 }
