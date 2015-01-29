@@ -21,5 +21,8 @@
     "lib",
     "helpers",
     "README.md"
-  ]
+  ],
+  "dependencies": {
+    "lib/facebox": "git://github.com/snikch/facebox"
+  },
 }
