@@ -234,20 +234,30 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 	var onReset = function() {
 		$(this).parents('form').dirtyForms('setClean');
+		if(settings.onFormCheck) {
+			settings.onFormCheck();
+		}
 	}
 
 	var onSelectionChange = function() {
 		if ($(this).hasClass($.DirtyForms.ignoreClass)) return;
 		$(this).dirtyForms('setDirty');
+		if(settings.onFormCheck) {
+			settings.onFormCheck();
+		}
 	}
 
 	var onFocus = function() {
 		element = $(this);
 		if (focusedIsDirty()) {
 			settings.focused['element'].dirtyForms('setDirty');
+			if(settings.onFormCheck) {
+				settings.onFormCheck();
+			}
 		}
 		settings.focused['element'] = element;
 		settings.focused['value']	= element.val();
+		
 	}
 	var focusedIsDirty = function() {
 		// Check, whether the value of focused element has changed
