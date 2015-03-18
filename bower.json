@@ -6,7 +6,7 @@
   "authors": [
     "Mal Curtis <mal@mal.co.nz>"
   ],
-  "description": "This is a bower enabled fork of jquery.dirtyforms",
+  "description": "A jQuery Plugin that monitors forms for change and alerts the user before leaving the page.",
   "keywords": [
     "dirty",
     "forms"
