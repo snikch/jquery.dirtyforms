@@ -117,6 +117,13 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 					$(this).delegate(selectionSelector,'change',onSelectionChange);
 					$(this).delegate(resetSelector,'click',onReset);
 				}
+
+				// Initialize settings with the currently focused element (autofocus)
+				var focused = $(this).find(inputSelector).filter(':focus');
+				if (focused) {
+					settings.focused['element'] = focused;
+					settings.focused['value'] = focused.val();
+				}
 			});
 		},
 		// Returns true if any of the supplied elements are dirty
