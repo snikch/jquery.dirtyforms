@@ -1,0 +1,6 @@
+# git ignore file
+
+/node_modules
+*.nupkg
+*.tgz
+/[Nn]u[Gg]et.*

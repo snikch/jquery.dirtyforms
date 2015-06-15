@@ -1,0 +1,59 @@
+{
+  "name": "jquery.dirtyforms",
+  "version": "1.0.0",
+  "description": "Dirty Forms is a jQuery plugin to help prevent users from losing data when editing forms.",
+  "main": "jquery.dirtyforms.js",
+  "files": [
+	"jquery.dirtyforms.js"
+  ],
+  "dependencies": {
+    "jquery": ">=1.4.2"
+  },
+  "devDependencies": {
+    "del": "^1.2.0",
+    "fs": "^0.0.2",
+    "glob": "^5.0.10",
+    "gulp": "^3.8.11",
+    "gulp-bump": "^0.3.1",
+    "gulp-git": "^1.2.4",
+    "gulp-jshint": "^1.11.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-tap": "^0.1.3",
+    "gulp-uglify": "^1.2.0",
+    "jshint-stylish": "^2.0.0",
+    "path": "^0.11.14",
+    "request": "^2.55.0",
+    "run-sequence": "^1.1.0",
+    "shelljs": "^0.5.1",
+    "yargs": "^3.7.2"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snikch/jquery.dirtyforms.git"
+  },
+  "keywords": [
+    "jquery",
+    "plugin",
+    "dirty",
+    "forms",
+    "confirmation",
+    "validate",
+    "validation",
+    "areyousure",
+	"jquery-plugin",
+	"ecosystem:jquery"
+  ],
+  "author": "Mal Curtis <mal@mal.co.nz>",
+  "license": { 
+	"type": "MIT",
+	"url": "http://www.opensource.org/licenses/mit-license.php"
+  },
+  "bugs": {
+    "url": "https://github.com/snikch/jquery.dirtyforms/issues"
+  },
+  "homepage": "https://github.com/snikch/jquery.dirtyforms#readme"
+}
