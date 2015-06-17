@@ -19,6 +19,7 @@ var args = require('yargs').argv;
 var settings = {
     baseProject: 'jquery.dirtyforms',
     src: ['./jquery.dirtyforms.js', './helpers/*.js', './dialogs/*.js'],
+    src_assets: ['./README.md'],
     dest: './dist/',
     nugetPath: './nuget.exe',
     subModules: [], // All of the git submodule names (individual releases) for the build
@@ -65,7 +66,7 @@ gulp.task('test', function () {
         .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('copy-minified', ['uglify'], function () {
+gulp.task('copy-minified', ['uglify', 'distribute-assets'], function () {
     return gulp.src([settings.dest + '*.js', settings.dest + '*.map'], { base: './' })
         .pipe(rename(function (path) {
             console.log('moving: ' + path.basename)
@@ -98,6 +99,14 @@ gulp.task('uglify', ['clean', 'test'], function () {
         .pipe(sourcemaps.write('.', {
             includeContent: true,
             sourceRoot: '/'
+        }))
+        .pipe(gulp.dest(settings.dest));
+});
+
+gulp.task('distribute-assets', ['clean'], function () {
+    return gulp.src(settings.src_assets, { base: './' })
+        .pipe(rename(function (path) {
+            path.dirname = settings.baseProject;
         }))
         .pipe(gulp.dest(settings.dest));
 });
