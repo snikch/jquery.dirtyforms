@@ -1,5 +1,5 @@
-Dirty Forms
-=======================================
+![Dirty Forms Logo](https://raw.githubusercontent.com/snikch/jquery.dirtyforms/master/branding/dirty-forms-logo.png)
+
 Dirty Forms is a jQuery plugin to help prevent users from losing data when editing forms.
 
 Dirty Forms will alert a user when they attempt to leave a page without submitting a form they have entered data into. It alerts them in a modal popup box, and also falls back to the browser's default onBeforeUnload handler for events outside the scope of the document such as, but not limited to, page refreshes and browser navigation buttons.
