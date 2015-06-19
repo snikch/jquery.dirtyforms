@@ -3,6 +3,7 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     rename = require('gulp-rename'),
+    ignore = require('gulp-ignore'),
     sourcemaps = require('gulp-sourcemaps'),
 	request = require('request'),
     fs = require('fs'),
@@ -21,6 +22,7 @@ var settings = {
     src: ['./jquery.dirtyforms.js', './helpers/*.js', './dialogs/*.js'],
     src_assets: ['./README.md'],
     dest: './dist/',
+    dest_plugins: '/plugins',
     nugetPath: './nuget.exe',
     subModules: [], // All of the git submodule names (individual releases) for the build
     version: '',
@@ -71,6 +73,14 @@ gulp.task('copy-minified', ['uglify', 'distribute-assets'], function () {
         .pipe(rename(function (path) {
             console.log('moving: ' + path.basename)
             path.dirname = path.basename.replace(/\.min(?:\.js)?/g, '');
+        }))
+        .pipe(gulp.dest(settings.dest))
+        .pipe(ignore.exclude(eval('/' + settings.baseProject + '\.min/')))
+        // Make a copy of the minified files in the /dist/plugins directory for 
+        // CDN distribution.
+        .pipe(rename(function (path) {
+            console.log('moving: ' + path.basename)
+            path.dirname = settings.baseProject + settings.dest_plugins;
         }))
         .pipe(gulp.dest(settings.dest));
 });
