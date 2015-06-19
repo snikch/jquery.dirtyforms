@@ -1,3 +1,5 @@
+[![jquery-dirtyforms MyGet Build Status](https://www.myget.org/BuildSource/Badge/jquery-dirtyforms?identifier=193d9dab-a526-484e-8062-9a960322f246)](https://www.myget.org/)
+
 ![Dirty Forms Logo](https://raw.githubusercontent.com/snikch/jquery.dirtyforms/master/branding/dirty-forms-logo.png)
 
 Dirty Forms is a jQuery plugin to help prevent users from losing data when editing forms.
@@ -14,17 +16,75 @@ Existing solutions were not flexible enough, so I wrote this to make sure that a
 
 The jQuery .on() method (or .delegate() method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
 
-Status
----------------------------------
-Feature complete, browser tested - about to go into a production environment for more testing.
-
 Prerequisites
 ---------------------------------
-Must have jQuery version 1.4.2 or higher. 
+- [jQuery](http://jquery.com) (>= 1.4.2)
+- [jquery.facebox](https://github.com/NightOwl888/facebox) (>= 1.2.0) 
 
-When using the TinyMCE helper, the [jQuery plugin for TinyMCE](http://www.tinymce.com/download/download.php "jQuery plugin for TinyMCE") is required. Likewise when using the CkEditor helper, the [jQuery plugin for CkEditor](http://ckeditor.com/blog/CKEditor_for_jQuery "jQuery plugin for CkEditor") is required.
+**NOTE:** If you set `$.DirtyForms.dialog = false;`, you can remove facebox as a prerequisite. See the [Dialogs](#dialogs) section for details about interoperability with other dialogs.
 
-**Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog continue function to fail in dirtyForms.
+> If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
+
+## Download & Installation
+There are several different ways to get the code. Some examples below:
+
+#### CDN
+Dirty Forms is available over jsDelivr CDN and can directly included to every page.
+```HTML
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/latest/jquery.dirtyforms.min.js"></script>
+```
+
+jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, and jquery.dirtyforms in one request.
+```HTML
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.4,facebox(jquery.facebox.min.js),jquery.dirtyforms"></script>
+```
+
+#### Self-Hosted
+Download and save one of two available files to include Dirty Forms to your page, either the [latest distribution](https://raw.githubusercontent.com/NightOwl888/jquery.dirtyforms.dist/master/jquery.dirtyforms.js) or the [latest minified](https://raw.githubusercontent.com/NightOwl888/jquery.dirtyforms.dist/master/jquery.dirtyforms.min.js) version.
+```HTML
+<script type="text/javascript" src="jquery.dirtyforms.min.js"></script>
+```
+
+You can also conveniently get all of the latest Dirty Forms files in one [Zip Download](https://github.com/NightOwl888/jquery.dirtyforms.dist/archive/master.zip).
+
+#### Package Managers
+The TinyMCE helper is even available through [NPM](http://npmjs.org), [Bower](http://bower.io), and [NuGet](https://www.nuget.org/). Just use one of the following commands below to install the helper, including all dependencies.
+
+[![NPM version](https://badge.fury.io/js/jquery.dirtyforms.svg)](http://www.npmjs.org/package/jquery.dirtyforms.helpers.tinymce)
+[![Bower version](https://badge.fury.io/bo/jquery.dirtyforms.svg)](http://bower.io/search/?q=jquery.dirtyforms.helpers.tinymce)
+
+[![NPM](https://nodei.co/npm/jquery.dirtyforms.png?compact=true)](https://nodei.co/npm/jquery.dirtyforms/)
+```
+// NPM
+$ npm install jquery.dirtyforms
+
+// Bower
+$ bower install jquery.dirtyforms
+
+// NuGet
+PM> Install-Package jquery.dirtyforms
+```
+
+## SourceMaps
+
+A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?hl=en_US&pli=1&pli=1) file is also available via CDN or your favorite package manager.
+
+####CDN
+
+```HTML
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/latest/jquery.dirtyforms.min.js.map"></script>
+```
+
+#### Package Managers
+
+NPM or Bower will install the file into the destination directory.
+
+```
+jquery.dirtyforms.min.js.map
+```
+
+For NuGet, this file is not included in the package, but you can get it from [here](https://github.com/NightOwl888/jquery.dirtyforms.dist/blob/master/jquery.dirtyforms.min.js.map) if you really need it.
+
 
 Usage
 ---------------------------------
@@ -120,12 +180,19 @@ The following methods have been deprecated and will eventually be removed from d
 *$.fn.cleanDirty()* -- former syntax: *$('form#accountform').cleanDirty()*
     Please use ***$('form#accountform').dirtyForms('setClean')*** instead
 
-
 Helpers
 ---------------------------------
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
 
 This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file. Same goes for helpers/ckeditor.js.
+
+#### Available Helpers
+
+- [Always Dirty](https://github.com/NightOwl888/jquery.dirtyforms.helpers.alwaysdirty.dist#readme)
+- [CKEditor](https://github.com/NightOwl888/jquery.dirtyforms.helpers.ckeditor.dist#readme)
+- [TinyMCE](https://github.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist#readme)
+
+#### Documentation for Rolling-Your-Own Helper
 
 **MEMBERS (All Optional)**
 
@@ -296,6 +363,15 @@ $.DirtyForms.dialog = {
 
 Triggers
 ---------------------------------
+
+Simply bind a function to any of these hooks to respond to the corresponding trigger.
+
+```javascript
+$(document).bind('choicecommit.dirtyforms', function() { 
+    ...stuff to do before commiting the user's choice... 
+});
+```
+
 **decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
 
 **decidingcancelledAfter.dirtyforms**: Raised when the *decidingCancel()* method is called after it runs all actions.
@@ -326,19 +402,5 @@ Selectors
 
 **:dirtylistening** will select all elements that has the listening class attached. This should be all forms that are currently listening for change
 
-Contributors
----------------------------------
-
-[Mal Curtis (snikch)](https://github.com/snikch)
-
-[Shad Storhaug (NightOwl888)](https://github.com/NightOwl888)
-
-[Mark Campbell (Nitrodist)](https://github.com/Nitrodist)
-
-[ssmiley483](https://github.com/ssmiley483)
-
-[Greg (gmcrist)](https://github.com/gmcrist)
-
-[Samuel (hleumas)](https://github.com/hleumas)
 
 
