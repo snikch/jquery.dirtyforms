@@ -50,8 +50,9 @@ You can also conveniently get all of the latest Dirty Forms files in one [Zip Do
 #### Package Managers
 The TinyMCE helper is even available through [NPM](http://npmjs.org), [Bower](http://bower.io), and [NuGet](https://www.nuget.org/). Just use one of the following commands below to install the helper, including all dependencies.
 
-[![NPM version](https://badge.fury.io/js/jquery.dirtyforms.svg)](http://www.npmjs.org/package/jquery.dirtyforms.helpers.tinymce)
-[![Bower version](https://badge.fury.io/bo/jquery.dirtyforms.svg)](http://bower.io/search/?q=jquery.dirtyforms.helpers.tinymce)
+[![NPM version](https://badge.fury.io/js/jquery.dirtyforms.svg)](http://www.npmjs.org/package/jquery.dirtyforms)
+[![Bower version](https://badge.fury.io/bo/jquery.dirtyforms.svg)](http://bower.io/search/?q=jquery.dirtyforms)
+[![NuGet version](https://badge.fury.io/nu/jquery.dirtyforms.svg)](https://www.nuget.org/packages/jquery.dirtyforms/)
 
 [![NPM](https://nodei.co/npm/jquery.dirtyforms.png?compact=true)](https://nodei.co/npm/jquery.dirtyforms/)
 ```
