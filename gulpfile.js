@@ -3,6 +3,7 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     rename = require('gulp-rename'),
+    replace = require('gulp-replace'),
     ignore = require('gulp-ignore'),
     sourcemaps = require('gulp-sourcemaps'),
 	request = require('request'),
@@ -22,7 +23,9 @@ var settings = {
     baseProject: 'jquery.dirtyforms',
     src: ['./jquery.dirtyforms.js', './helpers/*.js', './dialogs/*.js'],
     src_assets: ['./README.md', './pkg/*.json'],
-    src_module_assets: ['./helpers/**/*.json', './helpers/**/README.md', './helpers/**/LICENSE*','./dialogs/**/*.json', './dialogs/**/README.md', './dialogs/**/LICENSE*'],
+    src_module_assets: ['./helpers/**/*.json', './helpers/**/README.md', './helpers/**/LICENSE*', './dialogs/**/*.json', './dialogs/**/README.md', './dialogs/**/LICENSE*'],
+    src_json_files: ['./**/*.json', '!./node_modules/**', '!./dist/**'],
+    src_readme_files: ['./**/README*', '!./dist/**'],
     dest: './dist/',
     dest_plugins: '/plugins',
     nugetPath: './nuget.exe',
@@ -228,10 +231,8 @@ gulp.task('bump-version', function () {
 
     console.log('build type: ' + buildType);
 
-    var jsonFiles = ['./package.json', settings.dest + '**/*.json'];
-
     if (typeof (argsVersion) == 'undefined') {
-        return gulp.src(jsonFiles, { base: './' })
+        return gulp.src(settings.src_json_files, { base: './' })
             .pipe(bump({ type: buildType }))
             .pipe(tap(function (file, t) {
                 var newPkg = JSON.parse(file.contents.toString());
@@ -240,10 +241,18 @@ gulp.task('bump-version', function () {
             .pipe(gulp.dest('./'));
     }
     else {
-        return gulp.src(jsonFiles, { base: './' })
+        return gulp.src(settings.src_json_files, { base: './' })
             .pipe(bump({ version: settings.version, preid: preid }))
             .pipe(gulp.dest('./'));
     }
+});
+
+gulp.task('bump-readme-version', ['bump-version'], function () {
+    return gulp.src(settings.src_readme_files, { base: './' })
+        // Replace the version number in the CDN URLs
+        .pipe(replace(eval('/\\/' + settings.baseProject + '\\/\\d+\\.\\d+\\.\\d+(?:-\\w+)?\\//g'), '/' + settings.baseProject + '/' + settings.version + '/'))
+        .pipe(replace(eval('/' + settings.baseProject + '\\@\\d+\\.\\d+\\.\\d+(?:-\\w+)?/g'), settings.baseProject + '@' + settings.version))
+        .pipe(gulp.dest('.'));
 });
 
 // Bumps the version number.
@@ -251,7 +260,7 @@ gulp.task('bump-version', function () {
 //   --version=1.0.0     // sets the build to a specific version number
 //   --buildType=minor   // if the version is not specified, increments the minor version and resets the patch version to 0
 //                       // allowed values: major, minor, patch
-gulp.task('bump', ['bump-version'], function (cb) {
+gulp.task('bump', ['bump-readme-version'], function (cb) {
     console.log('Successfully bumped version to: ' + settings.version);
     cb();
 });
