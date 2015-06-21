@@ -18,7 +18,7 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\dist\jquery.dirtyforms.helpers.tinymce\jquery.dirtyforms.helpers.tinymce.js" target="content\scripts"/>
-		<file src="..\dist\jquery.dirtyforms.helpers.tinymce\jquery.dirtyforms.helpers.tinymce.min.js" target="content\scripts"/>
+		<file src="..\..\dist\jquery.dirtyforms.helpers.tinymce\jquery.dirtyforms.helpers.tinymce.js" target="content\scripts"/>
+		<file src="..\..\dist\jquery.dirtyforms.helpers.tinymce\jquery.dirtyforms.helpers.tinymce.min.js" target="content\scripts"/>
 	</files>
 </package>
