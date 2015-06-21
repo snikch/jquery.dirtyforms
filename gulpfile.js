@@ -23,7 +23,7 @@ var settings = {
     baseProject: 'jquery.dirtyforms',
     src: ['./jquery.dirtyforms.js', './helpers/*.js', './dialogs/*.js'],
     src_assets: ['./README.md', './pkg/*.json'],
-    src_module_assets: ['./helpers/**/*.json', './helpers/**/README.md', './helpers/**/LICENSE*', './dialogs/**/*.json', './dialogs/**/README.md', './dialogs/**/LICENSE*'],
+    src_module_assets: ['./@(helpers|dialogs)/**/*.json', './@(helpers|dialogs)/**/README.md', './@(helpers|dialogs)/**/LICENSE*'],
     src_json_files: ['./**/*.json', '!./node_modules/**', '!./dist/**'],
     src_readme_files: ['./**/README*', '!./dist/**'],
     dest: './dist/',
@@ -157,9 +157,9 @@ gulp.task('distribute-module-assets', ['distribute-assets'], function () {
             var segments = path.dirname.split(/[/\\]/);
             var rootDir = segments[0];
             if (rootDir == 'helpers' || rootDir == 'dialogs') {
+                console.log('moving: ' + path.dirname + '/' + path.basename + '.' + path.extname);
                 var pkgDir = segments[1].replace('.pkg', '');
                 path.dirname = settings.baseProject + '.' + rootDir + '.' + pkgDir;
-                console.log(path.dirname);
             }
         }))
         .pipe(gulp.dest(settings.dest));
