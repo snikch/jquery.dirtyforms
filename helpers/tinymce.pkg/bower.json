@@ -1,0 +1,35 @@
+{
+  "name": "jquery.dirtyforms.helpers.tinymce",
+  "main": "jquery.dirtyforms.helpers.tinymce.min.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/snikch/jquery.dirtyforms",
+  "authors": [
+    "Mal Curtis <mal@mal.co.nz>"
+  ],
+  "description": "A helper to enable TinyMCE support when using JQuery Dirty Forms.",
+  "keywords": [
+    "tinymce",
+    "dirty",
+    "forms",
+    "HTML",
+    "form",
+    "confirm",
+    "dialog",
+    "confirmation",
+    "are",
+    "you",
+    "sure"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "*.json",
+    ".git"
+  ],
+  "dependencies": {
+    "jquery.dirtyforms": ">=1.0.0",
+    "tinymce": ">=4.0.0"
+  }
+}

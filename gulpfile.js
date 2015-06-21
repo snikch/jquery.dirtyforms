@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     ignore = require('gulp-ignore'),
     sourcemaps = require('gulp-sourcemaps'),
 	request = require('request'),
+	merge = require('merge-stream'),
     fs = require('fs'),
 	del = require('del'),
     bump = require('gulp-bump'),
@@ -20,7 +21,8 @@ var args = require('yargs').argv;
 var settings = {
     baseProject: 'jquery.dirtyforms',
     src: ['./jquery.dirtyforms.js', './helpers/*.js', './dialogs/*.js'],
-    src_assets: ['./README.md'],
+    src_assets: ['./README.md', './pkg/*.json'],
+    src_module_assets: ['./helpers/**/*.json', './helpers/**/README.md', './helpers/**/LICENSE*','./dialogs/**/*.json', './dialogs/**/README.md', './dialogs/**/LICENSE*'],
     dest: './dist/',
     dest_plugins: '/plugins',
     nugetPath: './nuget.exe',
@@ -53,7 +55,10 @@ gulp.task('clean', function (cb) {
         settings.dest + '**/*.tgz',
         settings.dest + '**/*.css',
         settings.dest + '**/*.png',
-        settings.dest + '**/*.gif'], cb);
+        settings.dest + '**/*.gif',
+        settings.dest + '**/README.*',
+        settings.dest + '**/LICENSE.*',
+        settings.dest + '**/*.json'], cb);
 });
 
 // Moves the .js files to the distribution folders and creates a minified version and sourcemap
@@ -68,7 +73,7 @@ gulp.task('test', function () {
         .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('copy-minified', ['uglify', 'distribute-assets'], function () {
+gulp.task('copy-minified', ['uglify', 'distribute-module-assets'], function () {
     return gulp.src([settings.dest + '*.js', settings.dest + '*.map'], { base: './' })
         .pipe(rename(function (path) {
             console.log('moving: ' + path.basename)
@@ -113,10 +118,46 @@ gulp.task('uglify', ['clean', 'test'], function () {
         .pipe(gulp.dest(settings.dest));
 });
 
-gulp.task('distribute-assets', ['clean'], function () {
+gulp.task('distribute-default-license', ['clean'], function () {
+    var defaultLicense = './LICENSE*';
+    var baseModule = gulp.src(defaultLicense, { base: './' })
+        .pipe(rename(function (path) {
+            path.dirname = settings.baseProject;
+        }))
+        .pipe(gulp.dest(settings.dest));
+
+    var merged = merge(baseModule);
+    var modulesLength = settings.subModules.length;
+    for (var i = 0; i < modulesLength; i++) {
+        var subModule = settings.subModules[i];
+        var module = gulp.src(defaultLicense, { base: './' })
+            .pipe(ignore(settings.baseProject))
+            .pipe(gulp.dest(settings.dest + subModule));
+
+        merged.add(module);
+    }
+
+    return merged;
+});
+
+gulp.task('distribute-assets', ['distribute-default-license'], function () {
     return gulp.src(settings.src_assets, { base: './' })
         .pipe(rename(function (path) {
             path.dirname = settings.baseProject;
+        }))
+        .pipe(gulp.dest(settings.dest));
+});
+
+gulp.task('distribute-module-assets', ['distribute-assets'], function () {
+    return gulp.src(settings.src_module_assets, { base: './' })
+        .pipe(rename(function (path) {
+            var segments = path.dirname.split(/[/\\]/);
+            var rootDir = segments[0];
+            if (rootDir == 'helpers' || rootDir == 'dialogs') {
+                var pkgDir = segments[1].replace('.pkg', '');
+                path.dirname = settings.baseProject + '.' + rootDir + '.' + pkgDir;
+                console.log(path.dirname);
+            }
         }))
         .pipe(gulp.dest(settings.dest));
 });

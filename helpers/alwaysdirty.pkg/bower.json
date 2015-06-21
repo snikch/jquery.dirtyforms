@@ -1,0 +1,33 @@
+{
+  "name": "jquery.dirtyforms.helpers.alwaysdirty",
+  "main": "jquery.dirtyforms.helpers.alwaysdirty.min.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/snikch/jquery.dirtyforms",
+  "authors": [
+    "Mal Curtis <mal@mal.co.nz>"
+  ],
+  "description": "A helper to force forms to always be dirty when using JQuery Dirty Forms.",
+  "keywords": [
+    "dirty",
+    "forms",
+    "HTML",
+    "form",
+    "confirm",
+    "dialog",
+    "confirmation",
+    "are",
+    "you",
+    "sure"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "*.json",
+    ".git"
+  ],
+  "dependencies": {
+    "jquery.dirtyforms": ">=1.0.0"
+  }
+}

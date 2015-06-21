@@ -1,0 +1,36 @@
+{
+  "name": "jquery.dirtyforms",
+  "main": "jquery.dirtyforms.min.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/snikch/jquery.dirtyforms",
+  "authors": [
+    "Mal Curtis <mal@mal.co.nz>",
+    "Shad Storhaug <shad@shadstorhaug.com>",
+    "Nick Coyne <nick@codevader.com>"
+  ],
+  "description": "A jQuery Plugin that monitors forms for change and alerts the user before leaving the page.",
+  "keywords": [
+    "dirty",
+    "forms",
+    "HTML",
+    "form",
+    "confirm",
+    "dialog",
+    "confirmation",
+    "are",
+    "you",
+    "sure"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "*.json",
+    ".git"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.4.2",
+    "jquery.facebox": ">=1.2.0"
+  }
+}
