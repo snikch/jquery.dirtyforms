@@ -432,9 +432,6 @@
             return settings.message;
         }
         if (!settings.dialog) {
-            if (navigator.userAgent.toLowerCase().match(/chrome/)) {
-                settings.doubleunloadfix = true;
-            }
             return;
         }
 
