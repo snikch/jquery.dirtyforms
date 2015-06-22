@@ -1,6 +1,19 @@
 // TinyMCE helper, checks to see if TinyMCE editors in the given form are dirty
 
-(function($){
+// Support for UMD: https://github.com/umdjs/umd/blob/master/jqueryPluginCommonjs.js
+// This allows for tools such as Browserify to compose the components together into a single HTTP request.
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory(require('jquery'));
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
 	// Create a new object, with an isDirty method
 	var tinymce = {
 		ignoreAnchorSelector : '.mceEditor a,.mceMenu a',
@@ -50,4 +63,4 @@
 	//      This is no longer needed, but kept here to remind me.
 	//      tinyMCE.triggerSave();
 	//});
-})(jQuery);
+}));

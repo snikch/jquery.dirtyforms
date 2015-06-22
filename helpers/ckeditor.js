@@ -1,6 +1,19 @@
 // CkEditor helper, checks to see if CkEditor editors in the given form are dirty
 
-(function($){
+// Support for UMD: https://github.com/umdjs/umd/blob/master/jqueryPluginCommonjs.js
+// This allows for tools such as Browserify to compose the components together into a single HTTP request.
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS
+        module.exports = factory(require('jquery'));
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
   var ckeditor = {
     ignoreAnchorSelector: '.cke_dialog_ui_button, .cke_tpl_list a',
     isDirty: function(form){
@@ -32,5 +45,5 @@
     return $(editors);
   }
   $.DirtyForms.helpers.push(ckeditor);
-})(jQuery);
+}));
 
