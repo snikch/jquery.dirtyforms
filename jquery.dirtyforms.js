@@ -249,7 +249,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 
 	var onFocus = function() {
 		element = $(this);
-		if (focusedIsDirty()) {
+		if (focusedIsDirty() && !$(this).hasClass($.DirtyForms.ignoreClass)) {
 			settings.focused['element'].dirtyForms('setDirty');
 			if(settings.onFormCheck) {
 				settings.onFormCheck();
