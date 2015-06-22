@@ -270,15 +270,15 @@
     };
 
     var onFocus = function () {
-        element = $(this);
-        if (focusedIsDirty() && !$(this).hasClass($.DirtyForms.ignoreClass)) {
+        var $this = $(this);
+        if (focusedIsDirty() && !$this.hasClass($.DirtyForms.ignoreClass)) {
             settings.focused.element.dirtyForms('setDirty');
             if (settings.onFormCheck) {
                 settings.onFormCheck();
             }
         }
-        settings.focused.element = element;
-        settings.focused.value = element.val();
+        settings.focused.element = $this;
+        settings.focused.value = $this.val();
     };
 
     var focusedIsDirty = function () {
