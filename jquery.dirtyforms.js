@@ -16,6 +16,17 @@
         factory(jQuery);
     }
 }(function ($) {
+    if (typeof $(document).on !== 'function') {
+        if (typeof $(document).delegate === 'function') {
+            // Patch jQuery 1.4.2 - 1.7 with an on function (that uses delegate).
+            $.fn.on = function (events, selector, data, handler) {
+                $(this).delegate(selector, events, data, handler);
+            };
+        } else {
+            throw ('jQuery 1.4.2 or higher is required by jquery.dirtyforms');
+        }
+    }
+
     // Public General Plugin methods $.DirtyForms
     $.extend({
         DirtyForms: {
@@ -118,16 +129,9 @@
                 var selectionSelector = "input[type='checkbox'],input[type='radio'],select";
                 var resetSelector = "input[type='reset']";
 
-                // For jQuery 1.7+, use on()
-                if (typeof $(document).on === 'function') {
-                    $(this).on('focus change', inputSelector, onFocus);
-                    $(this).on('change', selectionSelector, onSelectionChange);
-                    $(this).on('click', resetSelector, onReset);
-                } else { // For jQuery 1.4.2 - 1.7, use delegate()
-                    $(this).delegate(inputSelector, 'focus change', onFocus);
-                    $(this).delegate(selectionSelector, 'change', onSelectionChange);
-                    $(this).delegate(resetSelector, 'click', onReset);
-                }
+                $(this).on('focus change', inputSelector, onFocus);
+                $(this).on('change', selectionSelector, onSelectionChange);
+                $(this).on('click', resetSelector, onReset);
 
                 // Initialize settings with the currently focused element (autofocus)
                 var focused = $(this).find(inputSelector).filter(':focus');
@@ -300,21 +304,11 @@
 
         var inIframe = (top !== self);
 
-        // For jQuery 1.7+, use on()
-        if (typeof $(document).on === 'function') {
-            $(document).on('click', 'a[href]', aBindFn);
-            $(document).on('submit', 'form', formBindFn);
-            if (settings.watchParentDocs && inIframe) {
-                $(top.document).on('click', 'a[href]', aBindFn);
-                $(top.document).on('submit', 'form', formBindFn);
-            }
-        } else { // For jQuery 1.4.2 - 1.7, use delegate()
-            $(document).delegate('a[href]', 'click', aBindFn);
-            $(document).delegate('form', 'submit', formBindFn);
-            if (settings.watchParentDocs && inIframe) {
-                $(top.document).delegate('a[href]', 'click', aBindFn);
-                $(top.document).delegate('form', 'submit', formBindFn);
-            }
+        $(document).on('click', 'a[href]', aBindFn);
+        $(document).on('submit', 'form', formBindFn);
+        if (settings.watchParentDocs && inIframe) {
+            $(top.document).on('click', 'a[href]', aBindFn);
+            $(top.document).on('submit', 'form', formBindFn);
         }
 
         $(window).bind('beforeunload', beforeunloadBindFn);
