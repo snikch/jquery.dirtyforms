@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dirty Forms is a jQuery plugin to help prevent users from losing data when editing forms.",
   "main": "jquery.dirtyforms.min.js",
   "files": [

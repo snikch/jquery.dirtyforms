@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms.helpers.tinymce",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A helper to enable TinyMCE support when using JQuery Dirty Forms.",
   "main": "jquery.dirtyforms.helpers.tinymce.min.js",
   "files": [

@@ -31,7 +31,7 @@ There are several different ways to get the code. Some examples below:
 #### CDN
 The TinyMCE helper is available over jsDelivr CDN and can directly included to every page.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.0.0/jquery.dirtyforms.helpers.tinymce.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.helpers.tinymce.min.js"></script>
 ```
 
 jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, TinyMCE, the jQuery TinyMCE plugin, jquery.dirtyforms, and jquery.dirtyforms.helpers.tinymce in one request.
@@ -73,7 +73,7 @@ A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-
 ####CDN
 
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.0.0/jquery.dirtyforms.helpers.tinymce.min.js.map"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.helpers.tinymce.min.js.map"></script>
 ```
 
 #### Package Managers
@@ -94,8 +94,8 @@ This helper is completely automatic - there are no properties or methods to inte
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/tinymce/latest/tinymce.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/tinymce/latest/jquery.tinymce.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.0.0/jquery.dirtyforms.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.0.0/jquery.dirtyforms.helpers.tinymce.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.helpers.tinymce.min.js" type="text/javascript"></script>
 ```
 
 > If not using a CDN, you need to apply the dependencies in the same order as  the example above.
