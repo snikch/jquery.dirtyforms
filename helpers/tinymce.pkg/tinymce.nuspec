@@ -13,7 +13,7 @@
 		<projectUrl>https://github.com/snikch/jquery.dirtyforms</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/snikch/jquery.dirtyforms/master/branding/dirty-forms-icon.png</iconUrl>
 		<dependencies>
-			<dependency id="jquery.dirtyforms" version="1.0" />
+			<dependency id="jquery.dirtyforms" version="$version$" />
 			<dependency id="TinyMCE.JQuery" version="3.5" />
 		</dependencies>
 	</metadata>
