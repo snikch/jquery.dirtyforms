@@ -399,12 +399,11 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			return true;
 		}
 
-		settings.deciding = true;
-		settings.decidingEvent = ev;
-		dirtylog('Setting deciding active');
+		if(settings.dialog){
+		    settings.deciding = true;
+		    settings.decidingEvent = ev;
+		    dirtylog('Setting deciding active');
 
-		if(settings.dialog !== false)
-		{
 			dirtylog('Saving dialog content');
 			settings.dialogStash =settings.dialog.stash();
 			dirtylog(settings.dialogStash);
@@ -418,7 +417,12 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 			dirtylog('Returning to beforeunload browser handler with: ' + settings.message);
 			return settings.message;
 		}
-		if(!settings.dialog) return;
+		if(!settings.dialog){
+		    if(navigator.userAgent.toLowerCase().match(/chrome/)){
+		        settings.doubleunloadfix = true;
+		    }
+		    return;
+		}
 
 		ev.preventDefault();
 		ev.stopImmediatePropagation();
@@ -469,7 +473,7 @@ if (typeof jQuery == 'undefined') throw ("jQuery Required");
 	}
 
 	var decidingContinue = function(ev){
-		window.onbeforeunload = null; // fix for chrome
+	    clearUnload(); // fix for chrome/safari
 		ev.preventDefault();
 		settings.dialogStash = false;
 		$(document).trigger('decidingcontinued.dirtyforms');
