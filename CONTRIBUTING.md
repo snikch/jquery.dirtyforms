@@ -40,7 +40,7 @@ Please test your code. Dirty Forms tends to use features that sometimes break in
 
 ```
 npm install
-./node_modules/.bin/gulp test
+npm test
 ```
 
 ### Helpers/Dialogs
