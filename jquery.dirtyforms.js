@@ -369,15 +369,16 @@
     };
 
     var bindFn = function (ev) {
-        dirtylog('Entering: Leaving Event fired, type: ' + ev.type + ', element: ' + ev.target + ', class: ' + $(ev.target).attr('class') + ' and id: ' + ev.target.id);
+        var $element = $(ev.target), eventType = ev.type;
+        dirtylog('Entering: Leaving Event fired, type: ' + eventType + ', element: ' + ev.target + ', class: ' + $element.attr('class') + ' and id: ' + ev.target.id);
 
-        if (ev.type == 'beforeunload' && settings.doubleunloadfix) {
+        if (eventType == 'beforeunload' && settings.doubleunloadfix) {
             dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
             settings.doubleunloadfix = false;
             return false;
         }
 
-        if ($(ev.target).hasClass(settings.ignoreClass) || isDifferentTarget($(ev.target))) {
+        if ($element.hasClass(settings.ignoreClass) || isDifferentTarget($element)) {
             dirtylog('Leaving: Element has ignore class or has target=\'_blank\'');
             if (!ev.isDefaultPrevented()) {
                 clearUnload();
@@ -403,7 +404,7 @@
             return false;
         }
 
-        if (ev.type == 'submit' && $(ev.target).dirtyForms('isDirty')) {
+        if (eventType == 'submit' && $element.dirtyForms('isDirty')) {
             dirtylog('Leaving: Form submitted is a dirty form');
             if (!ev.isDefaultPrevented()) {
                 clearUnload();
@@ -424,27 +425,24 @@
         // Callback for page access in current state
         $(document).trigger('defer.dirtyforms');
 
-        if (ev.type == 'beforeunload') {
-            //clearUnload();
+        if (eventType == 'beforeunload') {
             dirtylog('Returning to beforeunload browser handler with: ' + settings.message);
             return settings.message;
         }
-        if (!settings.dialog) {
-            return;
-        }
+        if (!settings.dialog) return;
 
         ev.preventDefault();
         ev.stopImmediatePropagation();
 
-        if ($(ev.target).is('form') && $(ev.target).parents(settings.dialog.selector).length > 0) {
+        if ($element.is('form') && $element.parents(settings.dialog.selector).length > 0) {
             dirtylog('Stashing form');
-            settings.formStash = $(ev.target).clone(true).hide();
+            settings.formStash = $element.clone(true).hide();
         } else {
             settings.formStash = false;
         }
 
         dirtylog('Deferring to the dialog');
-        settings.dialog.fire($.DirtyForms.message, $.DirtyForms.title);
+        settings.dialog.fire(settings.message, settings.title);
         settings.dialog.bind();
     };
 
