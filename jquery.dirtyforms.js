@@ -30,7 +30,6 @@
     // Public General Plugin methods $.DirtyForms
     $.extend({
         DirtyForms: {
-            debug: false,
             message: 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
             title: 'Are you sure you want to do that?',
             dirtyClass: 'dirty',
@@ -67,6 +66,13 @@
                     $.facebox(content);
                 }
             },
+            /*<log>*/
+            debug: false,
+
+            dirtylog: function (msg) {
+                dirtylog(msg);
+            },
+            /*</log>*/
 
             isDirty: function () {
                 return $(':dirtylistening').dirtyForms('isDirty');
@@ -96,10 +102,6 @@
 
             decidingCancel: function (e) {
                 decidingCancel(e);
-            },
-
-            dirtylog: function (msg) {
-                dirtylog(msg);
             }
         }
     });
@@ -248,8 +250,10 @@
         deciding: false,
         decidingEvent: false,
         currentForm: false,
+        /*<log>*/
         hasFirebug: "console" in window && "firebug" in window.console,
         hasConsoleLog: "console" in window && "log" in window.console,
+        /*</log>*/
         focused: { "element": false, "value": false }
     }, $.DirtyForms);
 
@@ -286,6 +290,7 @@
 			(settings.focused.element.val() !== settings.focused.value);
     };
 
+    /*<log>*/
     var dirtylog = function (msg) {
         if (!settings.debug) return;
         msg = "[DirtyForms] " + msg;
@@ -297,6 +302,7 @@
             alert(msg);
         }
     };
+    /*</log>*/
 
     var bindExit = function () {
         if (settings.exitBound) return;

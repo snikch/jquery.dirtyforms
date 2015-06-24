@@ -104,6 +104,9 @@ gulp.task('uglify', ['clean', 'test'], function () {
             path.dirname = path.basename;
         }))
         .pipe(gulp.dest(settings.dest))
+        // Remove log statements from minified code
+        .pipe(replace(eval('/\\/\\*\\s*?<log>\\s*?\\*\\/[\\s\\S]*?\\/\\*\\s*?<\\/log>\\s*?\\*\\//g'), ''))
+        .pipe(replace(eval('/(?:\\$\\.DirtyForms\\.)?dirtylog\\([\\s\\S]*?\\);/g'), ''))
         .pipe(sourcemaps.init())
         .pipe(rename(function (path) {
             path.dirname = '';

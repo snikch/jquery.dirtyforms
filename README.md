@@ -113,6 +113,8 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 
 **debug**: set to true to log messages to the firebug console (or alert if you don't have firebug).
 
+> **NOTE:** **debug** is not available in the minified version. If you need to turn this on, be sure to switch the file reference to the uncompressed `jquery.dirtyforms.js` file. 
+
 **message**: The dialog message to be sent.
 
 **title**: The modal dialog title.
