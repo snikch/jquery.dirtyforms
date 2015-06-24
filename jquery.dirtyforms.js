@@ -103,25 +103,23 @@
     // Create a custom selector $('form:dirty')
     $.extend($.expr[":"], {
         dirtylistening: function (a) {
-            return $(a).hasClass($.DirtyForms.listeningClass);
+            return $(a).hasClass(settings.listeningClass);
         },
         dirty: function (a) {
-            return $(a).hasClass($.DirtyForms.dirtyClass);
+            return $(a).hasClass(settings.dirtyClass);
         }
     });
 
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
         init: function () {
-            var core = $.DirtyForms;
-
             dirtylog('Adding forms to watch');
             bindExit();
 
             return this.each(function (e) {
                 if (!$(this).is('form')) return;
                 dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-                $(this).addClass(core.listeningClass);
+                $(this).addClass(settings.listeningClass);
 
                 // exclude all HTML 4 except text and password, but include HTML 5 except search
                 var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
@@ -151,12 +149,12 @@
                 return true;
             }
             this.each(function (e) {
-                if ($(this).hasClass($.DirtyForms.dirtyClass)) {
+                if ($(this).hasClass(settings.dirtyClass)) {
                     isDirty = true;
                     return true;
                 }
             });
-            $.each($.DirtyForms.helpers, function (key, obj) {
+            $.each(settings.helpers, function (key, obj) {
                 if ("isDirty" in obj) {
                     if (obj.isDirty(node)) {
                         isDirty = true;
@@ -179,7 +177,7 @@
         setDirty: function () {
             dirtylog('setDirty called');
             return this.each(function (e) {
-                $(this).addClass($.DirtyForms.dirtyClass).parents('form').addClass($.DirtyForms.dirtyClass);
+                $(this).addClass(settings.dirtyClass).parents('form').addClass(settings.dirtyClass);
             });
         },
         // "Cleans" this dirty form by essentially forgetting that it is dirty
@@ -191,21 +189,21 @@
                 var node = this;
 
                 // remove the current dirty class
-                $(node).removeClass($.DirtyForms.dirtyClass);
+                $(node).removeClass(settings.dirtyClass);
 
                 if ($(node).is('form')) {
                     // remove all dirty classes from children
-                    $(node).find(':dirty').removeClass($.DirtyForms.dirtyClass);
+                    $(node).find(':dirty').removeClass(settings.dirtyClass);
                 } else {
                     // if this is last dirty child, set form clean
                     var $form = $(node).parents('form');
                     if ($form.find(':dirty').length === 0) {
-                        $form.removeClass($.DirtyForms.dirtyClass);
+                        $form.removeClass(settings.dirtyClass);
                     }
                 }
 
                 // Clean helpers
-                $.each($.DirtyForms.helpers, function (key, obj) {
+                $.each(settings.helpers, function (key, obj) {
                     if ("setClean" in obj) {
                         obj.setClean(node);
                     }
@@ -262,7 +260,7 @@
     };
 
     var onSelectionChange = function () {
-        if ($(this).hasClass($.DirtyForms.ignoreClass)) return;
+        if ($(this).hasClass(settings.ignoreClass)) return;
         $(this).dirtyForms('setDirty');
         if (settings.onFormCheck) {
             settings.onFormCheck();
@@ -271,7 +269,7 @@
 
     var onFocus = function () {
         var $this = $(this);
-        if (focusedIsDirty() && !$this.hasClass($.DirtyForms.ignoreClass)) {
+        if (focusedIsDirty() && !$this.hasClass(settings.ignoreClass)) {
             settings.focused.element.dirtyForms('setDirty');
             if (settings.onFormCheck) {
                 settings.onFormCheck();
@@ -288,7 +286,7 @@
     };
 
     var dirtylog = function (msg) {
-        if (!$.DirtyForms.debug) return;
+        if (!settings.debug) return;
         msg = "[DirtyForms] " + msg;
         if (settings.hasFirebug) {
             console.log(msg);
@@ -321,7 +319,7 @@
 
     var getIgnoreAnchorSelector = function () {
         var result = '';
-        $.each($.DirtyForms.helpers, function (key, obj) {
+        $.each(settings.helpers, function (key, obj) {
             if ("ignoreAnchorSelector" in obj) {
                 if (result.length > 0) { result += ','; }
                 result += obj.ignoreAnchorSelector;
@@ -454,7 +452,7 @@
     var choiceCommit = function (ev) {
         if (settings.deciding) {
             $(document).trigger('choicecommit.dirtyforms');
-            if ($.DirtyForms.choiceContinue) {
+            if (settings.choiceContinue) {
                 decidingContinue(ev);
             } else {
                 decidingCancel(ev);
