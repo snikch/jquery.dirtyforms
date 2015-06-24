@@ -504,7 +504,7 @@
         switch (e.type) {
             case 'click':
                 dirtylog("Refiring click event");
-                var event = new jQuery.Event('click');
+                var event = new $.Event('click');
                 $(e.target).trigger(event);
                 if (!event.isDefaultPrevented()) {
                     var anchor = $(e.target).closest('[href]');
