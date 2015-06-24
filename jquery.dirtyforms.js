@@ -501,33 +501,30 @@
     var refire = function (e) {
         $(document).trigger('beforeRefire.dirtyforms');
         $(document).trigger('beforeunload.dirtyforms');
-        switch (e.type) {
-            case 'click':
-                dirtylog("Refiring click event");
-                var event = new $.Event('click');
-                $(e.target).trigger(event);
-                if (!event.isDefaultPrevented()) {
-                    var href = $(e.target).attr('href');
-                    dirtylog('Sending location to ' + href);
-                    location.href = href;
-                    return;
-                }
-                break;
-            default:
-                dirtylog("Refiring " + e.type + " event on " + e.target);
-                var target;
-                if (settings.formStash) {
-                    dirtylog('Appending stashed form to body');
-                    target = settings.formStash;
-                    $('body').append(target);
-                }
-                else {
-                    target = $(e.target);
-                    if (!target.is('form'))
-                        target = target.closest('form');
-                }
-                target.trigger(e.type);
-                break;
+        if (e.type === 'click') {
+            dirtylog("Refiring click event");
+            var event = new $.Event('click');
+            $(e.target).trigger(event);
+            if (!event.isDefaultPrevented()) {
+                var href = $(e.target).attr('href');
+                dirtylog('Sending location to ' + href);
+                location.href = href;
+                return;
+            }
+        } else {
+            dirtylog("Refiring " + e.type + " event on " + e.target);
+            var target;
+            if (settings.formStash) {
+                dirtylog('Appending stashed form to body');
+                target = settings.formStash;
+                $('body').append(target);
+            }
+            else {
+                target = $(e.target);
+                if (!target.is('form'))
+                    target = target.closest('form');
+            }
+            target.trigger(e.type);
         }
     };
 
