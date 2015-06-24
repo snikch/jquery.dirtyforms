@@ -509,9 +509,7 @@
                 if (!event.isDefaultPrevented()) {
                     var anchor = $(e.target).closest('[href]');
                     dirtylog('Sending location to ' + anchor.attr('href'));
-                    if (anchor.attr('href') !== undefined) {
-                        location.href = anchor.attr('href');
-                    }
+                    location.href = anchor.attr('href');
                     return;
                 }
                 break;
