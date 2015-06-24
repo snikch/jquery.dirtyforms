@@ -507,9 +507,9 @@
                 var event = new $.Event('click');
                 $(e.target).trigger(event);
                 if (!event.isDefaultPrevented()) {
-                    var anchor = $(e.target).closest('[href]');
-                    dirtylog('Sending location to ' + anchor.attr('href'));
-                    location.href = anchor.attr('href');
+                    var href = $(e.target).attr('href');
+                    dirtylog('Sending location to ' + href);
+                    location.href = href;
                     return;
                 }
                 break;
