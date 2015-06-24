@@ -331,10 +331,8 @@
     };
 
     var aBindFn = function (ev) {
-        var a = $(this);
-
         // Filter out any anchors the helpers wish to exclude
-        if (!a.is(getIgnoreAnchorSelector()) && typeof a.attr('href') != 'undefined') {
+        if (!$(this).is(getIgnoreAnchorSelector())) {
             bindFn(ev);
         }
     };
