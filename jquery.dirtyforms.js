@@ -377,7 +377,7 @@
             return false;
         }
 
-        if ($(ev.target).hasClass(settings.ignoreClass) || isDifferentTarget(ev)) {
+        if ($(ev.target).hasClass(settings.ignoreClass) || isDifferentTarget($(ev.target))) {
             dirtylog('Leaving: Element has ignore class or has target=\'_blank\'');
             if (!ev.isDefaultPrevented()) {
                 clearUnload();
@@ -448,12 +448,9 @@
         settings.dialog.bind();
     };
 
-    var isDifferentTarget = function (ev) {
-        var aTarget = $(ev.target).attr('target');
-        if (typeof aTarget === 'string') {
-            aTarget = aTarget.toLowerCase();
-        }
-        return (aTarget === '_blank');
+    var isDifferentTarget = function ($element) {
+        var aTarget = $element.attr('target');
+        return typeof aTarget === 'string' ? aTarget.toLowerCase() === '_blank' : false;
     };
 
     var choiceCommit = function (ev) {
