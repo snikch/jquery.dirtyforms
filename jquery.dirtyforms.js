@@ -20,7 +20,7 @@
         if (typeof $(document).delegate === 'function') {
             // Patch jQuery 1.4.2 - 1.7 with an on function (that uses delegate).
             $.fn.on = function (events, selector, data, handler) {
-                $(this).delegate(selector, events, data, handler);
+                return $(this).delegate(selector, events, data, handler);
             };
         } else {
             throw ('jQuery 1.4.2 or higher is required by jquery.dirtyforms');
