@@ -116,22 +116,24 @@
             dirtylog('Adding forms to watch');
             bindExit();
 
-            // Initialize settings with the currently focused element (autofocus)
-            var focused = $(document.activeElement);
-            if (focused) {
-                settings.focused.element = focused;
-                settings.focused.value = focused.val();
+            // exclude all HTML 4 except text and password, but include HTML 5 except search
+            var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
+        		"[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
+
+            // Initialize settings with the currently focused element (HTML 5 autofocus)
+            var $focused = $(document.activeElement);
+            if ($focused.is(inputSelector)) {
+                settings.focused.element = $focused;
+                settings.focused.value = $focused.val();
             }
 
             return this.each(function (e) {
                 var $form = $(this);
                 if (!$form.is('form')) return;
-                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
 
+                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
                 $form.addClass(settings.listeningClass)
-                    // exclude all HTML 4 except text and password, but include HTML 5 except search
-                    .on('focus change', "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
-					    "[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])", onFocus)
+                    .on('focus change', inputSelector, onFocus)
                     .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
                     .on('click', "input[type='reset']", onReset);
             });
