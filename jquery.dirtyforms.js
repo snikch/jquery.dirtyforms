@@ -369,6 +369,12 @@
         var $element = $(ev.target), eventType = ev.type;
         dirtylog('Entering: Leaving Event fired, type: ' + eventType + ', element: ' + ev.target + ', class: ' + $element.attr('class') + ' and id: ' + ev.target.id);
 
+        // Important: Do this check before calling clearUnload()
+        if (ev.isDefaultPrevented()) {
+            dirtylog('Leaving: Event has been stopped elsewhere');
+            return false;
+        }
+
         if (eventType == 'beforeunload' && settings.doubleunloadfix) {
             dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
             settings.doubleunloadfix = false;
@@ -377,9 +383,7 @@
 
         if (isIgnored($element) || isDifferentTarget($element)) {
             dirtylog('Leaving: Element has ignore class or a descendant of an ignored element or has target=\'_blank\'');
-            if (!ev.isDefaultPrevented()) {
-                clearUnload();
-            }
+            clearUnload();
             return false;
         }
 
@@ -388,24 +392,15 @@
             return false;
         }
 
-        if (ev.isDefaultPrevented()) {
-            dirtylog('Leaving: Event has been stopped elsewhere');
-            return false;
-        }
-
         if (!settings.isDirty()) {
             dirtylog('Leaving: Not dirty');
-            if (!ev.isDefaultPrevented()) {
-                clearUnload();
-            }
+            clearUnload();
             return false;
         }
 
         if (eventType == 'submit' && $element.dirtyForms('isDirty')) {
             dirtylog('Leaving: Form submitted is a dirty form');
-            if (!ev.isDefaultPrevented()) {
-                clearUnload();
-            }
+            clearUnload();
             return true;
         }
 
