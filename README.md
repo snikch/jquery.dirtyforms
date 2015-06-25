@@ -248,33 +248,39 @@ The node parameter is typically an individual form element. To respect the way j
 
 Dialogs
 ---------------------------------
-The default facebox dialog can be overriden by setting a new dialog object.
-
-The dialog object **requires** you to set four methods and a property.
+The default facebox dialog can be overriden by setting a new dialog object, and providing implementations for the following members.
 
 Methods:
 
-- **fire**
-- **refire**
-- **bind**
-- **stash**
+- **fire** (required)
+- **bind** (optional)
+- **stash** (optional) - for stashing
+- **refire** (optional) - for stashing
 
 Property:
 
-- **selector**
+- **selector** (optional) - for stashing
 
 
 ```javascript
-// Selector is a selector string for dialog content. Used to determine if event targets are inside a dialog
+// Selector is a selector string for dialog content. 
+// Used to select the element that will be cloned and put into the stash.
 selector : '#facebox .content',
-
 
 // Fire starts the dialog
 fire : function(message, title){
-	var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty continue">Continue</a><a href="#" class="ignoredirty cancel">Stop</a>';
+	var content = '<h1>' + title + '</h1><p>' + message + '</p>' + 
+		'<p>' +
+			'<a href="#" class="' + $.DirtyForms.ignoreClass + ' continue">Continue</a>' +
+			'<a href="#" class="' + $.DirtyForms.ignoreClass + ' cancel">Stop</a>' +
+		'</p>';
 	$.facebox(content);
 },
-// Bind binds the continue and cancel functions to the correct links
+
+// Bind binds the continue and cancel functions to the correct links. For some dialog
+// frameworks, it is simpler just to do all of the work in the fire function.
+// In that case, this function can be omitted. Note that this function is called immediately
+// after fire is called.
 bind : function(){
 	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
 	$('#facebox .continue').click($.DirtyForms.decidingContinue);
@@ -283,7 +289,18 @@ bind : function(){
 	});
 },
 
-// Refire handles closing an existing dialog AND fires a new one
+// Stash returns the current contents of a dialog to be refired after the confirmation
+// Use to store the current dialog, when it's about to be replaced with the confirmation dialog.
+// This function can be omitted (or return false) if you don't wish to stash anything.
+stash : function(){
+	var fb = $('#facebox .content');
+	return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
+	   false :
+	   fb.clone(true);
+}
+
+// Refire handles closing an existing dialog AND fires a new one.
+// You can omit this method (or return false) if you don't need to use stashing/refiring.
 refire : function(content){
 	var rebox = function(){
 		$.facebox(content);
@@ -292,15 +309,6 @@ refire : function(content){
 	$(document).bind('afterClose.facebox', rebox);
 },
 
-// Stash returns the current contents of a dialog to be refired after the confirmation
-// Use to store the current dialog, when it's about to be replaced with the confirmation dialog.
-// This function can return false if you don't wish to stash anything.
-stash : function(){
-	var fb = $('#facebox .content');
-	return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
-	   false :
-	   fb.clone(true);
-}
 ```
 
 **fire** accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the **bind** method you will see that we bind the *$.DirtyForms.decidingCancel* method to the .cancel link and the .close link, and we bind *$.DirtyForms.decidingContinue* to the .continue link. You must bind both *$.DirtyForms.decidingCancel* and *$.DirtyForms.decidingContinue* in the **bind** method.
@@ -353,14 +361,19 @@ The *$.DirtyForms.choiceCommit()* method automatically calls either *$.DirtyForm
 If you don't want to use a dialog at all, simply pass in false instead of an object.
 
 ```javascript
-$.DirtyForms.dialog = {
-	selector : '#mylightbox .body',
-	fire : function (){ ... },
-	refire : function (){ ... },
-	stash : function (){ ... },
-	bind : function (){ ... }
-}
+$.DirtyForms.dialog = false;
 ```
+
+### Modal Dialog Stashing
+
+Stashing is meant for the following scenario.
+
+1. A form is hosted inside a modal dialog.
+2. The dialog framework you use doesn't allow overlaying a modal dialog on top of another modal dialog.
+
+You don't need to use stashing if either of the above (or both) of the items don't apply to you.
+
+If you have a form and link which is in a modal dialog (a modal dialog created by some other part of your application) then when the Dirty Forms modal fires, the original modal is removed. So the stash saves the content from the original modal dialog while Dirty Forms shows its modal dialog, and then re-shows the original modal dialog with the edits if the user chooses to stay on the page.
 
 Triggers
 ---------------------------------

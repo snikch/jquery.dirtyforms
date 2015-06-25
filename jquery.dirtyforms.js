@@ -412,9 +412,11 @@
             settings.decidingEvent = ev;
             dirtylog('Setting deciding active');
 
-            dirtylog('Saving dialog content');
-            settings.dialogStash = settings.dialog.stash();
-            dirtylog(settings.dialogStash);
+            if (typeof settings.dialog.stash === 'function') {
+                dirtylog('Saving dialog content');
+                settings.dialogStash = settings.dialog.stash();
+                dirtylog(settings.dialogStash);
+            }
         }
 
         // Callback for page access in current state
@@ -429,7 +431,7 @@
         ev.preventDefault();
         ev.stopImmediatePropagation();
 
-        if ($element.is('form') && $element.parents(settings.dialog.selector).length > 0) {
+        if (typeof settings.dialog.selector === 'string' && $element.is('form') && $element.parents(settings.dialog.selector).length > 0) {
             dirtylog('Stashing form');
             settings.formStash = $element.clone(true).hide();
         } else {
@@ -438,7 +440,8 @@
 
         dirtylog('Deferring to the dialog');
         settings.dialog.fire(settings.message, settings.title);
-        settings.dialog.bind();
+        if (typeof settings.dialog.bind === 'function')
+            settings.dialog.bind();
     };
 
     var isDifferentTarget = function ($element) {
@@ -461,7 +464,7 @@
     var decidingCancel = function (ev) {
         ev.preventDefault();
         $(document).trigger('decidingcancelled.dirtyforms');
-        if (settings.dialog !== false && settings.dialogStash !== false) {
+        if (settings.dialog !== false && settings.dialogStash !== false && typeof settings.dialog.refire === 'function') {
             dirtylog('Refiring the dialog with stashed content');
             settings.dialog.refire(settings.dialogStash.html(), ev);
         }
