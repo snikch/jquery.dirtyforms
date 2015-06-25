@@ -466,8 +466,7 @@
             settings.dialog.refire(settings.dialogStash.html(), ev);
         }
         $(document).trigger('decidingcancelledAfter.dirtyforms');
-        settings.dialogStash = false;
-        settings.deciding = settings.currentForm = settings.decidingEvent = false;
+        settings.deciding = settings.currentForm = settings.decidingEvent = settings.dialogStash = false;
     };
 
     var decidingContinue = function (ev) {
