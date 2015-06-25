@@ -299,11 +299,11 @@
 
         var inIframe = (top !== self);
 
-        $(document).on('click', 'a[href]', aBindFn);
-        $(document).on('submit', 'form', formBindFn);
+        $(document).on('click', 'a[href]', aBindFn)
+                   .on('submit', 'form', formBindFn);
         if (settings.watchParentDocs && inIframe) {
-            $(top.document).on('click', 'a[href]', aBindFn);
-            $(top.document).on('submit', 'form', formBindFn);
+            $(top.document).on('click', 'a[href]', aBindFn)
+                           .on('submit', 'form', formBindFn);
         }
 
         $(window).bind('beforeunload', beforeunloadBindFn);
