@@ -138,8 +138,8 @@
         },
         // Returns true if any of the supplied elements are dirty
         isDirty: function () {
-            var isDirty = false;
-            var node = this;
+            var isDirty = false,
+                node = this;
             if (settings.disabled) return false;
             if (focusedIsDirty()) {
                 isDirty = true;
