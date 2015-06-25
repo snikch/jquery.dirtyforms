@@ -259,7 +259,7 @@
     };
 
     var onSelectionChange = function () {
-        if ($(this).hasClass(settings.ignoreClass)) return;
+        if (isIgnored($(this))) return;
         $(this).dirtyForms('setDirty');
         if (settings.onFormCheck) {
             settings.onFormCheck();
@@ -268,7 +268,7 @@
 
     var onFocus = function () {
         var $this = $(this);
-        if (focusedIsDirty() && !$this.hasClass(settings.ignoreClass)) {
+        if (focusedIsDirty() && !isIgnored($this)) {
             settings.focused.element.dirtyForms('setDirty');
             if (settings.onFormCheck) {
                 settings.onFormCheck();
@@ -375,8 +375,8 @@
             return false;
         }
 
-        if ($element.hasClass(settings.ignoreClass) || isDifferentTarget($element)) {
-            dirtylog('Leaving: Element has ignore class or has target=\'_blank\'');
+        if (isIgnored($element) || isDifferentTarget($element)) {
+            dirtylog('Leaving: Element has ignore class or a descendant of an ignored element or has target=\'_blank\'');
             if (!ev.isDefaultPrevented()) {
                 clearUnload();
             }
@@ -449,6 +449,10 @@
     var isDifferentTarget = function ($element) {
         var aTarget = $element.attr('target');
         return typeof aTarget === 'string' ? aTarget.toLowerCase() === '_blank' : false;
+    };
+
+    var isIgnored = function ($element) {
+        return $element.closest('.' + settings.ignoreClass).length > 0;
     };
 
     var choiceCommit = function (ev) {

@@ -121,7 +121,7 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 
 **listeningClass**: The class applied to elements that are having their inputs monitored for change.
 
-**ignoreClass**: The class applied to elements that you wish to allow the action to be continue even when the form is dirty.
+**ignoreClass**: The class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.
 
 **choiceContinue**: Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until *choiceCommit()* is called.
 
