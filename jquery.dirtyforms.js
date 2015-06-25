@@ -116,6 +116,13 @@
             dirtylog('Adding forms to watch');
             bindExit();
 
+            // Initialize settings with the currently focused element (autofocus)
+            var focused = $(document.activeElement);
+            if (focused) {
+                settings.focused.element = focused;
+                settings.focused.value = focused.val();
+            }
+
             return this.each(function (e) {
                 var $form = $(this);
                 if (!$form.is('form')) return;
@@ -127,13 +134,6 @@
 					    "[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])", onFocus)
                     .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
                     .on('click', "input[type='reset']", onReset);
-
-                // Initialize settings with the currently focused element (autofocus)
-                var focused = $form.find(inputSelector).filter(':focus');
-                if (focused) {
-                    settings.focused.element = focused;
-                    settings.focused.value = focused.val();
-                }
             });
         },
         // Returns true if any of the supplied elements are dirty
