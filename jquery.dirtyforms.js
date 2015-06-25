@@ -117,22 +117,19 @@
             bindExit();
 
             return this.each(function (e) {
-                if (!$(this).is('form')) return;
-                dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-                $(this).addClass(settings.listeningClass);
+                var $form = $(this);
+                if (!$form.is('form')) return;
+                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
 
-                // exclude all HTML 4 except text and password, but include HTML 5 except search
-                var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
-					"[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
-                var selectionSelector = "input[type='checkbox'],input[type='radio'],select";
-                var resetSelector = "input[type='reset']";
-
-                $(this).on('focus change', inputSelector, onFocus);
-                $(this).on('change', selectionSelector, onSelectionChange);
-                $(this).on('click', resetSelector, onReset);
+                $form.addClass(settings.listeningClass)
+                    // exclude all HTML 4 except text and password, but include HTML 5 except search
+                    .on('focus change', "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
+					    "[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])", onFocus)
+                    .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
+                    .on('click', "input[type='reset']", onReset);
 
                 // Initialize settings with the currently focused element (autofocus)
-                var focused = $(this).find(inputSelector).filter(':focus');
+                var focused = $form.find(inputSelector).filter(':focus');
                 if (focused) {
                     settings.focused.element = focused;
                     settings.focused.value = focused.val();
