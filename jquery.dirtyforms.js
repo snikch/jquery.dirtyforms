@@ -488,8 +488,8 @@
     };
 
     var refire = function (e) {
-        $(document).trigger('beforeRefire.dirtyforms');
-        $(document).trigger('beforeunload.dirtyforms');
+        $(document).trigger('beforeRefire.dirtyforms')
+                   .trigger('beforeunload.dirtyforms');
         if (e.type === 'click') {
             dirtylog("Refiring click event");
             var event = new $.Event('click');
