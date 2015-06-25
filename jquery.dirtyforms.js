@@ -183,17 +183,17 @@
             settings.focused = { element: false, value: false };
 
             return this.each(function (e) {
-                var node = this;
+                var node = this, $node = $(this);
 
                 // remove the current dirty class
-                $(node).removeClass(settings.dirtyClass);
+                $node.removeClass(settings.dirtyClass);
 
-                if ($(node).is('form')) {
+                if ($node.is('form')) {
                     // remove all dirty classes from children
-                    $(node).find(':dirty').removeClass(settings.dirtyClass);
+                    $node.find(':dirty').removeClass(settings.dirtyClass);
                 } else {
                     // if this is last dirty child, set form clean
-                    var $form = $(node).parents('form');
+                    var $form = $node.parents('form');
                     if ($form.find(':dirty').length === 0) {
                         $form.removeClass(settings.dirtyClass);
                     }
