@@ -316,20 +316,18 @@
         settings.exitBound = true;
     };
 
-    var getIgnoreAnchorSelector = function () {
-        var result = '';
+    var ignoredByHelpers = function () {
+        var $ignored = $();
         $.each(settings.helpers, function (key, obj) {
             if ("ignoreAnchorSelector" in obj) {
-                if (result.length > 0) { result += ','; }
-                result += obj.ignoreAnchorSelector;
+                $ignored = $ignored.add(obj.ignoreAnchorSelector);
             }
         });
-        return result;
+        return $ignored;
     };
 
     var aBindFn = function (ev) {
-        // Filter out any anchors the helpers wish to exclude
-        if (!$(this).is(getIgnoreAnchorSelector())) {
+        if (!$(this).is(ignoredByHelpers())) {
             bindFn(ev);
         }
     };
