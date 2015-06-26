@@ -513,9 +513,7 @@
                 $('body').append(target);
             }
             else {
-                target = $(e.target);
-                if (!target.is('form'))
-                    target = target.closest('form');
+                target = $(e.target).closest('form');
             }
             target.trigger(e.type);
         }
