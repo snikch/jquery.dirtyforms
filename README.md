@@ -181,6 +181,9 @@ The following methods have been deprecated and will eventually be removed from d
 *$.fn.cleanDirty()* -- former syntax: *$('form#accountform').cleanDirty()*
     Please use ***$('form#accountform').dirtyForms('setClean')*** instead
 
+*$.DirtyForms.disable()* -- 
+    Please use ***$('html').addClass($.DirtyForms.ignoreClass)*** instead
+
 Helpers
 ---------------------------------
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
@@ -415,6 +418,3 @@ Selectors
 **:dirty** will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
 
 **:dirtylistening** will select all elements that has the listening class attached. This should be all forms that are currently listening for change
-
-
-

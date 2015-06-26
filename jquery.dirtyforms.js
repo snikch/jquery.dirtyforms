@@ -70,8 +70,10 @@
                 return $(':dirtylistening').dirtyForms('isDirty');
             },
 
+            // DEPRECATED: Duplicate functionality.
+            // Use $('html').addClass($.DirtyForms.ignoreClass); instead.
             disable: function () {
-                settings.disabled = true;
+                $('html').addClass(settings.ignoreClass);
             },
 
             ignoreParentDocs: function () {
@@ -142,7 +144,6 @@
         isDirty: function () {
             var isDirty = false,
                 node = this;
-            if (settings.disabled) return false;
             if (focusedIsDirty()) {
                 isDirty = true;
                 return true;
@@ -239,7 +240,6 @@
     // Private Properties and Methods
     var settings = $.DirtyForms = $.extend({
         watchParentDocs: true,
-        disabled: false,
         exitBound: false,
         formStash: false,
         dialogStash: false,
