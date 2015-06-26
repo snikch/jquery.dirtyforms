@@ -39,9 +39,7 @@
             choiceContinue: false,
             helpers: [],
             dialog: {
-                refire: function (content, ev) {
-                    $.facebox(content);
-                },
+                selector: '#facebox .content',
                 fire: function (message, title) {
                     var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium red continue">Continue</a><a href="#" class="ignoredirty button medium cancel">Stop</a>';
                     $.facebox(content);
@@ -49,11 +47,13 @@
                 bind: function () {
                     var close = function (decision) {
                         return function (e) {
-                            e.preventDefault();
-                            $(document).trigger('close.facebox');
-                            decision(e);
+                            if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
+                                $(document).trigger('close.facebox');
+                                decision(e);
+                            }
                         };
                     };
+                    $(document).bind('keydown.facebox', close(decidingCancel));
                     $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close(decidingCancel));
                     $('#facebox .continue').click(close(decidingContinue));
                 },
@@ -63,7 +63,9 @@
 					   false :
 					   $('#facebox .content').clone(true);
                 },
-                selector: '#facebox .content'
+                refire: function (content, ev) {
+                    $.facebox(content);
+                }
             },
 
             isDirty: function () {

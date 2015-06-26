@@ -285,6 +285,13 @@ fire : function(message, title){
 // In that case, this function can be omitted. Note that this function is called immediately
 // after fire is called.
 bind : function(){
+	$(document).bind('keydown.facebox', function (e) {
+		// Intercept the escape key and send the event to Dirty Forms
+		if (e.keyCode === 27) {
+			$(document).trigger('close.facebox');
+            $.DirtyForms.decidingCancel(e);
+		}
+	});
 	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
 	$('#facebox .continue').click($.DirtyForms.decidingContinue);
 	$(document).bind('decidingcancelled.dirtyforms', function(){
@@ -316,29 +323,31 @@ refire : function(content){
 
 **fire** accepts a message and title, and is responsible for creating the modal dialog. Note the two classes on each link. In the **bind** method you will see that we bind the *$.DirtyForms.decidingCancel* method to the .cancel link and the .close link, and we bind *$.DirtyForms.decidingContinue* to the .continue link. You must bind both *$.DirtyForms.decidingCancel* and *$.DirtyForms.decidingContinue* in the **bind** method.
 
+> Be sure to register the keydown event for the escape key and pass the call on to *$.DirtyForms.decidingCancel* or the default browser fallback will fail when the user hits the escape key.
+
 Alternatively, another pattern is supported for modal dialogs where the continuing execution of the event is not allowed until after the dialog is closed (such as when using jQuery UI dialog in modal mode). The pattern uses a boolean property named **$.DirtyForms.choiceContinue** to indicate the dialog choice and a method named **$.DirtyForms.choiceCommit()** to execute the choice. Here is an example of that pattern in action using a modal jQuery UI dialog:
 
 ```javascript
 $.DirtyForms.dialog = {
 	selector: '#unsavedChanges',
 	fire: function(message, dlgTitle) {
-		$('#unsavedChanges').dialog({title: dlgTitle, width: 350, modal: true});
+		$('#unsavedChanges').dialog({title: dlgTitle, width: 400, modal: true});
 		$('#unsavedChanges').html(message);
 	},
 	bind: function() {
 		$('#unsavedChanges').dialog('option', 'buttons',
 			[
 				{
-					text: "Stay Here",
+					text: "Leave This Page",
 					click: function(e) {
-						$.DirtyForms.choiceContinue = false;
+						$.DirtyForms.choiceContinue = true;
 						$(this).dialog('close');
 					}
 				},
 				{
-					text: "Leave This Page",
+					text: "Stay Here",
 					click: function(e) {
-						$.DirtyForms.choiceContinue = true;
+						$.DirtyForms.choiceContinue = false;
 						$(this).dialog('close');
 					}
 				}
@@ -347,14 +356,23 @@ $.DirtyForms.dialog = {
 			// Execute the choice after the modal dialog closes
 			$.DirtyForms.choiceCommit(e);
 		});
-	},
-	refire: function(content) {
-		return false;
-	},
-	stash: function() {
-		return false;
+
+		// Intercept the escape key and cancel the event.
+		// Calling dialog('close') will fire the 'dialogclose' event,
+		// which will in turn commit the choice to Dirty Forms.
+		$(document).bind('keydown', function(e) {
+			if (e.keyCode == 27) {
+				e.preventDefault();
+				$.DirtyForms.choiceContinue = false;
+                $('#unsavedChanges').dialog('close');
+            }
+        });
 	}
 }
+
+// Dynamically add the div element to the page for the dialog (inside of a hidden div).
+$('body').append("<div style='display: none'><div id='unsavedChanges'></div></div>");
+        
 ```
 
 Note that calling *$.DirtyForms.choiceContinue = false;* isn't strictly necessary as false is the default, but is shown in the example to make it more clear. Also note that a choice will always be committed using this method whether the user clicks a button or uses the "X" icon to close the dialog because 'dialogclose' is called in every case the dialog is closed.
