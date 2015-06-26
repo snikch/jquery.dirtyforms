@@ -298,18 +298,14 @@
 
     var bindExit = function () {
         if (settings.exitBound) return;
-
         var inIframe = (top !== self);
 
         $(document).on('click', 'a[href]', aBindFn)
                    .on('submit', 'form', formBindFn);
+        $(window).bind('beforeunload', beforeunloadBindFn);
         if (settings.watchParentDocs && inIframe) {
             $(top.document).on('click', 'a[href]', aBindFn)
                            .on('submit', 'form', formBindFn);
-        }
-
-        $(window).bind('beforeunload', beforeunloadBindFn);
-        if (settings.watchParentDocs && inIframe) {
             $(top.window).bind('beforeunload', beforeunloadBindFn);
         }
 
