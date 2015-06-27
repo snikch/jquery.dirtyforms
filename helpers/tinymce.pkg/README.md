@@ -36,11 +36,11 @@ The TinyMCE helper is available over jsDelivr CDN and can directly included to e
 
 jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, TinyMCE, the jQuery TinyMCE plugin, jquery.dirtyforms, and jquery.dirtyforms.helpers.tinymce in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,tinymce(tinymce.min.js+jquery.tinymce.min.js),jquery.facebox,jquery.dirtyforms(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.tinymce.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,tinymce(tinymce.min.js+jquery.tinymce.min.js),jquery.facebox,jquery.dirtyforms@1.1.0(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.tinymce.min.js)"></script>
 ```
 
 #### Self-Hosted
-Download and save one of two available files to include the CKEditor helper to your page, either the [latest distribution](https://raw.githubusercontent.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist/master/jquery.dirtyforms.helpers.tinymce.js) or the [latest minified](https://raw.githubusercontent.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist/master/jquery.dirtyforms.helpers.tinymce.min.js) version.
+Download and save one of two available files to include the TinyMCE helper to your page, either the [latest distribution](https://raw.githubusercontent.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist/master/jquery.dirtyforms.helpers.tinymce.js) or the [latest minified](https://raw.githubusercontent.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist/master/jquery.dirtyforms.helpers.tinymce.min.js) version.
 ```HTML
 <script type="text/javascript" src="jquery.dirtyforms.helpers.tinymce.min.js"></script>
 ```
@@ -70,7 +70,7 @@ PM> Install-Package jquery.dirtyforms.helpers.tinymce
 
 A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?hl=en_US&pli=1&pli=1) file is also available via CDN or your favorite package manager.
 
-####CDN
+#### CDN
 
 ```HTML
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.helpers.tinymce.min.js.map"></script>
@@ -86,7 +86,7 @@ jquery.dirtyforms.helpers.tinymce.min.js.map
 
 For NuGet, this file is not included in the package, but you can get it from [here](https://github.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist/blob/master/jquery.dirtyforms.helpers.tinymce.min.js.map) if you really need it.
 
-##Usage
+## Usage
 
 This helper is completely automatic - there are no properties or methods to interact with. Simply include the reference to the helper after the [prerequisites](#prerequisites) and use Dirty Forms [as per the documentation](https://github.com/snikch/jquery.dirtyforms#usage) and TinyMCE [as per the documentation](http://www.tinymce.com/wiki.php/Installation).
 
@@ -98,4 +98,4 @@ This helper is completely automatic - there are no properties or methods to inte
 <script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.helpers.tinymce.min.js" type="text/javascript"></script>
 ```
 
-> If not using a CDN, you need to apply the dependencies in the same order as  the example above.
+> If not using a CDN, you need to apply the dependencies in the same order as in the example above.
