@@ -1,0 +1,36 @@
+{
+  "name": "jquery.dirtyforms.dialogs.jquery-ui",
+  "main": "jquery.dirtyforms.dialogs.jquery-ui.min.js",
+  "version": "1.1.0",
+  "homepage": "https://github.com/snikch/jquery.dirtyforms",
+  "authors": [
+    "Shad Storhaug <shad@shadstorhaug.com>"
+  ],
+  "description": "A module to enable automatic jQuery UI dialog support when using jQuery Dirty Forms.",
+  "keywords": [
+    "ui",
+	"jquery",
+    "dirty",
+    "forms",
+    "HTML",
+    "form",
+    "confirm",
+    "dialog",
+    "confirmation",
+    "are",
+    "you",
+    "sure"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "*.json",
+    ".git"
+  ],
+  "dependencies": {
+    "jquery.dirtyforms": ">=1.0.0",
+    "jquery-ui": ">=1.11.2"
+  }
+}
