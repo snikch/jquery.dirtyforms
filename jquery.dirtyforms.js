@@ -331,7 +331,7 @@
     };
 
     var aBindFn = function (ev) {
-        if (!$(this).is(ignoredByHelpers())) {
+        if (!$(this).is(ignoredByHelpers()) && !isDifferentTarget($(this))) {
             bindFn(ev);
         }
     };
@@ -383,8 +383,8 @@
             return false;
         }
 
-        if (isIgnored($element) || isDifferentTarget($element)) {
-            dirtylog('Leaving: Element has ignore class or a descendant of an ignored element or has target=\'_blank\'');
+        if (isIgnored($element)) {
+            dirtylog('Leaving: Element has ignore class or a descendant of an ignored element');
             clearUnload();
             return false;
         }
