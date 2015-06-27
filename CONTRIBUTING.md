@@ -60,7 +60,9 @@ For more information about UMD, and why it is important see the following docume
 
 We have built a script to package up the modules and deploy them in a consistent way. So it is important that you follow the same directory structure for new helpers and dialogs. The below examples assume you are contributing a new helper or module called `widget`. Replace widget in each of the paths with the name of your helper.
 
-Versioning of all helpers and dialogs will automatically be synced with Dirty Forms. Note that the CDN URLs in the `README.md` files will be automatically updated to the current version upon release.
+Versioning of all helpers and dialogs will automatically be synced with Dirty Forms. Your package will automatically be deployed on jsDelivr when we do a distribution, so be sure to include it in the readme. Note that the CDN URLs in the `README.md` files will be automatically updated to the current version upon release. 
+
+It is best to copy an existing helper or dialog and then use it as a starting point.
 
 ##### Helpers
 
@@ -69,7 +71,7 @@ Versioning of all helpers and dialogs will automatically be synced with Dirty Fo
 | `/helpers/widget.js`  | Helper code file (required) (must be a jQuery plugin and follow the UMD)  |
 | `/helpers/widget.pkg/README.md`  | Readme for your helper (required). Please provide a description, complete instructions on how to obtain and use the helper, its prerequisites, and how to install/reference via CDN. Note that if you use package managers, you can provide dependency information and the prerequisites can be installed automatically, so the documentation will be simpler.  |
 | `/helpers/widget.pkg/bower.json`  | [Bower package file](http://bower.io/docs/creating-packages/) (optional). We recommend providing this unless your helper depends on a JavaScript and/or CSS module that does not exist [on Bower](http://bower.io/search/).  |
-| `/helpers/widget.pkg/widget.nuspec`  | [NuGet package file (nuspec)](https://docs.nuget.org/create/nuspec-reference) (optional). We recommend providing this unless your helper depends on a JavaScript and/or CSS module that does not exist on [NuGet Gallery](https://www.nuget.org/).  |
+| `/helpers/widget.pkg/nuget.nuspec`  | [NuGet package file (nuspec)](https://docs.nuget.org/create/nuspec-reference) (optional). We recommend providing this unless your helper depends on a JavaScript and/or CSS module that does not exist on [NuGet Gallery](https://www.nuget.org/).  |
 | `/helpers/widget.pkg/package.json`  | [NPM package file](https://docs.npmjs.com/files/package.json) (optional). We recommend providing this unless your helper depends on a JavaScript and/or CSS module that does not exist on [NPM](https://www.npmjs.com/).  |
 | `/helpers/widget.pkg/LICENSE`  | License file (optional). If not provided, the MIT license file in the root of the project will be copied into your module.  |
 
@@ -81,6 +83,11 @@ Versioning of all helpers and dialogs will automatically be synced with Dirty Fo
 | `/dialogs/widget.js`  | Dialog code file (required) (must follow the UMD)  |
 | `/dialogs/widget.pkg/README.md`  | Readme for your dialog (required). Please provide a description, complete instructions on how to obtain and use the module, its prerequisites, and how to install/reference via CDN. Note that if you use package managers, you can provide dependency information and the prerequisites can be installed automatically, so the documentation will be simpler.  |
 | `/dialogs/widget.pkg/bower.json`  | [Bower package file](http://bower.io/docs/creating-packages/) (optional). We recommend providing this unless your dialog depends on a JavaScript and/or CSS module that does not exist [on Bower](http://bower.io/search/).  |
-| `/dialogs/widget.pkg/widget.nuspec`  | [NuGet package file (nuspec)](https://docs.nuget.org/create/nuspec-reference) (optional). We recommend providing this unless your dialog depends on a JavaScript and/or CSS module that does not exist on [NuGet Gallery](https://www.nuget.org/).  |
+| `/dialogs/widget.pkg/nuget.nuspec`  | [NuGet package file (nuspec)](https://docs.nuget.org/create/nuspec-reference) (optional). We recommend providing this unless your dialog depends on a JavaScript and/or CSS module that does not exist on [NuGet Gallery](https://www.nuget.org/).  |
 | `/dialogs/widget.pkg/package.json`  | [NPM package file](https://docs.npmjs.com/files/package.json) (optional). We recommend providing this unless your dialog depends on a JavaScript and/or CSS module that does not exist on [NPM](https://www.npmjs.com/).  |
 | `/dialogs/widget.pkg/LICENSE`  | License file (optional). If not provided, the MIT license file in the root of the project will be copied into your module.  |
+
+
+#### Submodules
+
+We distribute the packages through the use of Git submodules. There is no need for you to add a submodule to your contribution, we will do that for you (one that we own). But do note that the readme will be automatically copied to the distribution repository (submodule) when we do a build.
