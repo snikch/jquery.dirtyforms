@@ -16,8 +16,8 @@ Existing solutions were not flexible enough, so I wrote this to make sure that a
 
 The jQuery .on() method (or .delegate() method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
 
-Prerequisites
----------------------------------
+## Prerequisites
+
 - [jQuery](http://jquery.com) (>= 1.4.2)
 - [jquery.facebox](https://github.com/NightOwl888/facebox) (>= 1.2.0) 
 
@@ -86,9 +86,8 @@ jquery.dirtyforms.min.js.map
 
 For NuGet, this file is not included in the package, but you can get it from [here](https://github.com/NightOwl888/jquery.dirtyforms.dist/blob/master/jquery.dirtyforms.min.js.map) if you really need it.
 
+## Usage
 
-Usage
----------------------------------
 ```javascript
 // Enable for all forms
 $('form').dirtyForms();
@@ -107,8 +106,8 @@ $('form:dirty');
 $('form:dirtylistening');
 ```
 
-Options
----------------------------------
+## Options
+
 The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**
 
 **debug**: set to true to log messages to the firebug console (or alert if you don't have firebug).
@@ -132,8 +131,8 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 **dialog**: See Dialogs below.
 
 
-Public Methods
----------------------------------
+## Public Methods
+
 **$.DirtyForms.isDirty()** will return true if any watched elements are considered dirty.
     *Syntax:* ***if($.DirtyForms.isDirty())***
 
@@ -162,8 +161,8 @@ Public Methods
     *Syntax:* ***if($.DirtyForms.isDeciding())***
 
 
-Obsolete Public Methods
----------------------------------
+## Obsolete Public Methods
+
 **IMPORTANT**: The following methods have been completely removed from the public interface to avoid collisions with other JavaScript code. This is a **breaking change**. Please update your code before getting the current version.
 
 *decidingContinue()*
@@ -186,8 +185,8 @@ The following methods have been deprecated and will eventually be removed from d
 *$.DirtyForms.disable()* -- 
     Please use ***$('html').addClass($.DirtyForms.ignoreClass)*** instead
 
-Helpers
----------------------------------
+## Helpers
+
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
 
 This is useful when you're using replacement inputs or textarea, such as with tinymce. To enable the tinymce helper, simply include the helpers/tinymce.js file. Same goes for helpers/ckeditor.js.
@@ -251,8 +250,8 @@ The node parameter is typically an individual form element. To respect the way j
 })(jQuery);
 ```
 
-Dialogs
----------------------------------
+## Dialogs
+
 The default facebox dialog can be overriden by setting a new dialog object, and providing implementations for the following members.
 
 Methods:
@@ -398,8 +397,7 @@ You don't need to use stashing if either of the above (or both) of the items don
 
 If you have a form and link which is in a modal dialog (a modal dialog created by some other part of your application) then when the Dirty Forms modal fires, the original modal is removed. So the stash saves the content from the original modal dialog while Dirty Forms shows its modal dialog, and then re-shows the original modal dialog with the edits if the user chooses to stay on the page.
 
-Triggers
----------------------------------
+## Triggers
 
 Simply bind a function to any of these hooks to respond to the corresponding trigger.
 
@@ -432,8 +430,7 @@ These triggers are not available when used with the browser fallback dialog meth
 
 Also available is **defer.dirtyforms** for accessing elements on the page prior to the dialog box alerting the user is called, and **beforeRefire.dirtyforms**, called before the original event is refired after a user chooses to leave the page (useful if you need to do things like save data back to fields which is normally part of event propagation - ala tinyMce).
 
-Selectors
----------------------------------
+## Selectors
 
 **:dirty** will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
 
