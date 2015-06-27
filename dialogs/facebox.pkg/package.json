@@ -1,0 +1,43 @@
+{
+  "name": "jquery.dirtyforms.dialogs.facebox",
+  "version": "1.1.0",
+  "description": "A module to enable automatic Facebox dialog support when using JQuery Dirty Forms.",
+  "main": "jquery.dirtyforms.dialogs.facebox.min.js",
+  "files": [
+    "jquery.dirtyforms.dialogs.facebox.*",
+    "LICENSE*"
+  ],
+  "dependencies": {
+    "jquery.dirtyforms": ">=1.0.0",
+    "jquery.facebox": ">=1.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snikch/jquery.dirtyforms.git"
+  },
+  "keywords": [
+    "facebox",
+    "jquery",
+    "plugin",
+    "dirty",
+    "forms",
+    "confirmation",
+    "validate",
+    "validation",
+    "areyousure",
+    "jquery-plugin",
+    "ecosystem:jquery"
+  ],
+  "author": "Shad Storhaug <shad@shadstorhaug.com>",
+  "license": {
+    "type": "MIT",
+    "url": "http://www.opensource.org/licenses/mit-license.php"
+  },
+  "bugs": {
+    "url": "https://github.com/snikch/jquery.dirtyforms/issues"
+  },
+  "homepage": "https://github.com/snikch/jquery.dirtyforms#readme"
+}

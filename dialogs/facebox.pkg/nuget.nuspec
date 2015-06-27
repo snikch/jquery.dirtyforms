@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>jquery.dirtyforms.dialogs.facebox</id>
+		<title>Facebox dialog for JQuery Dirty Forms</title>
+		<version>$version$</version>
+		<authors>NightOwl888</authors>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>A module to enable automatic Facebox dialog support when using JQuery Dirty Forms.</summary>
+		<description>Dirty Forms will alert a user when they attempt to leave a page without submitting a form they have entered data into. It alerts them in a modal popup box, and also falls back to the browser's default onBeforeUnload handler for events outside the scope of the document such as, but not limited to, page refreshes and browser navigation buttons.</description>
+		<language>en-US</language>
+		<tags>facebox jquery plugin dirty forms confirmation validate validation areyousure</tags>
+		<projectUrl>https://github.com/snikch/jquery.dirtyforms</projectUrl>
+    <licenseUrl>https://github.com/snikch/jquery.dirtyforms/blob/master/LICENSE</licenseUrl>
+		<iconUrl>https://raw.githubusercontent.com/snikch/jquery.dirtyforms/master/branding/dirty-forms-icon.png</iconUrl>
+		<dependencies>
+			<dependency id="jquery.dirtyforms" version="$version$" />
+			<dependency id="jquery.facebox" version="1.4.1" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="..\..\dist\jquery.dirtyforms.dialogs.facebox\jquery.dirtyforms.dialogs.facebox.*" target="content\scripts"/>
+	</files>
+</package>
