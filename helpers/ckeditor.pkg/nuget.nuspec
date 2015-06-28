@@ -11,6 +11,7 @@
 		<language>en-US</language>
 		<tags>ckeditor jquery plugin dirty forms confirmation validate validation areyousure</tags>
 		<projectUrl>https://github.com/snikch/jquery.dirtyforms</projectUrl>
+    <licenseUrl>https://github.com/snikch/jquery.dirtyforms/blob/master/LICENSE</licenseUrl>
 		<iconUrl>https://raw.githubusercontent.com/snikch/jquery.dirtyforms/master/branding/dirty-forms-icon.png</iconUrl>
 		<dependencies>
 			<dependency id="jquery.dirtyforms" version="$version$" />
