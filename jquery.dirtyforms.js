@@ -52,9 +52,9 @@
                             }
                         };
                     };
-                    $(document).bind('keydown.facebox', close(decidingCancel));
-                    $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close(decidingCancel));
-                    $('#facebox .continue').click(close(decidingContinue));
+                    $(document).bind('keydown.facebox', close(settings.decidingCancel));
+                    $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close(settings.decidingCancel));
+                    $('#facebox .continue').click(close(settings.decidingContinue));
                 },
                 stash: function () {
                     var fb = $('#facebox');
@@ -88,20 +88,40 @@
                 settings.watchParentDocs = false;
             },
 
-            choiceCommit: function (e) {
-                choiceCommit(e);
+            choiceCommit: function (ev) {
+                if (settings.deciding) {
+                    $(document).trigger('choicecommit.dirtyforms');
+                    if (settings.choiceContinue) {
+                        settings.decidingContinue(ev);
+                    } else {
+                        settings.decidingCancel(ev);
+                    }
+                    $(document).trigger('choicecommitAfter.dirtyforms');
+                }
             },
 
             isDeciding: function () {
                 return settings.deciding;
             },
 
-            decidingContinue: function (e) {
-                decidingContinue(e);
+            decidingContinue: function (ev) {
+                clearUnload(); // fix for chrome/safari
+                ev.preventDefault();
+                settings.dialogStash = false;
+                $(document).trigger('decidingcontinued.dirtyforms');
+                refire(settings.decidingEvent);
+                settings.deciding = settings.currentForm = settings.decidingEvent = false;
             },
 
-            decidingCancel: function (e) {
-                decidingCancel(e);
+            decidingCancel: function (ev) {
+                ev.preventDefault();
+                $(document).trigger('decidingcancelled.dirtyforms');
+                if (settings.dialog !== false && settings.dialogStash !== false && typeof settings.dialog.refire === 'function') {
+                    dirtylog('Refiring the dialog with stashed content');
+                    settings.dialog.refire(settings.dialogStash.html(), ev);
+                }
+                $(document).trigger('decidingcancelledAfter.dirtyforms');
+                settings.deciding = settings.currentForm = settings.decidingEvent = settings.dialogStash = false;
             }
         }
     });
@@ -450,38 +470,6 @@
 
     var isIgnored = function ($element) {
         return $element.closest('.' + settings.ignoreClass).length > 0;
-    };
-
-    var choiceCommit = function (ev) {
-        if (settings.deciding) {
-            $(document).trigger('choicecommit.dirtyforms');
-            if (settings.choiceContinue) {
-                decidingContinue(ev);
-            } else {
-                decidingCancel(ev);
-            }
-            $(document).trigger('choicecommitAfter.dirtyforms');
-        }
-    };
-
-    var decidingCancel = function (ev) {
-        ev.preventDefault();
-        $(document).trigger('decidingcancelled.dirtyforms');
-        if (settings.dialog !== false && settings.dialogStash !== false && typeof settings.dialog.refire === 'function') {
-            dirtylog('Refiring the dialog with stashed content');
-            settings.dialog.refire(settings.dialogStash.html(), ev);
-        }
-        $(document).trigger('decidingcancelledAfter.dirtyforms');
-        settings.deciding = settings.currentForm = settings.decidingEvent = settings.dialogStash = false;
-    };
-
-    var decidingContinue = function (ev) {
-        clearUnload(); // fix for chrome/safari
-        ev.preventDefault();
-        settings.dialogStash = false;
-        $(document).trigger('decidingcontinued.dirtyforms');
-        refire(settings.decidingEvent);
-        settings.deciding = settings.currentForm = settings.decidingEvent = false;
     };
 
     var clearUnload = function () {
