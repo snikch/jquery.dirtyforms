@@ -18,7 +18,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\dist\jquery.dirtyforms.helpers.ckeditor\jquery.dirtyforms.helpers.ckeditor.js" target="content\scripts"/>
-		<file src="..\..\dist\jquery.dirtyforms.helpers.ckeditor\jquery.dirtyforms.helpers.ckeditor.min.js" target="content\scripts"/>
+    <file src="..\..\dist\jquery.dirtyforms.helpers.ckeditor\jquery.dirtyforms.helpers.ckeditor.*" target="content\scripts"/>
 	</files>
 </package>

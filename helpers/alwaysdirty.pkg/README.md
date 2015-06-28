@@ -75,13 +75,11 @@ A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-
 
 #### Package Managers
 
-NPM or Bower will install the file into the destination directory.
+NPM, Bower, and NuGet will install the SourceMap file into the destination directory.
 
 ```
 jquery.dirtyforms.helpers.alwaysdirty.min.js.map
 ```
-
-For NuGet, this file is not included in the package, but you can get it from [here](https://github.com/NightOwl888/jquery.dirtyforms.helpers.alwaysdirty.dist/blob/master/jquery.dirtyforms.helpers.alwaysdirty.min.js.map) if you really need it.
 
 ## Usage
 

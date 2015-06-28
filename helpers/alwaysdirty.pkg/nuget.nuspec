@@ -17,7 +17,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\dist\jquery.dirtyforms.helpers.alwaysdirty\jquery.dirtyforms.helpers.alwaysdirty.js" target="content\scripts"/>
-		<file src="..\..\dist\jquery.dirtyforms.helpers.alwaysdirty\jquery.dirtyforms.helpers.alwaysdirty.min.js" target="content\scripts"/>
+		<file src="..\..\dist\jquery.dirtyforms.helpers.alwaysdirty\jquery.dirtyforms.helpers.alwaysdirty.*" target="content\scripts"/>
 	</files>
 </package>
