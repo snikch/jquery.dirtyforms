@@ -106,6 +106,36 @@ $('form:dirty');
 $('form:dirtylistening');
 ```
 
+## Ignoring Things
+
+Simply add the value of `$.DirtyForms.ignoreClass` to any elements you wish to ignore, and Dirty Forms will ignore them.
+
+```javascript
+$('#ignored-element').addClass($.DirtyForms.ignoreClass);
+```
+
+If you want to ignore more than one element at a time, you can add the value of `$.DirtyForms.ignoreClass` (with the default value `dirtyignore`) to a containing element.
+
+```HTML
+<div class="dirtyignore">
+
+    <!-- Everything here will be ignored - anchor, input, textarea, and select -->
+
+</div>
+```
+
+And of course that means if you ignore the topmost element on the page, you will effectively disable Dirty Forms.
+
+```
+$('html').addClass($.DirtyForms.ignoreClass);
+```
+
+You can re-enable elements so Dirty Forms watches them again simply by removing the ignore class.
+
+```
+$('html').removeClass($.DirtyForms.ignoreClass);
+```
+
 ## Options
 
 The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**
