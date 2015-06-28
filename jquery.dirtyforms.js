@@ -426,18 +426,6 @@
             return true;
         }
 
-        if (settings.dialog) {
-            settings.deciding = true;
-            settings.decidingEvent = ev;
-            dirtylog('Setting deciding active');
-
-            if (typeof settings.dialog.stash === 'function') {
-                dirtylog('Saving dialog content');
-                settings.dialogStash = settings.dialog.stash();
-                dirtylog(settings.dialogStash);
-            }
-        }
-
         // Callback for page access in current state
         $(document).trigger('defer.dirtyforms');
 
@@ -446,6 +434,17 @@
             return settings.message;
         }
         if (!settings.dialog) return;
+
+        // Using the GUI dialog...
+        settings.deciding = true;
+        settings.decidingEvent = ev;
+        dirtylog('Setting deciding active');
+
+        if (typeof settings.dialog.stash === 'function') {
+            dirtylog('Saving dialog content');
+            settings.dialogStash = settings.dialog.stash();
+            dirtylog(settings.dialogStash);
+        }
 
         ev.preventDefault();
         ev.stopImmediatePropagation();
