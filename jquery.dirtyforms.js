@@ -136,34 +136,15 @@
         },
         // Returns true if any of the supplied elements are dirty
         isDirty: function () {
-            var isDirty = false,
-                node = this;
-            if (focusedIsDirty()) {
-                isDirty = true;
-                return true;
+            if (focusedIsDirty() || this.hasClass(settings.dirtyClass)) return true;
+
+            var helpers = settings.helpers;
+            for (var i = 0; i < helpers.length; i++) {
+                if ('isDirty' in helpers[i] && helpers[i].isDirty(this)) {
+                    return true;
+                }
             }
-            this.each(function (e) {
-                if ($(this).hasClass(settings.dirtyClass)) {
-                    isDirty = true;
-                    // Return false to break out of the .each() function
-                    return false;
-                }
-            });
-            // Skip helpers if we are already dirty.
-            if (isDirty) return true;
-
-            $.each(settings.helpers, function (key, obj) {
-                if ("isDirty" in obj) {
-                    if (obj.isDirty(node)) {
-                        isDirty = true;
-                        // Return false to break out of the .each() function
-                        return false;
-                    }
-                }
-            });
-
-            dirtylog('isDirty returned ' + isDirty);
-            return isDirty;
+            return false;
         },
         // Marks the element(s) that match the selector (and their parent form) dirty
         setDirty: function () {
