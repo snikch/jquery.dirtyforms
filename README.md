@@ -39,9 +39,6 @@ The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.
 ## Prerequisites
 
 - [jQuery](http://jquery.com) (>= 1.4.2)
-- [jquery.facebox](https://github.com/NightOwl888/facebox) (>= 1.2.0) 
-
-**NOTE:** If you set `$.DirtyForms.dialog = false;`, you can remove facebox as a prerequisite. See the [Dialogs](#dialogs) section for details about interoperability with other dialogs.
 
 > If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
 
@@ -54,9 +51,9 @@ Dirty Forms is available over jsDelivr CDN and can directly included to every pa
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.2.3/jquery.dirtyforms.min.js"></script>
 ```
 
-jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, and jquery.dirtyforms in one request.
+jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery and jquery.dirtyforms in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,jquery.dirtyforms@1.2.3"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.dirtyforms@1.2.3"></script>
 ```
 
 #### Self-Hosted
@@ -167,7 +164,7 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 | **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
 | **choiceContinue**  | bool  | `false`  | Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until `choiceCommit()` is called.  |  
 | **helpers** | string  | `[]`  | An array for helper objects. See [Helpers](#helpers) below.  |  
-| **dialog**  | string  | A Facebox dialog object  | An object that will be used to fire the JavaScript/CSS dialog. See [Dialogs](#dialogs) below.  |  
+| **dialog**  | string  | `false`  | An object that will be used to fire the JavaScript/CSS dialog. See [Dialogs](#dialogs) below.  |  
 | **debug**  | bool  | `false`   | Set to true to log messages to the console (or firebug). If your browser doesn't support this, there will be alerts instead.  |  
 
 > **NOTE:** **debug** is not available in the minified version. If you need to turn this on, be sure to switch the file reference to the uncompressed `jquery.dirtyforms.js` file. 
@@ -416,7 +413,7 @@ See the [TinyMCE Helper Source Code](https://github.com/snikch/jquery.dirtyforms
 
 ## Dialogs
 
-The default facebox dialog can be overriden by setting a new dialog object, and providing implementations for the following members.
+The default browser dialog can be overriden by setting a new dialog object, and providing implementations for the following members.
 
 #### `fire(message, title)` (Required)
 

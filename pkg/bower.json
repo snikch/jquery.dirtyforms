@@ -30,7 +30,6 @@
     ".git"
   ],
   "dependencies": {
-    "jquery": ">= 1.4.2",
-    "jquery.facebox": ">=1.2.0"
+    "jquery": ">= 1.4.2"
   }
 }

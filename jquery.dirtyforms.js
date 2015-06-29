@@ -36,39 +36,7 @@
             ignoreClass: 'ignoredirty',
             choiceContinue: false,
             helpers: [],
-            dialog: {
-                selector: '#facebox .content',
-                fire: function (message, title) {
-                    var content = '<h1>' + title + '</h1><p>' + message + '</p><p><a href="#" class="ignoredirty button medium red continue">Continue</a><a href="#" class="ignoredirty button medium cancel">Stop</a></p>';
-                    $.facebox(content);
-                },
-                bind: function () {
-                    var close = function (decision) {
-                        return function (e) {
-                            if (e.type !== 'keydown' || (e.type === 'keydown' && e.which === 27)) {
-                                // Facebox hack: If we call close when returning from the stash, the
-                                // stash dialog will close, so we guard against calling close in that case. 
-                                if (!settings.dialogStash) {
-                                    $(document).trigger('close.facebox');
-                                }
-                                decision(e);
-                            }
-                        };
-                    };
-                    $(document).bind('keydown.facebox', close(settings.decidingCancel));
-                    $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close(settings.decidingCancel));
-                    $('#facebox .continue').click(close(settings.decidingContinue));
-                },
-                stash: function () {
-                    var fb = $('#facebox');
-                    return ($.trim(fb.html()) === '' || fb.css('display') != 'block') ?
-					   false :
-					   $('#facebox .content').clone(true);
-                },
-                refire: function (content, ev) {
-                    $.facebox(content);
-                }
-            },
+            dialog: false,
             /*<log>*/
             debug: false,
 

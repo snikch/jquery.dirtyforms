@@ -8,8 +8,7 @@
     "LICENSE*"
   ],
   "dependencies": {
-    "jquery": ">=1.4.2",
-    "jquery.facebox": ">=1.2.0"
+    "jquery": ">=1.4.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
