@@ -39,7 +39,6 @@
             dialog: false,
             /*<log>*/
             debug: false,
-
             dirtylog: function (msg) {
                 dirtylog(msg);
             },
@@ -214,10 +213,6 @@
         dialogStash: false,
         deciding: false,
         decidingEvent: false,
-        /*<log>*/
-        hasFirebug: "console" in window && "firebug" in window.console,
-        hasConsoleLog: "console" in window && "log" in window.console,
-        /*</log>*/
         focused: { "element": false, "value": false }
     }, $.DirtyForms);
 
@@ -248,20 +243,6 @@
         return settings.focused.element &&
 			(settings.focused.element.val() !== settings.focused.value);
     };
-
-    /*<log>*/
-    var dirtylog = function (msg) {
-        if (!settings.debug) return;
-        msg = "[DirtyForms] " + msg;
-        if (settings.hasFirebug) {
-            console.log(msg);
-        } else if (settings.hasConsoleLog) {
-            window.console.log(msg);
-        } else {
-            alert(msg);
-        }
-    };
-    /*</log>*/
 
     var bindExit = function () {
         if (settings.exitBound) return;
@@ -441,5 +422,21 @@
             target.trigger(e.type);
         }
     };
+
+    /*<log>*/
+    var dirtylog = function (msg) {
+        if (!settings.debug) return;
+        var hasFirebug = 'console' in window && 'firebug' in window.console,
+            hasConsoleLog = 'console' in window && 'log' in window.console;
+        msg = '[DirtyForms] ' + msg;
+        if (hasFirebug) {
+            console.log(msg);
+        } else if (hasConsoleLog) {
+            window.console.log(msg);
+        } else {
+            alert(msg);
+        }
+    };
+    /*</log>*/
 
 }));
