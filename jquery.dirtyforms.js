@@ -287,26 +287,17 @@
 
     var onReset = function () {
         $(this).parents('form').dirtyForms('setClean');
-        if (settings.onFormCheck) {
-            settings.onFormCheck();
-        }
     };
 
     var onSelectionChange = function () {
         if (isIgnored($(this))) return;
         $(this).dirtyForms('setDirty');
-        if (settings.onFormCheck) {
-            settings.onFormCheck();
-        }
     };
 
     var onFocus = function () {
         var $this = $(this);
         if (focusedIsDirty() && !isIgnored($this)) {
             settings.focused.element.dirtyForms('setDirty');
-            if (settings.onFormCheck) {
-                settings.onFormCheck();
-            }
         }
         settings.focused.element = $this;
         settings.focused.value = $this.val();
