@@ -161,14 +161,6 @@
                         return false;
                     }
                 }
-                // For backward compatibility, we call isNodeDirty (deprecated)
-                if ("isNodeDirty" in obj) {
-                    if (obj.isNodeDirty(node)) {
-                        isDirty = true;
-                        // Return false to break out of the .each() function
-                        return false;
-                    }
-                }
             });
 
             dirtylog('isDirty returned ' + isDirty);
