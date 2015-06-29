@@ -78,10 +78,9 @@
             decidingContinue: function (ev) {
                 clearUnload(); // fix for chrome/safari
                 ev.preventDefault();
-                settings.dialogStash = false;
                 $(document).trigger('decidingcontinued.dirtyforms');
                 refire(settings.decidingEvent);
-                settings.deciding = settings.decidingEvent = false;
+                clearDecidingState();
             },
 
             decidingCancel: function (ev) {
@@ -92,7 +91,7 @@
                     settings.dialog.refire(settings.dialogStash.html(), ev);
                 }
                 $(document).trigger('decidingcancelledAfter.dirtyforms');
-                settings.deciding = settings.decidingEvent = settings.dialogStash = false;
+                clearDecidingState();
             }
         }
     });
@@ -232,6 +231,10 @@
         /*</log>*/
         focused: { "element": false, "value": false }
     }, $.DirtyForms);
+
+    var clearDecidingState = function () {
+        settings.deciding = settings.decidingEvent = settings.dialogStash = false;
+    };
 
     var onReset = function () {
         $(this).parents('form').dirtyForms('setClean');
