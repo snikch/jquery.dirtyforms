@@ -114,7 +114,8 @@ gulp.task('uglify', ['clean', 'test'], function () {
         }))
         .pipe(uglify({
             outSourceMap: true,
-            sourceRoot: '/'
+            sourceRoot: '/',
+            preserveComments: 'some'
         }))
         .pipe(gulp.dest(settings.dest))
         .pipe(sourcemaps.write('.', {
@@ -250,7 +251,15 @@ gulp.task('bump-version', function () {
     }
 });
 
-gulp.task('bump-readme-version', ['bump-version'], function () {
+gulp.task('bump-source-version', /*['bump-version'],*/ function () {
+    return gulp.src(settings.src, { base: './' })
+        // Replace the version number in the header comment
+        // and in the CDN URLs
+        .pipe(replace(eval('/v\\s*?\\d+\\.\\d+\\.\\d+(?:-\\w+)?/g'), 'v' + settings.version))
+        .pipe(gulp.dest('.'));
+});
+
+gulp.task('bump-readme-version', ['bump-source-version'], function () {
     return gulp.src(settings.src_readme_files, { base: './' })
         // Replace the version number in the CDN URLs
         .pipe(replace(eval('/\\/' + settings.baseProject + '\\/\\d+\\.\\d+\\.\\d+(?:-\\w+)?\\//g'), '/' + settings.baseProject + '/' + settings.version + '/'))
