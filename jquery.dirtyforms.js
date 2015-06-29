@@ -218,18 +218,6 @@
         }
     };
 
-    // Deprecated Methods for Backward Compatibility
-    // DO NOT ADD MORE METHODS LIKE THESE, ADD METHODS WHERE INDICATED ABOVE
-    $.fn.setDirty = function () {
-        return this.dirtyForms('setDirty');
-    };
-    $.fn.isDirty = function () {
-        return this.dirtyForms('isDirty');
-    };
-    $.fn.cleanDirty = function () {
-        return this.dirtyForms('setClean');
-    };
-
     // Private Properties and Methods
     var settings = $.DirtyForms = $.extend({
         watchParentDocs: true,
