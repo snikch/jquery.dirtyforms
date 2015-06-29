@@ -113,7 +113,7 @@
                 settings.dialogStash = false;
                 $(document).trigger('decidingcontinued.dirtyforms');
                 refire(settings.decidingEvent);
-                settings.deciding = settings.currentForm = settings.decidingEvent = false;
+                settings.deciding = settings.decidingEvent = false;
             },
 
             decidingCancel: function (ev) {
@@ -124,7 +124,7 @@
                     settings.dialog.refire(settings.dialogStash.html(), ev);
                 }
                 $(document).trigger('decidingcancelledAfter.dirtyforms');
-                settings.deciding = settings.currentForm = settings.decidingEvent = settings.dialogStash = false;
+                settings.deciding = settings.decidingEvent = settings.dialogStash = false;
             }
         }
     });
@@ -278,7 +278,6 @@
         dialogStash: false,
         deciding: false,
         decidingEvent: false,
-        currentForm: false,
         /*<log>*/
         hasFirebug: "console" in window && "firebug" in window.console,
         hasConsoleLog: "console" in window && "log" in window.console,
@@ -338,11 +337,11 @@
         var inIframe = (top !== self);
 
         $(document).on('click', 'a[href]', aBindFn)
-                   .on('submit', 'form', formBindFn);
+                   .on('submit', 'form', bindFn);
         $(window).bind('beforeunload', beforeunloadBindFn);
         if (settings.watchParentDocs && inIframe) {
             $(top.document).on('click', 'a[href]', aBindFn)
-                           .on('submit', 'form', formBindFn);
+                           .on('submit', 'form', bindFn);
             $(top.window).bind('beforeunload', beforeunloadBindFn);
         }
 
@@ -364,11 +363,6 @@
         if (!$(this).is(getIgnoreAnchorSelector()) && !isDifferentTarget($(this))) {
             bindFn(ev);
         }
-    };
-
-    var formBindFn = function (ev) {
-        settings.currentForm = this;
-        bindFn(ev);
     };
 
     var beforeunloadBindFn = function (ev) {
