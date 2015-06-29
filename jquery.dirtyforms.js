@@ -165,11 +165,17 @@
             dirtylog('isDirty returned ' + isDirty);
             return isDirty;
         },
-        // Marks the element(s) that match the selector dirty
+        // Marks the element(s) that match the selector (and their parent form) dirty
         setDirty: function () {
             dirtylog('setDirty called');
             return this.each(function (e) {
-                $(this).addClass(settings.dirtyClass).parents('form').addClass(settings.dirtyClass);
+                var $form = $(this).closest('form');
+                var changed = !$form.hasClass(settings.dirtyClass);
+                $(this).addClass(settings.dirtyClass);
+                if (changed) {
+                    $form.addClass(settings.dirtyClass)
+                         .trigger('dirty.dirtyforms', [$form]);
+                }
             });
         },
         // "Cleans" this dirty form by essentially forgetting that it is dirty
@@ -180,26 +186,28 @@
             return this.each(function (e) {
                 var node = this, $node = $(this);
 
-                // remove the current dirty class
-                $node.removeClass(settings.dirtyClass);
-
-                if ($node.is('form')) {
-                    // remove all dirty classes from children
-                    $node.find(':dirty').removeClass(settings.dirtyClass);
-                } else {
-                    // if this is last dirty child, set form clean
-                    var $form = $node.parents('form');
-                    if ($form.find(':dirty').length === 0) {
-                        $form.removeClass(settings.dirtyClass);
-                    }
-                }
-
                 // Clean helpers
                 $.each(settings.helpers, function (key, obj) {
                     if ("setClean" in obj) {
                         obj.setClean(node);
                     }
                 });
+
+                // remove the current dirty class
+                $node.removeClass(settings.dirtyClass);
+
+                if ($node.is('form')) {
+                    // remove all dirty classes from children
+                    $node.find(':dirty').removeClass(settings.dirtyClass);
+                    $node.trigger('clean.dirtyforms', [$node]);
+                } else {
+                    // if this is last dirty child, set form clean
+                    var $form = $node.parents('form');
+                    if ($form.find(':dirty').length === 0 && $form.hasClass(settings.dirtyClass)) {
+                        $form.removeClass(settings.dirtyClass)
+                             .trigger('clean.dirtyforms', [$form]);
+                    }
+                }
             });
         }
 

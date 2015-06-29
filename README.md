@@ -252,6 +252,10 @@ $(document).bind('choicecommit.dirtyforms', function() {
 });
 ```
 
+**dirty.dirtyforms**: Raised when a form changes from clean state to dirty state. Passes the form (a jQuery object) as the first parameter.
+
+**clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')`. Passes the form (a jQuery object) as the first parameter.
+
 **decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
 
 **decidingcancelledAfter.dirtyforms**: Raised when the *decidingCancel()* method is called after it runs all actions.
