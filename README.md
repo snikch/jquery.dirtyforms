@@ -12,25 +12,27 @@ Oh, and it's pretty easy to use.
 $('form').dirtyForms();
 ```
 
-Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack.
+Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack (except of course for Dirty Forms [helpers](#helpers) and [dialog modules](#dialogs)).
 
-The jQuery .on() method (or .delegate() method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
+The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
 
 ## Features
 
+- Supports multiple forms.
 - Works on forms of any size.
 - Wide browser support.
 - Works with your existing dialog framework for the best user experience (optional).
 - Falls back to the browser's dialog (if the browser supports it).
 - Pluggable helper system that reads and updates the dirty state of common rich text editor frameworks (optional).
-- Small size (about 6k when minified).
-- Universal Module Definition (UMD) support for AMD, JSCommon, Browserify, etc.
+- IFrame support (Fires the dialog when the page that references Dirty Forms is hosted within an IFrame).
+- Small size (about 6 KB minified).
+- Universal Module Definition (UMD) support for AMD, Node/CommonJS, Browserify, etc.
 - Hosted on jsDelivr CDN for easy combining of modules into a single HTTP request.
 
 ## Supported Browsers
 
 - IE 8+
-- Google Chrome (all versions since 2010)
+- Google Chrome 1+
 - Firefox 4+
 - Safari 5+
 
@@ -203,37 +205,55 @@ Marks the provided form or element as clean. In other words, removes the `dirtyC
 
 #### `$.DirtyForms.choiceCommit( event )`
 
-This method should be called after the dialog is closed to commit the choice that was specified in *$.DirtyForms.choiceContinue*. This method will cascade the call to either `$.DirtyForms.decidingContinue()` or `$.DirtyForms.decidingCancel()` automatically, so there is no need to use them in conjunction with this method. An event object is required to be passed as a parameter. See the [Dialogs](#dialogs) section for an example of how to use this method.
+This method should be called after the dialog is closed to commit the choice that was specified in `$.DirtyForms.choiceContinue()`. This method will cascade the call to either `$.DirtyForms.decidingContinue()` or `$.DirtyForms.decidingCancel()` automatically, so there is no need to use them in conjunction with this method.
+
+##### event (Required)
+
+A cancelable event.
+
+> See the [Dialogs](#dialogs) section for an example of how to use this method.
 
 
 #### `$.DirtyForms.decidingContinue( event )`
 
-This method should be called from the dialog to refire the event and continue following the link or button that was clicked. An event object is required to be passed as a parameter.
+This method should be called from the dialog to refire the event and continue following the link or button that was clicked.
+
+##### event (Required)
+
+A cancelable event.
+
+> See the [Dialogs](#dialogs) section for an example of how to use this method.
 
 
 #### `$.DirtyForms.decidingCancel( event )`
 
-This method should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. An event object is required to be passed as a parameter. Note that this method will automatically cancel the event.
+This method should be called from the dialog to indicate not to move on to the page of the button or link that was clicked. Note that this method will automatically cancel the event.
+
+##### event (Required)
+
+A cancelable event.
+
+> See the [Dialogs](#dialogs) section for an example of how to use this method.
 
 
 #### `$.DirtyForms.isDeciding()`
 
-This method will return true if the dialog has fired and neither `$.DirtyForms.decidingCancel()` or `$.DirtyForms.decidingContinue()` has yet been called.
+This method will return true if the dialog has fired and neither `$.DirtyForms.decidingCancel()` or `$.DirtyForms.decidingContinue()` has yet been called. It indicates that the dialog has fired, but the user has not yet made a decision.
 
 
 #### `$('form#my-watched-form').isDirty()` (Deprecated)
 
-Please use `$('form#my-watched-form').dirtyForms('isDirty')` instead.
+Please use [`$('form#my-watched-form').dirtyForms('isDirty')`](#var-isdirty--formmy-watched-formdirtyformsisdirty) instead.
 
 
 #### `$('form#my-watched-form').setDirty()` (Deprecated)
 
-Please use `$('form#my-watched-form').dirtyForms('setDirty')` instead.
+Please use [`$('form#my-watched-form').dirtyForms('setDirty')`](#formmy-watched-formdirtyformssetdirty) instead.
 
 
 #### `$('form#my-watched-form').cleanDirty()` (Deprecated)
 
-Please use `$('form#my-watched-form').dirtyForms('setClean')` instead.
+Please use [`$('form#my-watched-form').dirtyForms('setClean')`](#formmy-watched-formdirtyformssetclean) instead.
 
 
 #### `$.DirtyForms.disable()` (Deprecated)
@@ -246,7 +266,7 @@ Simply bind a function to any of these hooks to respond to the corresponding tri
 
 ```javascript
 $(document).bind('choicecommit.dirtyforms', function() { 
-    ...stuff to do before commiting the user's choice... 
+    // ...stuff to do before commiting the user's choice... 
 });
 ```
 
@@ -301,9 +321,9 @@ Helpers can be created by implementing and then pushing the helper to the `$.Dir
 $.DirtyForms.helpers.push(myHelper);
 ```
 
-##### Members (All Optional)
+##### Members
 
-#### `isDirty( form )`
+#### `isDirty( form )` (Optional)
 
 Should return the dirty status of the helper. You can use jQuery to select all of the helpers within the form and test their dirty status.
 
@@ -326,7 +346,7 @@ isDirty: function (form) {
 ```
 
 
-#### `setClean( form )`
+#### `setClean( form )` (Optional)
 
 Should reset the dirty status of the helper so `isDirty(form)` will return false the next time it is called.
 
@@ -344,7 +364,7 @@ setClean: function (form) {
 }
 ```
 
-#### `ignoreAnchorSelector` (Property)
+#### `ignoreAnchorSelector` (Optional Property)
 
 A jQuery selector of any anchor elements to exclude from activating the dialog. Non-anchors will be ignored. This works similarly to putting the ignoreClass on a specific anchor, but will always ignore the anchors if your helper is included.
 
@@ -447,21 +467,29 @@ $(document).keydown(function(e) {
 
 Stash returns the current contents of a dialog to be refired after the confirmation. Use to store the current dialog (from the application), when it's about to be replaced with the confirmation dialog. This function can be omitted (or return false) if you don't wish to stash anything.
 
-See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
+> See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
 
 
-#### `refire(content, ev)` (Optional)
+#### `refire(content, event)` (Optional)
 
 Refire handles closing an existing dialog AND fires a new one. You can omit this method (or return false) if you don't need to use stashing/refiring.
 
-See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
+##### content
+
+A string containing the HTML of the object that was placed in the stash.
+
+##### event
+
+The event that triggered the refire (typically a button or anchor click).
+
+> See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
 
 
 #### `selector` (Optional Property)
 
-A jQuery selector used to select the element that will be cloned and put into the stash. This should be a class or id of a modal dialog with a form in it, not the dialog that Dirty Forms will show its confirmation message in.
+A jQuery selector used to select the element that will be cloned and put into the stash. This should be a class or id of a modal dialog with a form in it, not the dialog that Dirty Forms will show its confirmation message in. This property can be omitted if you are not using stashing.
 
-See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
+> See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
 
 
 #### `continueButtonText` (Optional Property)
