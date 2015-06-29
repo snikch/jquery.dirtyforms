@@ -1,5 +1,7 @@
 /*!
-	Copyright 2010 Mal Curtis
+Dirty Forms jQuery Plugin | v1.2.0 | github.com/snikch/jquery.dirtyforms
+(c) 2010-2015 Mal Curtis
+License MIT
 */
 
 // Support for UMD: https://github.com/umdjs/umd/blob/master/jqueryPluginCommonjs.js

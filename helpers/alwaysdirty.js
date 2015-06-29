@@ -1,3 +1,9 @@
+/*!
+Always dirty helper module (for jQuery Dirty Forms) | v1.2.0 | github.com/snikch/jquery.dirtyforms
+(c) 2015 Mal Curtis
+License MIT
+*/
+
 // Example helper, the form is always considered dirty
 
 // Support for UMD: https://github.com/umdjs/umd/blob/master/jqueryPluginCommonjs.js
