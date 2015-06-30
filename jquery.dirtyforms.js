@@ -87,7 +87,7 @@ License MIT
             decidingCancel: function (ev) {
                 ev.preventDefault();
                 $(document).trigger('decidingcancelled.dirtyforms');
-                if (settings.dialog !== false && settings.dialogStash !== false && typeof settings.dialog.refire === 'function') {
+                if (settings.dialog && settings.dialogStash && $.isFunction(settings.dialog.refire)) {
                     dirtylog('Refiring the dialog with stashed content');
                     settings.dialog.refire(settings.dialogStash.html(), ev);
                 }
@@ -358,7 +358,7 @@ License MIT
         settings.decidingEvent = ev;
         dirtylog('Setting deciding active');
 
-        if (typeof settings.dialog.stash === 'function') {
+        if ($.isFunction(settings.dialog.stash)) {
             dirtylog('Saving dialog content');
             settings.dialogStash = settings.dialog.stash();
             dirtylog(settings.dialogStash);
@@ -376,7 +376,7 @@ License MIT
 
         dirtylog('Deferring to the dialog');
         settings.dialog.fire(settings.message, settings.title);
-        if (typeof settings.dialog.bind === 'function')
+        if ($.isFunction(settings.dialog.bind))
             settings.dialog.bind();
     };
 
