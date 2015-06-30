@@ -340,18 +340,19 @@
         settings.exitBound = true;
     };
 
-    var ignoredByHelpers = function () {
-        var $ignored = $();
+    var getIgnoreAnchorSelector = function () {
+        var result = '';
         $.each(settings.helpers, function (key, obj) {
             if ("ignoreAnchorSelector" in obj) {
-                $ignored = $ignored.add(obj.ignoreAnchorSelector);
+                if (result.length > 0) { result += ','; }
+                result += obj.ignoreAnchorSelector;
             }
         });
-        return $ignored;
+        return result;
     };
 
     var aBindFn = function (ev) {
-        if (!$(this).is(ignoredByHelpers()) && !isDifferentTarget($(this))) {
+        if (!$(this).is(getIgnoreAnchorSelector()) && !isDifferentTarget($(this))) {
             bindFn(ev);
         }
     };
