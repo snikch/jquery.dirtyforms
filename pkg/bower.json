@@ -1,7 +1,7 @@
 {
   "name": "jquery.dirtyforms",
   "main": "jquery.dirtyforms.min.js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "homepage": "https://github.com/snikch/jquery.dirtyforms",
   "authors": [
     "Mal Curtis <mal@mal.co.nz>",
