@@ -124,12 +124,9 @@ License MIT
                 settings.focused.value = $focused.val();
             }
 
-            return this.each(function (e) {
-                var $form = $(this);
-                if (!$form.is('form')) return;
-
-                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
-                $form.addClass(settings.listeningClass)
+            return this.filter('form').each(function () {
+                dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
+                $(this).addClass(settings.listeningClass)
                     .on('focus change', inputSelector, onFocus)
                     .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
                     .on('click', "input[type='reset']", onReset);
