@@ -147,7 +147,7 @@ License MIT
         // Marks the element(s) that match the selector (and their parent form) dirty
         setDirty: function () {
             dirtylog('setDirty called');
-            return this.each(function (e) {
+            return this.each(function () {
                 var $form = $(this).closest('form');
                 var changed = !$form.hasClass(settings.dirtyClass);
                 $(this).addClass(settings.dirtyClass);
@@ -162,7 +162,7 @@ License MIT
             dirtylog('setClean called');
             settings.focused = { element: false, value: false };
 
-            return this.each(function (e) {
+            return this.each(function () {
                 var node = this, $node = $(this);
 
                 // Clean helpers
