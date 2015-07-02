@@ -28,82 +28,16 @@ License MIT
         };
     }
 
-    // Public General Plugin methods $.DirtyForms
-    $.DirtyForms = {
-        message: 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
-        title: 'Are you sure you want to do that?',
-        dirtyClass: 'dirty',
-        listeningClass: 'dirtylisten',
-        ignoreClass: 'ignoredirty',
-        choiceContinue: false,
-        helpers: [],
-        dialog: false,
-        /*<log>*/
-        debug: false,
-        dirtylog: function (msg) {
-            dirtylog(msg);
-        },
-        /*</log>*/
-
-        isDirty: function () {
-            return $(':dirtylistening').dirtyForms('isDirty');
-        },
-
-        // DEPRECATED: Duplicate functionality.
-        // Use $('html').addClass($.DirtyForms.ignoreClass); instead.
-        disable: function () {
-            $('html').addClass(settings.ignoreClass);
-        },
-
-        ignoreParentDocs: function () {
-            settings.watchParentDocs = false;
-        },
-
-        choiceCommit: function (ev) {
-            if (settings.deciding) {
-                $(document).trigger('choicecommit.dirtyforms');
-                if (settings.choiceContinue) {
-                    settings.decidingContinue(ev);
-                } else {
-                    settings.decidingCancel(ev);
-                }
-                $(document).trigger('choicecommitAfter.dirtyforms');
-            }
-        },
-
-        isDeciding: function () {
-            return settings.deciding;
-        },
-
-        decidingContinue: function (ev) {
-            clearUnload(); // fix for chrome/safari
-            ev.preventDefault();
-            $(document).trigger('decidingcontinued.dirtyforms');
-            refire(settings.decidingEvent);
-            clearDecidingState();
-        },
-
-        decidingCancel: function (ev) {
-            ev.preventDefault();
-            $(document).trigger('decidingcancelled.dirtyforms');
-            if (settings.dialog && settings.dialogStash && $.isFunction(settings.dialog.refire)) {
-                dirtylog('Refiring the dialog with stashed content');
-                settings.dialog.refire(settings.dialogStash.html(), ev);
-            }
-            $(document).trigger('decidingcancelledAfter.dirtyforms');
-            clearDecidingState();
+    $.fn.dirtyForms = function (method) {
+        // Method calling logic
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + method + ' does not exist on jQuery.dirtyForms');
         }
     };
-
-    // Create a custom selector $('form:dirty')
-    $.extend($.expr[":"], {
-        dirtylistening: function (a) {
-            return $(a).hasClass(settings.listeningClass);
-        },
-        dirty: function (a) {
-            return $(a).hasClass(settings.dirtyClass);
-        }
-    });
 
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
@@ -187,18 +121,82 @@ License MIT
                 }
             });
         }
-
-        // ADD NEW METHODS HERE
     };
 
-    $.fn.dirtyForms = function (method) {
-        // Method calling logic
-        if (methods[method]) {
-            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-        } else if (typeof method === 'object' || !method) {
-            return methods.init.apply(this, arguments);
-        } else {
-            $.error('Method ' + method + ' does not exist on jQuery.dirtyForms');
+    // Custom selectors $('form:dirty')
+    $.extend($.expr[":"], {
+        dirtylistening: function (a) {
+            return $(a).hasClass(settings.listeningClass);
+        },
+        dirty: function (a) {
+            return $(a).hasClass(settings.dirtyClass);
+        }
+    });
+
+    // Public General Plugin properties and methods $.DirtyForms
+    $.DirtyForms = {
+        message: 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
+        title: 'Are you sure you want to do that?',
+        dirtyClass: 'dirty',
+        listeningClass: 'dirtylisten',
+        ignoreClass: 'ignoredirty',
+        choiceContinue: false,
+        helpers: [],
+        dialog: false,
+        /*<log>*/
+        debug: false,
+        dirtylog: function (msg) {
+            dirtylog(msg);
+        },
+        /*</log>*/
+
+        isDirty: function () {
+            return $(':dirtylistening').dirtyForms('isDirty');
+        },
+
+        // DEPRECATED: Duplicate functionality.
+        // Use $('html').addClass($.DirtyForms.ignoreClass); instead.
+        disable: function () {
+            $('html').addClass(settings.ignoreClass);
+        },
+
+        ignoreParentDocs: function () {
+            settings.watchParentDocs = false;
+        },
+
+        choiceCommit: function (ev) {
+            if (settings.deciding) {
+                $(document).trigger('choicecommit.dirtyforms');
+                if (settings.choiceContinue) {
+                    settings.decidingContinue(ev);
+                } else {
+                    settings.decidingCancel(ev);
+                }
+                $(document).trigger('choicecommitAfter.dirtyforms');
+            }
+        },
+
+        isDeciding: function () {
+            return settings.deciding;
+        },
+
+        decidingContinue: function (ev) {
+            clearUnload(); // fix for chrome/safari
+            ev.preventDefault();
+            $(document).trigger('decidingcontinued.dirtyforms');
+            refire(settings.decidingEvent);
+            clearDecidingState();
+        },
+
+        decidingCancel: function (ev) {
+            ev.preventDefault();
+            $(document).trigger('decidingcancelled.dirtyforms');
+            if (settings.dialog && settings.dialogStash && $.isFunction(settings.dialog.refire)) {
+                dirtylog('Refiring the dialog with stashed content');
+                settings.dialog.refire(settings.dialogStash.html(), ev);
+            }
+            $(document).trigger('decidingcancelledAfter.dirtyforms');
+            clearDecidingState();
         }
     };
 
