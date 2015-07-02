@@ -52,8 +52,7 @@ License MIT
             // Initialize settings with the currently focused element (HTML 5 autofocus)
             var $focused = $(document.activeElement);
             if ($focused.is(inputSelector)) {
-                state.focused.element = $focused;
-                state.focused.value = $focused.val();
+                state.setFocused($focused);
             }
 
             return this.filter('form').each(function () {
@@ -209,6 +208,10 @@ License MIT
         watchParentDocs: true,
         exitBound: false,
         focused: { "element": false, "value": false },
+        setFocused: function ($element) {
+            this.focused.element = $element;
+            this.focused.value = $element.val();
+        },
         formStash: false,
         dialogStash: false,
         deciding: false,
@@ -232,8 +235,7 @@ License MIT
         if (focusedIsDirty() && !isIgnored($this)) {
             state.focused.element.dirtyForms('setDirty');
         }
-        state.focused.element = $this;
-        state.focused.value = $this.val();
+        state.setFocused($this);
     };
 
     var focusedIsDirty = function () {
