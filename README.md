@@ -162,6 +162,7 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 | **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
 | **dirtyClass**  | string  | `dirty`  | The class applied to elements and forms when they're considered dirty. Note you can use this to style the elements to make them stand out if they are dirty (or for debugging).  |  
 | **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
+| **watchTopDocument**  | bool  | `false` | Set to true to bind to the `onbeforeunload` event and anchor tags of the top document when the page that uses Dirty Forms is hosted inside of an IFrame.  |  
 | **choiceContinue**  | bool  | `false`  | Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until `choiceCommit()` is called.  |  
 | **helpers** | string  | `[]`  | An array for helper objects. See [Helpers](#helpers) below.  |  
 | **dialog**  | string  | `false`  | An object that will be used to fire the JavaScript/CSS dialog. See [Dialogs](#dialogs) below.  |  

@@ -143,6 +143,7 @@ License MIT
         dirtyClass: 'dirty',
         listeningClass: 'dirtylisten',
         ignoreClass: 'ignoredirty',
+        watchTopDocument: false,
         choiceContinue: false,
         helpers: [],
         dialog: false,
@@ -161,10 +162,6 @@ License MIT
         // Use $('html').addClass($.DirtyForms.ignoreClass); instead.
         disable: function () {
             $('html').addClass(this.ignoreClass);
-        },
-
-        ignoreParentDocs: function () {
-            state.watchParentDocs = false;
         },
 
         choiceCommit: function (ev) {
@@ -205,7 +202,6 @@ License MIT
 
     // Private State Management
     var state = {
-        watchParentDocs: true,
         exitBound: false,
         focused: { "element": false, "value": false },
         setFocused: function ($element) {
@@ -249,7 +245,7 @@ License MIT
         $(document).on('click', 'a[href]', aBindFn)
                    .on('submit', 'form', bindFn);
         $(window).bind('beforeunload', beforeunloadBindFn);
-        if (state.watchParentDocs && inIframe) {
+        if ($.DirtyForms.watchTopDocument && inIframe) {
             $(top.document).on('click', 'a[href]', aBindFn)
                            .on('submit', 'form', bindFn);
             $(top.window).bind('beforeunload', beforeunloadBindFn);
