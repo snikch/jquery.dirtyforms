@@ -189,7 +189,7 @@ License MIT
             ev.preventDefault();
             $(document).trigger('decidingcontinued.dirtyforms');
             refire(state.decidingEvent);
-            clearDecidingState();
+            state.clearDeciding();
         },
 
         decidingCancel: function (ev) {
@@ -200,7 +200,7 @@ License MIT
                 this.dialog.refire(state.dialogStash.html(), ev);
             }
             $(document).trigger('decidingcancelledAfter.dirtyforms');
-            clearDecidingState();
+            state.clearDeciding();
         }
     };
 
@@ -212,11 +212,10 @@ License MIT
         formStash: false,
         dialogStash: false,
         deciding: false,
-        decidingEvent: false
-    };
-
-    var clearDecidingState = function () {
-        state.deciding = state.decidingEvent = state.dialogStash = false;
+        decidingEvent: false,
+        clearDeciding: function () {
+            this.deciding = this.decidingEvent = this.dialogStash = false;
+        }
     };
 
     var onReset = function () {
