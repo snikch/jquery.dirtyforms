@@ -52,13 +52,13 @@ License MIT
             // Initialize settings with the currently focused element (HTML 5 autofocus)
             var $focused = $(document.activeElement);
             if ($focused.is(inputSelector)) {
-                settings.focused.element = $focused;
-                settings.focused.value = $focused.val();
+                state.focused.element = $focused;
+                state.focused.value = $focused.val();
             }
 
             return this.filter('form').each(function () {
                 dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-                $(this).addClass(settings.listeningClass)
+                $(this).addClass($.DirtyForms.listeningClass)
                     .on('focus change', inputSelector, onFocus)
                     .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
                     .on('click', "input[type='reset']", onReset);
@@ -66,9 +66,9 @@ License MIT
         },
         // Returns true if any of the supplied elements are dirty
         isDirty: function () {
-            if (focusedIsDirty() || this.hasClass(settings.dirtyClass)) return true;
+            if (focusedIsDirty() || this.hasClass($.DirtyForms.dirtyClass)) return true;
 
-            var helpers = settings.helpers;
+            var helpers = $.DirtyForms.helpers;
             for (var i = 0; i < helpers.length; i++) {
                 if ('isDirty' in helpers[i] && helpers[i].isDirty(this)) {
                     return true;
@@ -81,10 +81,10 @@ License MIT
             dirtylog('setDirty called');
             return this.each(function () {
                 var $form = $(this).closest('form');
-                var changed = !$form.hasClass(settings.dirtyClass);
-                $(this).addClass(settings.dirtyClass);
+                var changed = !$form.hasClass($.DirtyForms.dirtyClass);
+                $(this).addClass($.DirtyForms.dirtyClass);
                 if (changed) {
-                    $form.addClass(settings.dirtyClass)
+                    $form.addClass($.DirtyForms.dirtyClass)
                          .trigger('dirty.dirtyforms', [$form]);
                 }
             });
@@ -92,30 +92,30 @@ License MIT
         // "Cleans" this dirty form by essentially forgetting that it is dirty
         setClean: function () {
             dirtylog('setClean called');
-            settings.focused = { element: false, value: false };
+            state.focused = { element: false, value: false };
 
             return this.each(function () {
                 var node = this, $node = $(this);
 
                 // Clean helpers
-                $.each(settings.helpers, function (key, obj) {
+                $.each($.DirtyForms.helpers, function (key, obj) {
                     if ("setClean" in obj) {
                         obj.setClean(node);
                     }
                 });
 
                 // remove the current dirty class
-                $node.removeClass(settings.dirtyClass);
+                $node.removeClass($.DirtyForms.dirtyClass);
 
                 if ($node.is('form')) {
                     // remove all dirty classes from children
-                    $node.find(':dirty').removeClass(settings.dirtyClass);
+                    $node.find(':dirty').removeClass($.DirtyForms.dirtyClass);
                     $node.trigger('clean.dirtyforms', [$node]);
                 } else {
                     // if this is last dirty child, set form clean
                     var $form = $node.parents('form');
-                    if ($form.find(':dirty').length === 0 && $form.hasClass(settings.dirtyClass)) {
-                        $form.removeClass(settings.dirtyClass)
+                    if ($form.find(':dirty').length === 0 && $form.hasClass($.DirtyForms.dirtyClass)) {
+                        $form.removeClass($.DirtyForms.dirtyClass)
                              .trigger('clean.dirtyforms', [$form]);
                     }
                 }
@@ -126,10 +126,10 @@ License MIT
     // Custom selectors $('form:dirty')
     $.extend($.expr[":"], {
         dirtylistening: function (a) {
-            return $(a).hasClass(settings.listeningClass);
+            return $(a).hasClass($.DirtyForms.listeningClass);
         },
         dirty: function (a) {
-            return $(a).hasClass(settings.dirtyClass);
+            return $(a).hasClass($.DirtyForms.dirtyClass);
         }
     });
 
@@ -157,62 +157,62 @@ License MIT
         // DEPRECATED: Duplicate functionality.
         // Use $('html').addClass($.DirtyForms.ignoreClass); instead.
         disable: function () {
-            $('html').addClass(settings.ignoreClass);
+            $('html').addClass(this.ignoreClass);
         },
 
         ignoreParentDocs: function () {
-            settings.watchParentDocs = false;
+            state.watchParentDocs = false;
         },
 
         choiceCommit: function (ev) {
-            if (settings.deciding) {
+            if (state.deciding) {
                 $(document).trigger('choicecommit.dirtyforms');
-                if (settings.choiceContinue) {
-                    settings.decidingContinue(ev);
+                if (this.choiceContinue) {
+                    this.decidingContinue(ev);
                 } else {
-                    settings.decidingCancel(ev);
+                    this.decidingCancel(ev);
                 }
                 $(document).trigger('choicecommitAfter.dirtyforms');
             }
         },
 
         isDeciding: function () {
-            return settings.deciding;
+            return state.deciding;
         },
 
         decidingContinue: function (ev) {
             clearUnload(); // fix for chrome/safari
             ev.preventDefault();
             $(document).trigger('decidingcontinued.dirtyforms');
-            refire(settings.decidingEvent);
+            refire(state.decidingEvent);
             clearDecidingState();
         },
 
         decidingCancel: function (ev) {
             ev.preventDefault();
             $(document).trigger('decidingcancelled.dirtyforms');
-            if (settings.dialog && settings.dialogStash && $.isFunction(settings.dialog.refire)) {
+            if (state.dialog && state.dialogStash && $.isFunction(this.dialog.refire)) {
                 dirtylog('Refiring the dialog with stashed content');
-                settings.dialog.refire(settings.dialogStash.html(), ev);
+                this.dialog.refire(state.dialogStash.html(), ev);
             }
             $(document).trigger('decidingcancelledAfter.dirtyforms');
             clearDecidingState();
         }
     };
 
-    // Private Properties and Methods
-    var settings = $.DirtyForms = $.extend({
+    // Private State Management
+    var state = {
         watchParentDocs: true,
         exitBound: false,
+        focused: { "element": false, "value": false },
         formStash: false,
         dialogStash: false,
         deciding: false,
-        decidingEvent: false,
-        focused: { "element": false, "value": false }
-    }, $.DirtyForms);
+        decidingEvent: false
+    };
 
     var clearDecidingState = function () {
-        settings.deciding = settings.decidingEvent = settings.dialogStash = false;
+        state.deciding = state.decidingEvent = state.dialogStash = false;
     };
 
     var onReset = function () {
@@ -227,37 +227,37 @@ License MIT
     var onFocus = function () {
         var $this = $(this);
         if (focusedIsDirty() && !isIgnored($this)) {
-            settings.focused.element.dirtyForms('setDirty');
+            state.focused.element.dirtyForms('setDirty');
         }
-        settings.focused.element = $this;
-        settings.focused.value = $this.val();
+        state.focused.element = $this;
+        state.focused.value = $this.val();
     };
 
     var focusedIsDirty = function () {
         // Check, whether the value of focused element has changed
-        return settings.focused.element &&
-			(settings.focused.element.val() !== settings.focused.value);
+        return state.focused.element &&
+			(state.focused.element.val() !== state.focused.value);
     };
 
     var bindExit = function () {
-        if (settings.exitBound) return;
+        if (state.exitBound) return;
         var inIframe = (top !== self);
 
         $(document).on('click', 'a[href]', aBindFn)
                    .on('submit', 'form', bindFn);
         $(window).bind('beforeunload', beforeunloadBindFn);
-        if (settings.watchParentDocs && inIframe) {
+        if (state.watchParentDocs && inIframe) {
             $(top.document).on('click', 'a[href]', aBindFn)
                            .on('submit', 'form', bindFn);
             $(top.window).bind('beforeunload', beforeunloadBindFn);
         }
 
-        settings.exitBound = true;
+        state.exitBound = true;
     };
 
     var getIgnoreAnchorSelector = function () {
         var result = '';
-        $.each(settings.helpers, function (key, obj) {
+        $.each($.DirtyForms.helpers, function (key, obj) {
             if ("ignoreAnchorSelector" in obj) {
                 if (result.length > 0) { result += ','; }
                 result += obj.ignoreAnchorSelector;
@@ -275,13 +275,13 @@ License MIT
     var beforeunloadBindFn = function (ev) {
         var result = bindFn(ev);
 
-        if (result && settings.doubleunloadfix !== true) {
+        if (result && state.doubleunloadfix !== true) {
             dirtylog('Before unload will be called, resetting');
-            settings.deciding = false;
+            state.deciding = false;
         }
 
-        settings.doubleunloadfix = true;
-        setTimeout(function () { settings.doubleunloadfix = false; }, 200);
+        state.doubleunloadfix = true;
+        setTimeout(function () { state.doubleunloadfix = false; }, 200);
 
         // Bug Fix: Only return the result if it is a string,
         // otherwise don't return anything.
@@ -308,9 +308,9 @@ License MIT
             return false;
         }
 
-        if (eventType == 'beforeunload' && settings.doubleunloadfix) {
+        if (eventType == 'beforeunload' && state.doubleunloadfix) {
             dirtylog('Skip this unload, Firefox bug triggers the unload event multiple times');
-            settings.doubleunloadfix = false;
+            state.doubleunloadfix = false;
             return false;
         }
 
@@ -320,12 +320,12 @@ License MIT
             return false;
         }
 
-        if (settings.deciding) {
+        if (state.deciding) {
             dirtylog('Leaving: Already in the deciding process');
             return false;
         }
 
-        if (!settings.isDirty()) {
+        if (!$.DirtyForms.isDirty()) {
             dirtylog('Leaving: Not dirty');
             clearUnload();
             return false;
@@ -341,36 +341,36 @@ License MIT
         $(document).trigger('defer.dirtyforms');
 
         if (eventType == 'beforeunload') {
-            dirtylog('Returning to beforeunload browser handler with: ' + settings.message);
-            return settings.message;
+            dirtylog('Returning to beforeunload browser handler with: ' + $.DirtyForms.message);
+            return $.DirtyForms.message;
         }
-        if (!settings.dialog) return;
+        if (!$.DirtyForms.dialog) return;
 
         // Using the GUI dialog...
-        settings.deciding = true;
-        settings.decidingEvent = ev;
+        state.deciding = true;
+        state.decidingEvent = ev;
         dirtylog('Setting deciding active');
 
-        if ($.isFunction(settings.dialog.stash)) {
+        if ($.isFunction($.DirtyForms.dialog.stash)) {
             dirtylog('Saving dialog content');
-            settings.dialogStash = settings.dialog.stash();
-            dirtylog(settings.dialogStash);
+            state.dialogStash = $.DirtyForms.dialog.stash();
+            dirtylog(state.dialogStash);
         }
 
         ev.preventDefault();
         ev.stopImmediatePropagation();
 
-        if (typeof settings.dialog.selector === 'string' && $element.is('form') && $element.parents(settings.dialog.selector).length > 0) {
+        if (typeof $.DirtyForms.dialog.selector === 'string' && $element.is('form') && $element.parents($.DirtyForms.dialog.selector).length > 0) {
             dirtylog('Stashing form');
-            settings.formStash = $element.clone(true).hide();
+            state.formStash = $element.clone(true).hide();
         } else {
-            settings.formStash = false;
+            state.formStash = false;
         }
 
         dirtylog('Deferring to the dialog');
-        settings.dialog.fire(settings.message, settings.title);
-        if ($.isFunction(settings.dialog.bind))
-            settings.dialog.bind();
+        $.DirtyForms.dialog.fire($.DirtyForms.message, $.DirtyForms.title);
+        if ($.isFunction($.DirtyForms.dialog.bind))
+            $.DirtyForms.dialog.bind();
     };
 
     var isDifferentTarget = function ($element) {
@@ -379,7 +379,7 @@ License MIT
     };
 
     var isIgnored = function ($element) {
-        return $element.closest('.' + settings.ignoreClass).length > 0;
+        return $element.closest('.' + $.DirtyForms.ignoreClass).length > 0;
     };
 
     var clearUnload = function () {
@@ -406,9 +406,9 @@ License MIT
         } else {
             dirtylog("Refiring " + e.type + " event on " + e.target);
             var target;
-            if (settings.formStash) {
+            if (state.formStash) {
                 dirtylog('Appending stashed form to body');
-                target = settings.formStash;
+                target = state.formStash;
                 $('body').append(target);
             }
             else {
@@ -420,7 +420,7 @@ License MIT
 
     /*<log>*/
     var dirtylog = function (msg) {
-        if (!settings.debug) return;
+        if (!$.DirtyForms.debug) return;
         var hasFirebug = 'console' in window && 'firebug' in window.console,
             hasConsoleLog = 'console' in window && 'log' in window.console;
         msg = '[DirtyForms] ' + msg;
