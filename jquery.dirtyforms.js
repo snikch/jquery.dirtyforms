@@ -65,7 +65,7 @@ License MIT
         },
         // Returns true if any of the supplied elements are dirty
         isDirty: function () {
-            if (focusedIsDirty() || this.hasClass($.DirtyForms.dirtyClass)) return true;
+            if (state.focusedIsDirty() || this.hasClass($.DirtyForms.dirtyClass)) return true;
 
             var helpers = $.DirtyForms.helpers;
             for (var i = 0; i < helpers.length; i++) {
@@ -212,6 +212,10 @@ License MIT
             this.focused.element = $element;
             this.focused.value = $element.val();
         },
+        focusedIsDirty: function () {
+            // Check, whether the value of focused element has changed
+            return this.focused.element && (this.focused.element.val() !== this.focused.value);
+        },
         formStash: false,
         dialogStash: false,
         deciding: false,
@@ -232,16 +236,10 @@ License MIT
 
     var onFocus = function () {
         var $this = $(this);
-        if (focusedIsDirty() && !isIgnored($this)) {
+        if (state.focusedIsDirty() && !isIgnored($this)) {
             state.focused.element.dirtyForms('setDirty');
         }
         state.setFocused($this);
-    };
-
-    var focusedIsDirty = function () {
-        // Check, whether the value of focused element has changed
-        return state.focused.element &&
-			(state.focused.element.val() !== state.focused.value);
     };
 
     var bindExit = function () {
