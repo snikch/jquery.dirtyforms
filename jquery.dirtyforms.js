@@ -167,12 +167,6 @@ License MIT
             return $(':dirtylistening').dirtyForms('isDirty');
         },
 
-        // DEPRECATED: Duplicate functionality.
-        // Use $('html').addClass($.DirtyForms.ignoreClass); instead.
-        disable: function () {
-            $('html').addClass(this.ignoreClass);
-        },
-
         choiceCommit: function (ev) {
             if (state.deciding) {
                 $(document).trigger('choicecommit.dirtyforms');

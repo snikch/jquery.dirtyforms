@@ -256,10 +256,6 @@ A cancelable event.
 This method will return true if the dialog has fired and neither `$.DirtyForms.decidingCancel()` or `$.DirtyForms.decidingContinue()` has yet been called. It indicates that the dialog has fired, but the user has not yet made a decision.
 
 
-#### `$.DirtyForms.disable()` (Deprecated)
-
-Please use `$('html').addClass($.DirtyForms.ignoreClass)` instead.
-
 ## Triggers
 
 Simply bind a function to any of these hooks to respond to the corresponding trigger.
