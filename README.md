@@ -153,7 +153,15 @@ $('html').removeClass($.DirtyForms.ignoreClass);
 
 ## Options
 
-The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**
+The following options are available to set during declaration of `.dirtyForms()` or alternatively via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**.
+
+```javascript
+$('form').dirtyForms({ title: 'Warning!!' });
+
+// OR
+
+$.DirtyForms.title = 'Warning!!';
+```
 
 | Name  | Type  | Default  | Description  |  
 |---|---|---|---|
@@ -177,14 +185,23 @@ The following options are available to set via **$.DirtyForms.OPTIONNAME = OPTIO
 Returns true if any watched elements (that are not ignored) are considered dirty.
 
 
-#### ```$('form#my-watched-form').dirtyForms()```
+#### ```$('form#my-watched-form').dirtyForms( options )```
 
-Starts watching the supplied elements (forms) for descendant input changes. To watch all forms, simply use the `'form'` selector.
+Starts watching the supplied elements (forms) for descendant input changes. This method can be called multiple times to add additional forms to watch that were dynamically added to the page. To watch all forms, simply use the `'form'` selector.
 
 ```javascript
 $('form').dirtyForms();
 ```
 
+##### options (Optional)
+
+An options object.
+
+```javascript
+$('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-dirty'});
+```
+
+> For a list of available options, see [Options](#options).
 
 #### `var isDirty = $('form#my-watched-form').dirtyForms('isDirty')`
 

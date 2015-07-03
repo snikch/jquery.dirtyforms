@@ -41,26 +41,35 @@ License MIT
 
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
-        init: function () {
-            dirtylog('Adding forms to watch');
-            bindExit();
+        init: function (options) {
+            if (!state.initialized) {
+                // Override any default options
+                $.extend(true, $.DirtyForms, options);
+                bindExit();
 
-            // exclude all HTML 4 except text and password, but include HTML 5 except search
-            var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
-        		"[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
+                // exclude all HTML 4 except text and password, but include HTML 5 except search
+                var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
+                    "[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
 
-            // Initialize settings with the currently focused element (HTML 5 autofocus)
-            var $focused = $(document.activeElement);
-            if ($focused.is(inputSelector)) {
-                state.setFocused($focused);
+                // Initialize settings with the currently focused element (HTML 5 autofocus)
+                var $focused = $(document.activeElement);
+                if ($focused.is(inputSelector)) {
+                    state.setFocused($focused);
+                }
+
+                state.initialized = true;
             }
 
+            dirtylog('Adding forms to watch');
+
             return this.filter('form').each(function () {
-                dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-                $(this).addClass($.DirtyForms.listeningClass)
-                    .on('focus change', inputSelector, onFocus)
-                    .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
-                    .on('click', "input[type='reset']", onReset);
+                if (!$(this).is(':dirtylistening')) {
+                    dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
+                    $(this).addClass($.DirtyForms.listeningClass)
+                        .on('focus change', inputSelector, onFocus)
+                        .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
+                        .on('click', "input[type='reset']", onReset);
+                }
             });
         },
         // Returns true if any of the supplied elements are dirty
@@ -202,7 +211,7 @@ License MIT
 
     // Private State Management
     var state = {
-        exitBound: false,
+        initialized: false,
         focused: { "element": false, "value": false },
         setFocused: function ($element) {
             this.focused.element = $element;
@@ -239,7 +248,6 @@ License MIT
     };
 
     var bindExit = function () {
-        if (state.exitBound) return;
         var inIframe = (top !== self);
 
         $(document).on('click', 'a[href]', aBindFn)
@@ -250,8 +258,6 @@ License MIT
                            .on('submit', 'form', bindFn);
             $(top.window).bind('beforeunload', beforeunloadBindFn);
         }
-
-        state.exitBound = true;
     };
 
     var getIgnoreAnchorSelector = function () {
