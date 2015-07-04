@@ -376,12 +376,12 @@ setClean: function (form) {
 }
 ```
 
-#### `ignoreAnchorSelector` (Optional Property)
+#### `ignoreSelector` (Optional Property)
 
-A jQuery selector of any anchor elements to exclude from activating the dialog. Non-anchors will be ignored. This works similarly to putting the ignoreClass on a specific anchor, but will always ignore the anchors if your helper is included.
+A jQuery selector of any anchor, input, select, or textarea elements to exclude from activating the dialog. This works similarly to putting the `ignoreClass` on a specific element, but can be included with a specific helper.
 
 ```javascript
-ignoreAnchorSelector: '.mceEditor a,.mceMenu a'
+ignoreSelector: '.mceEditor a,.mceMenu a'
 ```
 
 To respect the way jQuery selectors work, all children of the form as well as the form itself should have your custom `isDirty()` and `setClean()` logic applied.

@@ -374,9 +374,9 @@ License MIT
     var getIgnoreSelector = function () {
         var result = $.DirtyForms.ignoreSelector;
         $.each($.DirtyForms.helpers, function (key, obj) {
-            if ("ignoreAnchorSelector" in obj) {
+            if ("ignoreSelector" in obj) {
                 if (result.length > 0) { result += ','; }
-                result += obj.ignoreAnchorSelector;
+                result += obj.ignoreSelector;
             }
         });
         return result;

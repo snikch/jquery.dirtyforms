@@ -20,7 +20,7 @@ License MIT
 }(function ($) {
     // Create a new object, with an isDirty method
     var tinymce = {
-        ignoreAnchorSelector: '.mceEditor a,.mceMenu a',
+        ignoreSelector: '.mceEditor a,.mceMenu a',
         isDirty: function (form) {
             var isDirty = false;
             if (formHasTinyMCE(form)) {
@@ -48,7 +48,10 @@ License MIT
                     }
                 });
             }
-        }
+        },
+
+        // Patch for Dirty Forms < 2.0
+        ignoreAnchorSelector: this.ignoreSelector
     };
     // Fix: tinymce throws an error if the selector doesn't match anything
     // (such as when there are no textareas on the current page)

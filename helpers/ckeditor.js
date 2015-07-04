@@ -19,7 +19,7 @@ License MIT
     }
 }(function ($) {
     var ckeditor = {
-        ignoreAnchorSelector: '.cke_dialog_ui_button, .cke_tpl_list a',
+        ignoreSelector: '.cke_dialog_ui_button, .cke_tpl_list a',
         isDirty: function (form) {
             editors = ckeditors(form);
             $.DirtyForms.dirtylog('Checking ' + editors.length + ' ckeditors for dirtyness.');
@@ -37,7 +37,10 @@ License MIT
         },
         setClean: function (form) {
             ckeditors(form).each(function () { this.resetDirty(); });
-        }
+        },
+
+        // Patch for Dirty Forms < 2.0
+        ignoreAnchorSelector: this.ignoreSelector
     };
     var ckeditors = function (form) {
         var $form = form.jquery ? form : $(form);
