@@ -21,6 +21,7 @@ The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.
 - Supports multiple forms.
 - Works on forms of any size.
 - Wide browser support.
+- Advanced state management - tracks the original values of fields so they are "clean" when reset to the original value.
 - Works with your existing dialog framework for the best user experience (optional).
 - Falls back to the browser's dialog (if the browser supports it).
 - Pluggable helper system that reads and updates the dirty state of common rich text editor frameworks (optional).
@@ -123,7 +124,13 @@ $('form:dirtylistening');
 
 ## Ignoring Things
 
-Simply add the value of `$.DirtyForms.ignoreClass` to any elements you wish to ignore, and Dirty Forms will ignore them.
+Set the `ignoreSelector` option to ignore specific fields, anchors, or buttons.
+
+```
+$('form').dirtyForms({ ignoreSelector: 'a.ignore-me'});
+```
+
+Alternatively, add the value of `$.DirtyForms.ignoreClass` to any elements you wish to ignore, and Dirty Forms will ignore them.
 
 ```javascript
 $('#ignored-element').addClass($.DirtyForms.ignoreClass);
@@ -167,9 +174,11 @@ $.DirtyForms.title = 'Warning!!';
 |---|---|---|---|
 | **title**  | string  | `Are you sure you want to do that?`  | Sets the title of the dialog (JavaScript/CSS dialog only).  |  
 | **message**  | string  | `You've made changes on this page which aren't saved. If you leave you will lose these changes.`  | Sets the message of the dialog (whether JavaScript/CSS dialog or the browser's built in dialog - note that some browsers do not show this message).   |   
-| **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
 | **dirtyClass**  | string  | `dirty`  | The class applied to elements and forms when they're considered dirty. Note you can use this to style the elements to make them stand out if they are dirty (or for debugging).  |  
 | **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
+| **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
+| **ignoreSelector**  | string  | `''` | A jQuery selector that can be set to ignore specific elements.  |  
+| **fieldSelector**  | string  | `input:not([type='button'],[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search']),select,textarea` | A jQuery selector indicating which input fields to include in the scan. |  
 | **watchTopDocument**  | bool  | `false` | Set to true to bind to the `onbeforeunload` event and anchor tags of the top document when the page that uses Dirty Forms is hosted inside of an IFrame.  |  
 | **choiceContinue**  | bool  | `false`  | Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until `choiceCommit()` is called.  |  
 | **helpers** | string  | `[]`  | An array for helper objects. See [Helpers](#helpers) below.  |  
@@ -202,20 +211,19 @@ $('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-
 ```
 
 > For a list of available options, see [Options](#options).
-
 #### `var isDirty = $('form#my-watched-form').dirtyForms('isDirty')`
 
 Returns true if the provided element is considered dirty.
 
 
-#### `$('form#my-watched-form').dirtyForms('setDirty')`
+#### `$('form#my-watched-form').dirtyForms('scan')`
 
-Marks the provided element as dirty by adding the `dirtyClass`. If the element is within a form, the form is also marked dirty with the `dirtyClass`.
+Scans the selected forms for any fields that were dynamically added to track their original values. Note that the default behavior tracks the original value of a field when it receives focus, so you only need to call this method in cases where the focus event doesn't fire (i.e. automation rather than user interaction).
 
 
-#### `$('form#my-watched-form').dirtyForms('setClean')`
+#### `$('form#my-watched-form').dirtyForms('snapShot')`
 
-Marks the provided form or element as clean. In other words, removes the `dirtyClass`. If the operation marks all elements within a form clean, it will also mark the form clean.
+Forgets the dirty state of the form and begins tracking the values from their current state. Any changes from the current state will cause the form to be dirty.
 
 
 #### `$.DirtyForms.choiceCommit( event )`
@@ -269,6 +277,10 @@ $(document).bind('choicecommit.dirtyforms', function() {
 **dirty.dirtyforms**: Raised when a form changes from clean state to dirty state. Passes the form (a jQuery object) as the first parameter.
 
 **clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')`. Passes the form (a jQuery object) as the first parameter.
+
+**scan.dirtyforms**: Raised after the form is scanned (whether during initialization or when calling the [scan method](#formmy-watched-formdirtyformsscan) explicitly). Passes the form (a jQuery object) as the first parameter.
+
+**snapshot.dirtyforms**: Raised after a snapshot is taken (fired by the [snapshot method](#formmy-watched-formdirtyformssnapshot)). Passes the form (a jQuery object) as the first parameter.
 
 **decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
 

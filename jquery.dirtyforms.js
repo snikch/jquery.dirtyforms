@@ -47,36 +47,34 @@ License MIT
                 $.extend(true, $.DirtyForms, options);
                 bindExit();
 
-                // exclude all HTML 4 except text and password, but include HTML 5 except search
-                var inputSelector = "textarea,input:not([type='checkbox'],[type='radio'],[type='button']," +
-                    "[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search'])";
-
-                // Initialize settings with the currently focused element (HTML 5 autofocus)
-                var $focused = $(document.activeElement);
-                if ($focused.is(inputSelector)) {
-                    state.setFocused($focused);
-                }
-
                 state.initialized = true;
             }
 
+            var dirtyForms = $.DirtyForms;
             dirtylog('Adding forms to watch');
 
             return this.filter('form').each(function () {
-                if (!$(this).is(':dirtylistening')) {
-                    dirtylog('Adding form ' + $(this).attr('id') + ' to forms to watch');
-                    $(this).addClass($.DirtyForms.listeningClass)
-                        .on('focus change', inputSelector, onFocus)
-                        .on('change', "input[type='checkbox'],input[type='radio'],select", onSelectionChange)
+                var $form = $(this);
+                if (!$form.is(':dirtylistening')) {
+                    var $fields = $form.find(dirtyForms.fieldSelector);
+                    $fields.each(function () { storeOriginalValue($(this)); });
+                    $form.trigger('scan.dirtyforms', [$form]);
+
+                    dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
+                    $form.addClass(dirtyForms.listeningClass)
+                        .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
+                        .on('focus', dirtyForms.fieldSelector, onFocus)
                         .on('click', "input[type='reset']", onReset);
                 }
             });
         },
         // Returns true if any of the supplied elements are dirty
         isDirty: function () {
-            if (state.focusedIsDirty() || this.hasClass($.DirtyForms.dirtyClass)) return true;
+            var dirtyForms = $.DirtyForms;
+            if (isIgnored(this)) return false;
+            if (this.hasClass(dirtyForms.dirtyClass)) return true;
 
-            var helpers = $.DirtyForms.helpers;
+            var helpers = dirtyForms.helpers;
             for (var i = 0; i < helpers.length; i++) {
                 if ('isDirty' in helpers[i] && helpers[i].isDirty(this)) {
                     return true;
@@ -84,52 +82,38 @@ License MIT
             }
             return false;
         },
-        // Marks the element(s) that match the selector (and their parent form) dirty
-        setDirty: function () {
-            dirtylog('setDirty called');
-            var dirtyClass = $.DirtyForms.dirtyClass;
-
-            return this.each(function () {
-                var $form = $(this).closest('form');
-                var changed = !$form.hasClass(dirtyClass);
-                $(this).addClass(dirtyClass);
-                if (changed) {
-                    $form.addClass(dirtyClass)
-                         .trigger('dirty.dirtyforms', [$form]);
+        // Scans the selected form(s) for any fields that were added dynamically 
+        // and tracks their original values.
+        scan: function () {
+            return this.filter('form').each(function () {
+                var $form = $(this);
+                if (!$form.is(':dirtylistening')) {
+                    dirtylog('Scanning form ' + $form.attr('id') + ' for new fields');
+                    var $fields = $form.find($.DirtyForms.fieldSelector);
+                    $fields.each(function () {
+                        var $field = $(this);
+                        if (!hasOriginalValue($field)) {
+                            dirtylog('Start tracking field value of ' + $field.attr('name'));
+                            storeOriginalValue($field);
+                        }
+                    });
+                    $form.trigger('scan.dirtyforms', [$form]);
                 }
             });
         },
-        // "Cleans" this dirty form by essentially forgetting that it is dirty
-        setClean: function () {
-            dirtylog('setClean called');
-            var dirtyForms = $.DirtyForms;
-            var dirtyClass = dirtyForms.dirtyClass;
-            state.focused = { element: false, value: false };
-
-            return this.each(function () {
-                var node = this, $node = $(this);
-
-                // Clean helpers
-                $.each(dirtyForms.helpers, function (key, obj) {
-                    if ("setClean" in obj) {
-                        obj.setClean(node);
-                    }
-                });
-
-                // remove the current dirty class
-                $node.removeClass(dirtyClass);
-
-                if ($node.is('form')) {
-                    // remove all dirty classes from children
-                    $node.find(':dirty').removeClass(dirtyClass);
-                    $node.trigger('clean.dirtyforms', [$node]);
-                } else {
-                    // if this is last dirty child, set form clean
-                    var $form = $node.parents('form');
-                    if ($form.find(':dirty').length === 0 && $form.hasClass(dirtyClass)) {
-                        $form.removeClass(dirtyClass)
-                             .trigger('clean.dirtyforms', [$form]);
-                    }
+        // Forgets the current dirty state and considers any changes 
+        // after this point to be dirty.
+        snapShot: function () {
+            return this.filter('form').each(function () {
+                var $form = $(this);
+                if (!$form.is(':dirtylistening')) {
+                    dirtylog('Taking snapshot of form ' + $form.attr('id'));
+                    var $fields = $form.find($.DirtyForms.fieldSelector);
+                    $fields.each(function () {
+                        storeOriginalValue($(this));
+                    });
+                    setClean($form);
+                    $form.trigger('snapshot.dirtyforms', [$form]);
                 }
             });
         }
@@ -152,6 +136,10 @@ License MIT
         dirtyClass: 'dirty',
         listeningClass: 'dirtylisten',
         ignoreClass: 'ignoredirty',
+        ignoreSelector: '',
+        // exclude all HTML 4 except text and password, but include HTML 5 except search
+        fieldSelector: "input:not([type='button'],[type='image'],[type='submit']," +
+            "[type='reset'],[type='file'],[type='search']),select,textarea",
         watchTopDocument: false,
         choiceContinue: false,
         helpers: [],
@@ -206,15 +194,6 @@ License MIT
     // Private State Management
     var state = {
         initialized: false,
-        focused: { "element": false, "value": false },
-        setFocused: function ($element) {
-            this.focused.element = $element;
-            this.focused.value = $element.val();
-        },
-        focusedIsDirty: function () {
-            // Check, whether the value of focused element has changed
-            return this.focused.element && (this.focused.element.val() !== this.focused.value);
-        },
         formStash: false,
         dialogStash: false,
         deciding: false,
@@ -224,21 +203,145 @@ License MIT
         }
     };
 
-    var onReset = function () {
-        $(this).parents('form').dirtyForms('setClean');
-    };
+    var getFieldValue = function ($field) {
+        if (isIgnored($field)) return null;
 
-    var onSelectionChange = function () {
-        if (isIgnored($(this))) return;
-        $(this).dirtyForms('setDirty');
-    };
-
-    var onFocus = function () {
-        var $this = $(this);
-        if (state.focusedIsDirty() && !isIgnored($this)) {
-            state.focused.element.dirtyForms('setDirty');
+        var value;
+        if ($field.is('select')) {
+            value = '';
+            $field.find('option').each(function () {
+                var $option = $(this);
+                if ($option.is(':selected')) {
+                    if (value.length > 0) { value += ','; }
+                    value += $option.val();
+                }
+            });
+        } else if ($field.is("[type='checkbox'],[type='radio']")) {
+            value = $field.is(':checked');
+        } else {
+            value = $field.val();
         }
-        state.setFocused($this);
+
+        return value;
+    };
+
+    var storeOriginalValue = function ($field) {
+        $field.data('df-orig', getFieldValue($field));
+        var isEmpty = (typeof $field.data('df-orig') === 'undefined');
+        $field.data('df-empty', isEmpty);
+    };
+
+    var hasOriginalValue = function ($field) {
+        return ($field.data('df-orig') || !$field.data('df-empty'));
+    };
+
+    var isFieldDirty = function ($field) {
+        if (isIgnored($field) || !hasOriginalValue($field)) return false;
+        return (getFieldValue($field) != $field.data('df-orig'));
+    };
+
+    var setFieldStatus = function ($field) {
+        if (isIgnored($field)) return;
+        var setDirtyStatus = function ($field) {
+            if (isFieldDirty($field)) {
+                setDirty($field);
+            } else {
+                setClean($field);
+            }
+        };
+
+        // Option groups are a special case because they change more than the current element.
+        if ($field.is(':radio[name]')) {
+            var name = $field.attr('name'),
+                $form = $field.parents('form');
+
+            $form.find(":radio[name='" + name + "']").each(function () {
+                setDirtyStatus($(this));
+            });
+        } else {
+            setDirtyStatus($field);
+        }
+    };
+
+    // Marks the element(s) (and their parent form) dirty
+    var setDirty = function ($element) {
+        dirtylog('setDirty called');
+        var dirtyClass = $.DirtyForms.dirtyClass;
+
+        $element.each(function () {
+            var $form = $(this).closest('form');
+            var changed = !$form.hasClass(dirtyClass);
+            $(this).addClass(dirtyClass);
+            if (changed) {
+                $form.addClass(dirtyClass)
+                     .trigger('dirty.dirtyforms', [$form]);
+            }
+        });
+    };
+
+    // Marks the element(s), their parent form, and any helpers within the element not dirty
+    var setClean = function ($element) {
+        dirtylog('setClean called');
+        var dirtyForms = $.DirtyForms;
+        var dirtyClass = dirtyForms.dirtyClass;
+
+        $element.each(function () {
+            var node = this, $node = $(this);
+
+            // Clean helpers
+            $.each(dirtyForms.helpers, function (key, obj) {
+                if ("setClean" in obj) {
+                    obj.setClean(node);
+                }
+            });
+
+            // remove the current dirty class
+            $node.removeClass(dirtyClass);
+
+            if ($node.is('form')) {
+                // remove all dirty classes from children
+                $node.find(':dirty').removeClass(dirtyClass);
+                $node.trigger('clean.dirtyforms', [$node]);
+            } else {
+                // if this is last dirty child, set form clean
+                var $form = $node.parents('form');
+                if ($form.find(':dirty').length === 0 && $form.hasClass(dirtyClass)) {
+                    $form.removeClass(dirtyClass)
+                         .trigger('clean.dirtyforms', [$form]);
+                }
+            }
+        });
+    };
+
+    // A delay to keep the key events from slowing down when changing the dirty status on the fly.
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
+    // For any fields added after the form was initialized, store the value when focused.
+    var onFocus = function () {
+        var $field = $(this);
+        if (!hasOriginalValue($field)) {
+            storeOriginalValue($field);
+        }
+    };
+
+    var onFieldChange = function () {
+        var $field = $(this);
+        delay(function () {
+            setFieldStatus($field);
+        }, 100);
+    };
+
+    var onReset = function () {
+        var $fields = $(this).parents('form').find($.DirtyForms.fieldSelector);
+        $fields.each(function () {
+            setFieldStatus($(this));
+        });
     };
 
     var bindExit = function () {
@@ -254,8 +357,32 @@ License MIT
         }
     };
 
-    var getIgnoreAnchorSelector = function () {
-        var result = '';
+    var clearUnload = function () {
+        // I'd like to just be able to unbind this but there seems
+        // to be a bug in jQuery which doesn't unbind onbeforeunload
+        dirtylog('Clearing the beforeunload event');
+        $(window).unbind('beforeunload', beforeunloadBindFn);
+        window.onbeforeunload = null;
+        $(document).trigger('beforeunload.dirtyforms');
+    };
+
+    var isDifferentTarget = function ($element) {
+        var aTarget = $element.attr('target');
+        return typeof aTarget === 'string' ? aTarget.toLowerCase() === '_blank' : false;
+    };
+
+    var isFragment = function ($element) {
+        var aHref = $element.attr('href');
+        return typeof aHref === 'string' ? /^#/.test(aHref) : false;
+    };
+
+    var isIgnored = function ($element) {
+        return $element.closest('.' + $.DirtyForms.ignoreClass).length > 0 ||
+            $element.is(getIgnoreSelector());
+    };
+
+    var getIgnoreSelector = function () {
+        var result = $.DirtyForms.ignoreSelector;
         $.each($.DirtyForms.helpers, function (key, obj) {
             if ("ignoreAnchorSelector" in obj) {
                 if (result.length > 0) { result += ','; }
@@ -266,7 +393,9 @@ License MIT
     };
 
     var aBindFn = function (ev) {
-        if (!$(this).is(getIgnoreAnchorSelector()) && !isDifferentTarget($(this))) {
+        var $a = $(this);
+        dirtylog('Anchor isIgnored: ' + isIgnored($a) + ', isDifferentTarget: ' + isDifferentTarget($a) + ', isFragment: ' + isFragment($a));
+        if (!isIgnored($a) && !isDifferentTarget($a) && !isFragment($a)) {
             bindFn(ev);
         }
     };
@@ -372,24 +501,6 @@ License MIT
         dirtyForms.dialog.fire(dirtyForms.message, dirtyForms.title);
         if ($.isFunction(dirtyForms.dialog.bind))
             dirtyForms.dialog.bind();
-    };
-
-    var isDifferentTarget = function ($element) {
-        var aTarget = $element.attr('target');
-        return typeof aTarget === 'string' ? aTarget.toLowerCase() === '_blank' : false;
-    };
-
-    var isIgnored = function ($element) {
-        return $element.closest('.' + $.DirtyForms.ignoreClass).length > 0;
-    };
-
-    var clearUnload = function () {
-        // I'd like to just be able to unbind this but there seems
-        // to be a bug in jQuery which doesn't unbind onbeforeunload
-        dirtylog('Clearing the beforeunload event');
-        $(window).unbind('beforeunload', beforeunloadBindFn);
-        window.onbeforeunload = null;
-        $(document).trigger('beforeunload.dirtyforms');
     };
 
     var refire = function (e) {
