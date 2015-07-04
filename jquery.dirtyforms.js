@@ -366,16 +366,6 @@ License MIT
         $(document).trigger('beforeunload.dirtyforms');
     };
 
-    var isDifferentTarget = function ($element) {
-        var aTarget = $element.attr('target');
-        return typeof aTarget === 'string' ? aTarget.toLowerCase() === '_blank' : false;
-    };
-
-    var isFragment = function ($element) {
-        var aHref = $element.attr('href');
-        return typeof aHref === 'string' ? /^#/.test(aHref) : false;
-    };
-
     var isIgnored = function ($element) {
         return $element.closest('.' + $.DirtyForms.ignoreClass).length > 0 ||
             $element.is(getIgnoreSelector());
@@ -393,9 +383,12 @@ License MIT
     };
 
     var aBindFn = function (ev) {
-        var $a = $(this);
-        dirtylog('Anchor isIgnored: ' + isIgnored($a) + ', isDifferentTarget: ' + isDifferentTarget($a) + ', isFragment: ' + isFragment($a));
-        if (!isIgnored($a) && !isDifferentTarget($a) && !isFragment($a)) {
+        var $a = $(this),
+            isDifferentTarget = /^_blank$/i.test($a.attr('target')),
+            isFragment = /^#/.test($a.attr('href'));
+
+        dirtylog('Anchor isIgnored: ' + isIgnored($a) + ', isDifferentTarget: ' + isDifferentTarget + ', isFragment: ' + isFragment);
+        if (!isIgnored($a) && !isDifferentTarget && !isFragment) {
             bindFn(ev);
         }
     };
