@@ -489,7 +489,7 @@
             var event = new $.Event('click');
             $(e.target).trigger(event);
             if (!event.isDefaultPrevented()) {
-                var href = $(e.target).attr('href');
+                var href = $(e.target).closest('[href]').attr('href');
                 dirtylog('Sending location to ' + href);
                 location.href = href;
                 return;
