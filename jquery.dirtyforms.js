@@ -64,7 +64,7 @@ License MIT
                     $form.addClass(dirtyForms.listeningClass)
                         .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
                         .on('focus', dirtyForms.fieldSelector, onFocus)
-                        .on('click', "input[type='reset']", onReset);
+                        .on('reset', onReset);
                 }
             });
         },
@@ -338,10 +338,7 @@ License MIT
     };
 
     var onReset = function () {
-        var $fields = $(this).parents('form').find($.DirtyForms.fieldSelector);
-        $fields.each(function () {
-            setFieldStatus($(this));
-        });
+        setClean($(this));
     };
 
     var bindExit = function () {
