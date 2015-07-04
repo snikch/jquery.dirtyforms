@@ -50,23 +50,15 @@ License MIT
                 state.initialized = true;
             }
 
-            var dirtyForms = $.DirtyForms;
             dirtylog('Adding forms to watch');
-
-            return this.filter('form').each(function () {
+            this.filter('form:not(:dirtylistening)').each(function () {
                 var $form = $(this);
-                if (!$form.is(':dirtylistening')) {
-                    var $fields = $form.find(dirtyForms.fieldSelector);
-                    $fields.each(function () { storeOriginalValue($(this)); });
-                    $form.trigger('scan.dirtyforms', [$form]);
-
-                    dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
-                    $form.addClass(dirtyForms.listeningClass)
-                        .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
-                        .on('focus', dirtyForms.fieldSelector, onFocus)
-                        .on('reset', onReset);
-                }
+                var $fields = $form.find($.DirtyForms.fieldSelector);
+                $fields.each(function () { storeOriginalValue($(this)); });
+                $form.trigger('scan.dirtyforms', [$form])
+                     .dirtyForms('listen');
             });
+            return this;
         },
         // Returns true if any of the supplied elements are dirty
         isDirty: function () {
@@ -85,37 +77,45 @@ License MIT
         // Scans the selected form(s) for any fields that were added dynamically 
         // and tracks their original values.
         scan: function () {
-            return this.filter('form').each(function () {
+            this.filter('form').dirtyForms('listen').each(function () {
                 var $form = $(this);
-                if (!$form.is(':dirtylistening')) {
-                    dirtylog('Scanning form ' + $form.attr('id') + ' for new fields');
-                    var $fields = $form.find($.DirtyForms.fieldSelector);
-                    $fields.each(function () {
-                        var $field = $(this);
-                        if (!hasOriginalValue($field)) {
-                            dirtylog('Start tracking field value of ' + $field.attr('name'));
-                            storeOriginalValue($field);
-                        }
-                    });
-                    $form.trigger('scan.dirtyforms', [$form]);
-                }
+                dirtylog('Scanning form ' + $form.attr('id') + ' for new fields');
+                var $fields = $form.find($.DirtyForms.fieldSelector);
+                $fields.each(function () {
+                    var $field = $(this);
+                    if (!hasOriginalValue($field)) {
+                        dirtylog('Start tracking field value of ' + $field.attr('name'));
+                        storeOriginalValue($field);
+                    }
+                });
+                $form.trigger('scan.dirtyforms', [$form]);
             });
+            return this;
         },
         // Forgets the current dirty state and considers any changes 
         // after this point to be dirty.
         snapShot: function () {
-            return this.filter('form').each(function () {
+            this.filter('form').dirtyForms('listen').each(function () {
                 var $form = $(this);
-                if (!$form.is(':dirtylistening')) {
-                    dirtylog('Taking snapshot of form ' + $form.attr('id'));
-                    var $fields = $form.find($.DirtyForms.fieldSelector);
-                    $fields.each(function () {
-                        storeOriginalValue($(this));
-                    });
-                    setClean($form);
-                    $form.trigger('snapshot.dirtyforms', [$form]);
-                }
+                dirtylog('Taking snapshot of form ' + $form.attr('id'));
+                var $fields = $form.find($.DirtyForms.fieldSelector);
+                $fields.each(function () {
+                    storeOriginalValue($(this));
+                });
+                setClean($form);
+                $form.trigger('snapshot.dirtyforms', [$form]);
             });
+            return this;
+        },
+        // Begins listening for events on the selected forms.
+        listen: function () {
+            var dirtyForms = $.DirtyForms;
+            this.filter('form:not(:dirtylistening)')
+                .addClass(dirtyForms.listeningClass)
+                .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
+                .on('focus', dirtyForms.fieldSelector, onFocus)
+                .on('reset', onReset);
+            return this;
         }
     };
 
