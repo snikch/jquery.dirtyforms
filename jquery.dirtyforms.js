@@ -46,17 +46,23 @@ License MIT
                 // Override any default options
                 $.extend(true, $.DirtyForms, options);
                 bindExit();
-
                 state.initialized = true;
             }
 
             dirtylog('Adding forms to watch');
-            this.filter('form:not(:dirtylistening)').each(function () {
+            var dirtyForms = $.DirtyForms;
+
+            this.filter('form').each(function () {
                 var $form = $(this);
-                var $fields = $form.find($.DirtyForms.fieldSelector);
+                var $fields = $form.find(dirtyForms.fieldSelector);
                 $fields.each(function () { storeOriginalValue($(this)); });
+                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
                 $form.trigger('scan.dirtyforms', [$form])
-                     .dirtyForms('listen');
+                     .filter(':not(:dirtylistening)')
+                     .addClass(dirtyForms.listeningClass)
+                     .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
+                     .on('focus keydown', dirtyForms.fieldSelector, onFocus)
+                     .on('reset', onReset);
             });
             return this;
         },
@@ -73,49 +79,6 @@ License MIT
                 }
             }
             return false;
-        },
-        // Scans the selected form(s) for any fields that were added dynamically 
-        // and tracks their original values.
-        scan: function () {
-            this.filter('form').dirtyForms('listen').each(function () {
-                var $form = $(this);
-                dirtylog('Scanning form ' + $form.attr('id') + ' for new fields');
-                var $fields = $form.find($.DirtyForms.fieldSelector);
-                $fields.each(function () {
-                    var $field = $(this);
-                    if (!hasOriginalValue($field)) {
-                        dirtylog('Start tracking field value of ' + $field.attr('name'));
-                        storeOriginalValue($field);
-                    }
-                });
-                $form.trigger('scan.dirtyforms', [$form]);
-            });
-            return this;
-        },
-        // Forgets the current dirty state and considers any changes 
-        // after this point to be dirty.
-        snapShot: function () {
-            this.filter('form').dirtyForms('listen').each(function () {
-                var $form = $(this);
-                dirtylog('Taking snapshot of form ' + $form.attr('id'));
-                var $fields = $form.find($.DirtyForms.fieldSelector);
-                $fields.each(function () {
-                    storeOriginalValue($(this));
-                });
-                setClean($form);
-                $form.trigger('snapshot.dirtyforms', [$form]);
-            });
-            return this;
-        },
-        // Begins listening for events on the selected forms.
-        listen: function () {
-            var dirtyForms = $.DirtyForms;
-            this.filter('form:not(:dirtylistening)')
-                .addClass(dirtyForms.listeningClass)
-                .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
-                .on('focus', dirtyForms.fieldSelector, onFocus)
-                .on('reset', onReset);
-            return this;
         }
     };
 
@@ -226,13 +189,14 @@ License MIT
     };
 
     var storeOriginalValue = function ($field) {
+        dirtylog('Storing original value for ' + $field.attr('name'));
         $field.data('df-orig', getFieldValue($field));
-        var isEmpty = (typeof $field.data('df-orig') === 'undefined');
+        var isEmpty = ($field.data('df-orig') === undefined);
         $field.data('df-empty', isEmpty);
     };
 
     var hasOriginalValue = function ($field) {
-        return ($field.data('df-orig') || !$field.data('df-empty'));
+        return ($field.data('df-orig') !== undefined || $field.data('df-empty') === true);
     };
 
     var isFieldDirty = function ($field) {

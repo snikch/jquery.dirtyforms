@@ -216,16 +216,6 @@ $('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-
 Returns true if the provided element is considered dirty.
 
 
-#### `$('form#my-watched-form').dirtyForms('scan')`
-
-Scans the selected forms for any fields that were dynamically added to track their original values. Note that the default behavior tracks the original value of a field when it receives focus, so you only need to call this method in cases where the focus event doesn't fire (i.e. automation rather than user interaction).
-
-
-#### `$('form#my-watched-form').dirtyForms('snapShot')`
-
-Forgets the dirty state of the form and begins tracking the values from their current state. Any changes from the current state will cause the form to be dirty.
-
-
 #### `$.DirtyForms.choiceCommit( event )`
 
 This method should be called after the dialog is closed to commit the choice that was specified in `$.DirtyForms.choiceContinue()`. This method will cascade the call to either `$.DirtyForms.decidingContinue()` or `$.DirtyForms.decidingCancel()` automatically, so there is no need to use them in conjunction with this method.
@@ -278,9 +268,7 @@ $(document).bind('choicecommit.dirtyforms', function() {
 
 **clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')`. Passes the form (a jQuery object) as the first parameter.
 
-**scan.dirtyforms**: Raised after the form is scanned (whether during initialization or when calling the [scan method](#formmy-watched-formdirtyformsscan) explicitly). Passes the form (a jQuery object) as the first parameter.
-
-**snapshot.dirtyforms**: Raised after a snapshot is taken (fired by the [snapshot method](#formmy-watched-formdirtyformssnapshot)). Passes the form (a jQuery object) as the first parameter.
+**scan.dirtyforms**: Raised after the form is scanned for new fields (whether during initialization or when subsequently calling `.dirtyForms()`). Passes the form (a jQuery object) as the first parameter.
 
 **decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
 
