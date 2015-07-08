@@ -111,6 +111,35 @@ License MIT
                 });
             });
             return this;
+        },
+        // Scans the selected elements and descendants for any new fields and stores their original values.
+        // Ignores any original values that had been set previously.
+        rescan: function () {
+            dirtylog('rescan called');
+            var dirtyForms = $.DirtyForms;
+
+            this.not(':dirtyignored').each(function () {
+                var $node = $(this);
+
+                // Rescan helpers
+                $.each(dirtyForms.helpers, function (key, helper) {
+                    if ('rescan' in helper) {
+                        helper.rescan($node);
+                    }
+                });
+
+                // Work with node and all non-ignored descendants that match the fieldSelector
+                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).not(':dirtyignored').each(function () {
+                    var $field = $(this);
+
+                    // Skip previously added fields
+                    if (!hasOriginalValue($field)) {
+                        // Store the original value
+                        storeOriginalValue($field);
+                    }
+                });
+            });
+            return this;
         }
     };
 

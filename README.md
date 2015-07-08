@@ -214,7 +214,12 @@ Returns true if any non-ignored elements that match or are descendants of the se
 
 #### `$('form#my-watched-form').dirtyForms('setClean')`
 
-Marks all non-ignored fields that match the selector (or are descendants of the selector) clean. In other words, removes the `dirtyClass` and resets the state so any changes from the current point will cause the form to be dirty. If the operation marks all elements within a form clean, it will also mark the form clean even if it is not included in the selector.
+Marks all non-ignored fields that match the selector (or are descendants of the selector) clean. Also calls the `setClean` method of all nested helpers. In other words, removes the `dirtyClass` and resets the state so any changes from the current point will cause the form to be dirty. If the operation marks all elements within a form clean, it will also mark the form clean even if it is not included in the selector.
+
+
+#### `$('form#my-watched-form').dirtyForms('rescan')`
+
+Scans all non-ignored fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Note that the default behavior attempts to capture original values during focus and keydown events, but this method can be useful if you are doing automation that requires you have original values or you have helpers that are being dynamically added to the page.
 
 
 #### `$.DirtyForms.choiceCommit( event )`
@@ -324,16 +329,16 @@ $.DirtyForms.helpers.push(myHelper);
 
 ##### Members
 
-#### `isDirty( form )` (Optional)
+#### `isDirty( $node )` (Optional)
 
-Should return the dirty status of the helper. You can use jQuery to select all of the helpers within the form and test their dirty status.
+Should return the dirty status of the helper. You can use jQuery to select all of the helpers within the node and test their dirty status.
 
 ```javascript
-isDirty: function (form) {
+isDirty: function ($node) {
 	var isDirty = false;
 	
-	// Search for all tinymce elements inside the given form
-	$(form).find(':tinymce').each(function () {
+	// Search for all tinymce elements (either the current node or any nested elements).
+	$node.filter(':tinymce').add($node.find(':tinymce')).each(function () {
 
 		if ($(this).tinymce().isDirty()) {
 			isDirty = true;
@@ -347,15 +352,15 @@ isDirty: function (form) {
 ```
 
 
-#### `setClean( form )` (Optional)
+#### `setClean( $node )` (Optional)
 
 Should reset the dirty status of the helper so `isDirty(form)` will return false the next time it is called.
 
 ```javascript
-setClean: function (form) {
+setClean: function ($node) {
 
-	// Search for all tinymce elements inside the given form
-	$(form).find(':tinymce').each(function () {
+	// Search for all tinymce elements (either the current node or any nested elements).
+	$node.filter(':tinymce').add($node.find(':tinymce')).each(function () {
 		if ($(this).tinymce().isDirty()) {
 			//Force not dirty state
 			$(this).tinymce().isNotDirty = 1; 
@@ -364,6 +369,12 @@ setClean: function (form) {
 
 }
 ```
+
+#### `rescan( $node )` (Optional)
+
+If the helper requires extra logic in order to track the original state, this method can be used to track the values of any dynamically added elements.
+
+
 
 #### `ignoreSelector` (Optional Property)
 
@@ -383,11 +394,11 @@ To respect the way jQuery selectors work, all children of the form as well as th
 	var alwaysDirty = {
 		// Ignored anchors will not activate the dialog
 		ignoreAnchorSelector : '.editor a, a.toolbar',
-		isDirty : function(node){
+		isDirty : function($node){
 			// Perform dirty check on a given node (usually a form element)
 			return true;
 		},
-		setClean : function(node){
+		setClean : function($node){
 			// Perform logic to reset the node so the isDirty function will return true
 			// the next time it is called for this node.
 
@@ -398,14 +409,14 @@ To respect the way jQuery selectors work, all children of the form as well as th
 		// accomplished easily by using the .find() jQuery
 		// method.
 		//
-		// $(node).find('.mySelector').each(function(){
+		// $node.find('.mySelector').each(function(){
 		//     Run desired action against the child
 		//     node here
 		//     doSomething(this);
 		// });
 		// Run desired action against $(node) to handle the case
 		// of a selector for a specific DOM element
-		// if ($(node).hasClass('.mySelector')) { doSomething(node); }
+		// if ($node.hasClass('.mySelector')) { doSomething(node); }
 
 	}
 	// Push the new object onto the helpers array
