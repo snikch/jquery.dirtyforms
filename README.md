@@ -175,7 +175,6 @@ $.DirtyForms.title = 'Warning!!';
 | **title**  | string  | `Are you sure you want to do that?`  | Sets the title of the dialog (JavaScript/CSS dialog only).  |  
 | **message**  | string  | `You've made changes on this page which aren't saved. If you leave you will lose these changes.`  | Sets the message of the dialog (whether JavaScript/CSS dialog or the browser's built in dialog - note that some browsers do not show this message).   |   
 | **dirtyClass**  | string  | `dirty`  | The class applied to elements and forms when they're considered dirty. Note you can use this to style the elements to make them stand out if they are dirty (or for debugging).  |  
-| **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
 | **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
 | **ignoreSelector**  | string  | `''` | A jQuery selector that can be set to ignore specific elements.  |  
 | **fieldSelector**  | string  | `input:not([type='button'],[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search']),select,textarea` | A jQuery selector indicating which input fields to include in the scan. |  
@@ -189,14 +188,9 @@ $.DirtyForms.title = 'Warning!!';
 
 ## Public Methods
 
-#### ```$.DirtyForms.isDirty()```
-
-Returns true if any watched elements (that are not ignored) are considered dirty.
-
-
 #### ```$('form#my-watched-form').dirtyForms( options )```
 
-Starts watching the supplied elements (forms or parent containers of forms) for descendant input changes. This method can be called multiple times to add additional forms to watch that were dynamically added to the page. To watch all forms, simply use the `'form'` selector.
+Initializes Dirty Forms, overrides any of the default options, and stores the original values of the fields of all of the forms that match or are descendants of the selector. The `scan.dirtyforms` event is triggered for each form that is found. To scan all forms, simply use the `'form'` selector.
 
 ```javascript
 $('form').dirtyForms();
@@ -211,9 +205,11 @@ $('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-
 ```
 
 > For a list of available options, see [Options](#options).
+
+
 #### `var isDirty = $('form#my-watched-form').dirtyForms('isDirty')`
 
-Returns true if any non-ignored elements that match the selector are dirty.
+Returns true if any non-ignored elements that match or are descendants of the selector are dirty.
 
 
 #### `$('form#my-watched-form').dirtyForms('setClean')`
@@ -302,8 +298,6 @@ Also available is **defer.dirtyforms** for accessing elements on the page prior 
 ## Selectors
 
 **:dirty** will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
-
-**:dirtylistening** will select all elements that has the listening class attached. This should be all forms that are currently listening for change.
 
 **:dirtyignored** will select all elements that are currently ignored by Dirty Forms.
 

@@ -42,28 +42,29 @@ License MIT
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
         init: function (options) {
+            var dirtyForms = $.DirtyForms;
+
             if (!state.initialized) {
                 // Override any default options
                 $.extend(true, $.DirtyForms, options);
                 bindExit();
+
+                // Listen for events from all fields on all forms
+                $('body').on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
+                         .on('focus keydown', dirtyForms.fieldSelector, onFocus)
+                         .on('click', ':reset', onReset);
+
                 state.initialized = true;
             }
-
-            dirtylog('Adding forms to watch');
-            var dirtyForms = $.DirtyForms;
 
             // Work with all forms and descendant forms of the selector
             this.filter('form').add(this.find('form')).each(function () {
                 var $form = $(this);
+                dirtylog('Storing original field values for form ' + $form.attr('id'));
+
                 var $fields = $form.find(dirtyForms.fieldSelector);
                 $fields.each(function () { storeOriginalValue($(this)); });
-                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
-                $form.trigger('scan.dirtyforms', [$form])
-                     .filter(':not(:dirtylistening)')
-                     .addClass(dirtyForms.listeningClass)
-                     .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
-                     .on('focus keydown', dirtyForms.fieldSelector, onFocus)
-                     .on('click', ':reset', onReset);
+                $form.trigger('scan.dirtyforms', [$form]);
             });
             return this;
         },
@@ -115,9 +116,6 @@ License MIT
 
     // Custom selectors $('form:dirty')
     $.extend($.expr[":"], {
-        dirtylistening: function (a) {
-            return $(a).hasClass($.DirtyForms.listeningClass);
-        },
         dirty: function (a) {
             return $(a).hasClass($.DirtyForms.dirtyClass);
         },
@@ -144,7 +142,6 @@ License MIT
         message: 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
         title: 'Are you sure you want to do that?',
         dirtyClass: 'dirty',
-        listeningClass: 'dirtylisten',
         ignoreClass: 'ignoredirty',
         ignoreSelector: '',
         // exclude all HTML 4 except text and password, but include HTML 5 except search
@@ -160,10 +157,6 @@ License MIT
             dirtylog(msg);
         },
         /*</log>*/
-
-        isDirty: function () {
-            return $(':dirtylistening').dirtyForms('isDirty');
-        },
 
         choiceCommit: function (ev) {
             if (state.deciding) {
@@ -305,14 +298,11 @@ License MIT
 
     var onFieldChange = function () {
         var $field = $(this);
-        delay(function () {
-            setFieldStatus($field);
-        }, 100);
+        delay(function () { setFieldStatus($field); }, 100);
     };
 
     var onReset = function () {
         var $form = $(this).closest('form');
-
         // Need a delay here because reset is called before the state of the form is reset.
         setTimeout(function () { $form.dirtyForms('setClean'); }, 100);
     };
@@ -399,7 +389,7 @@ License MIT
             return false;
         }
 
-        if (!dirtyForms.isDirty()) {
+        if (!$('form').dirtyForms('isDirty')) {
             dirtylog('Leaving: Not dirty');
             clearUnload();
             return false;
