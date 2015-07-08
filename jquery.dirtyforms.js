@@ -217,7 +217,7 @@ License MIT
                     value += $option.val();
                 }
             });
-        } else if ($field.is("[type='checkbox'],[type='radio']")) {
+        } else if ($field.is(":checkbox,:radio")) {
             value = $field.is(':checked');
         } else {
             value = $field.val();
