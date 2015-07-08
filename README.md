@@ -305,6 +305,8 @@ Also available is **defer.dirtyforms** for accessing elements on the page prior 
 
 **:dirtylistening** will select all elements that has the listening class attached. This should be all forms that are currently listening for change.
 
+**:dirtyignored** will select all elements that are currently ignored by Dirty Forms.
+
 
 ## Helpers
 
