@@ -309,13 +309,14 @@ License MIT
     };
 
     var bindExit = function () {
-        var inIframe = (top !== self);
+        var inIframe = (top !== self),
+            anchorSelector = 'a[href]:not([target="_blank"])';
 
-        $(document).on('click', 'a[href]', aBindFn)
+        $(document).on('click', anchorSelector, aBindFn)
                    .on('submit', 'form', bindFn);
         $(window).bind('beforeunload', beforeunloadBindFn);
         if ($.DirtyForms.watchTopDocument && inIframe) {
-            $(top.document).on('click', 'a[href]', aBindFn)
+            $(top.document).on('click', anchorSelector, aBindFn)
                            .on('submit', 'form', bindFn);
             $(top.window).bind('beforeunload', beforeunloadBindFn);
         }
@@ -347,14 +348,7 @@ License MIT
     };
 
     var aBindFn = function (ev) {
-        var $a = $(this),
-            isDifferentTarget = /^_blank$/i.test($a.attr('target')),
-            isFragment = /^#/.test($a.attr('href'));
-
-        dirtylog('Anchor isIgnored: ' + isIgnored($a) + ', isDifferentTarget: ' + isDifferentTarget + ', isFragment: ' + isFragment);
-        if (!isIgnored($a) && !isDifferentTarget && !isFragment) {
-            bindFn(ev);
-        }
+        bindFn(ev);
     };
 
     var beforeunloadBindFn = function (ev) {
