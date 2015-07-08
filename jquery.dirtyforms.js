@@ -340,12 +340,12 @@ License MIT
         var inIframe = (top !== self),
             anchorSelector = 'a[href]:not([target="_blank"])';
 
-        $(document).on('click', anchorSelector, aBindFn)
-                   .on('submit', 'form', bindFn);
+        $(document).on('click', anchorSelector, nonCancelingBindFn)
+                   .on('submit', 'form', nonCancelingBindFn);
         $(window).bind('beforeunload', beforeunloadBindFn);
         if ($.DirtyForms.watchTopDocument && inIframe) {
-            $(top.document).on('click', anchorSelector, aBindFn)
-                           .on('submit', 'form', bindFn);
+            $(top.document).on('click', anchorSelector, nonCancelingBindFn)
+                           .on('submit', 'form', nonCancelingBindFn);
             $(top.window).bind('beforeunload', beforeunloadBindFn);
         }
     };
@@ -359,7 +359,7 @@ License MIT
         $(document).trigger('beforeunload.dirtyforms');
     };
 
-    var aBindFn = function (ev) {
+    var nonCancelingBindFn = function (ev) {
         bindFn(ev);
     };
 
