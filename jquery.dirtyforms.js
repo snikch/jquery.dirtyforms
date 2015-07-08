@@ -52,7 +52,8 @@ License MIT
             dirtylog('Adding forms to watch');
             var dirtyForms = $.DirtyForms;
 
-            this.filter('form').each(function () {
+            // Work with all forms and descendant forms of the selector
+            this.filter('form').add(this.find('form')).each(function () {
                 var $form = $(this);
                 var $fields = $form.find(dirtyForms.fieldSelector);
                 $fields.each(function () { storeOriginalValue($(this)); });
@@ -62,7 +63,7 @@ License MIT
                      .addClass(dirtyForms.listeningClass)
                      .on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
                      .on('focus keydown', dirtyForms.fieldSelector, onFocus)
-                     .on('reset', onReset);
+                     .on('click', ':reset', onReset);
             });
             return this;
         },
@@ -79,6 +80,43 @@ License MIT
                 }
             }
             return false;
+        },
+        // Marks the element(s) and any helpers within the element not dirty.
+        // If all of the fields in a form are marked not dirty, the form itself will be marked not dirty even
+        // if it is not included in the selector. Also resets original values to the current state - 
+        // essentially "forgetting" the node or its descendants are dirty.
+        setClean: function () {
+            dirtylog('setClean called');
+            var dirtyForms = $.DirtyForms,
+                dirtyClass = dirtyForms.dirtyClass;
+
+            return this.each(function () {
+                var $node = $(this);
+
+                // Skip the node if ignored
+                if (isIgnored($node)) return false;
+
+                // Clean helpers
+                $.each(dirtyForms.helpers, function (key, helper) {
+                    if ('setClean' in helper) {
+                        helper.setClean($node);
+                    }
+                });
+
+                // Work with node and all descendants that match the fieldSelector
+                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).each(function () {
+                    var $field = $(this);
+
+                    // Skip the field if ignored
+                    if (isIgnored($field)) return false;
+
+                    // Remove the dirty class
+                    setDirtyStatus($field, false);
+
+                    // Reset by storing the original value again
+                    storeOriginalValue($field);
+                });
+            });
         }
     };
 
@@ -206,13 +244,6 @@ License MIT
 
     var setFieldStatus = function ($field) {
         if (isIgnored($field)) return;
-        var setDirtyStatus = function ($field) {
-            if (isFieldDirty($field)) {
-                setDirty($field);
-            } else {
-                setClean($field);
-            }
-        };
 
         // Option groups are a special case because they change more than the current element.
         if ($field.is(':radio[name]')) {
@@ -220,61 +251,30 @@ License MIT
                 $form = $field.parents('form');
 
             $form.find(":radio[name='" + name + "']").each(function () {
-                setDirtyStatus($(this));
+                var $radio = $(this);
+                setDirtyStatus($radio, isFieldDirty($radio));
             });
         } else {
-            setDirtyStatus($field);
+            setDirtyStatus($field, isFieldDirty($field));
         }
     };
 
-    // Marks the element(s) (and their parent form) dirty
-    var setDirty = function ($element) {
-        dirtylog('setDirty called');
-        var dirtyClass = $.DirtyForms.dirtyClass;
+    var setDirtyStatus = function ($field, isDirty) {
+        dirtylog('Setting dirty status to ' + isDirty + ' on field ' + $field.attr('id'));
+        var dirtyClass = $.DirtyForms.dirtyClass,
+            $form = $field.parents('form');
 
-        $element.each(function () {
-            var $form = $(this).closest('form');
-            var changed = !$form.hasClass(dirtyClass);
-            $(this).addClass(dirtyClass);
-            if (changed) {
-                $form.addClass(dirtyClass)
-                     .trigger('dirty.dirtyforms', [$form]);
-            }
-        });
-    };
+        // Mark the field dirty/clean
+        $field.toggleClass(dirtyClass, isDirty);
+        var changed = (isDirty !== ($form.hasClass(dirtyClass) && $form.find(':dirty').length === 0));
 
-    // Marks the element(s), their parent form, and any helpers within the element not dirty
-    var setClean = function ($element) {
-        dirtylog('setClean called');
-        var dirtyForms = $.DirtyForms;
-        var dirtyClass = dirtyForms.dirtyClass;
+        if (changed) {
+            dirtylog('Setting dirty status to ' + isDirty + ' on form ' + $form.attr('id'));
+            $form.toggleClass(dirtyClass, isDirty);
 
-        $element.each(function () {
-            var node = this, $node = $(this);
-
-            // Clean helpers
-            $.each(dirtyForms.helpers, function (key, obj) {
-                if ("setClean" in obj) {
-                    obj.setClean(node);
-                }
-            });
-
-            // remove the current dirty class
-            $node.removeClass(dirtyClass);
-
-            if ($node.is('form')) {
-                // remove all dirty classes from children
-                $node.find(':dirty').removeClass(dirtyClass);
-                $node.trigger('clean.dirtyforms', [$node]);
-            } else {
-                // if this is last dirty child, set form clean
-                var $form = $node.parents('form');
-                if ($form.find(':dirty').length === 0 && $form.hasClass(dirtyClass)) {
-                    $form.removeClass(dirtyClass)
-                         .trigger('clean.dirtyforms', [$form]);
-                }
-            }
-        });
+            if (isDirty) $form.trigger('dirty.dirtyforms', [$form]);
+            if (!isDirty) $form.trigger('clean.dirtyforms', [$form]);
+        }
     };
 
     // A delay to keep the key events from slowing down when changing the dirty status on the fly.
@@ -302,7 +302,10 @@ License MIT
     };
 
     var onReset = function () {
-        setClean($(this));
+        var $form = $(this).closest('form');
+
+        // Need a delay here because reset is called before the state of the form is reset.
+        setTimeout(function () { $form.dirtyForms('setClean'); }, 100);
     };
 
     var bindExit = function () {

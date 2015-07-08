@@ -196,7 +196,7 @@ Returns true if any watched elements (that are not ignored) are considered dirty
 
 #### ```$('form#my-watched-form').dirtyForms( options )```
 
-Starts watching the supplied elements (forms) for descendant input changes. This method can be called multiple times to add additional forms to watch that were dynamically added to the page. To watch all forms, simply use the `'form'` selector.
+Starts watching the supplied elements (forms or parent containers of forms) for descendant input changes. This method can be called multiple times to add additional forms to watch that were dynamically added to the page. To watch all forms, simply use the `'form'` selector.
 
 ```javascript
 $('form').dirtyForms();
@@ -213,7 +213,12 @@ $('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-
 > For a list of available options, see [Options](#options).
 #### `var isDirty = $('form#my-watched-form').dirtyForms('isDirty')`
 
-Returns true if the provided element is considered dirty.
+Returns true if any non-ignored elements that match the selector are dirty.
+
+
+#### `$('form#my-watched-form').dirtyForms('setClean')`
+
+Marks all non-ignored fields that match the selector (or are descendants of the selector) clean. In other words, removes the `dirtyClass` and resets the state so any changes from the current point will cause the form to be dirty. If the operation marks all elements within a form clean, it will also mark the form clean even if it is not included in the selector.
 
 
 #### `$.DirtyForms.choiceCommit( event )`
