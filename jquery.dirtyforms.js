@@ -68,10 +68,10 @@ License MIT
             });
             return this;
         },
-        // Returns true if any of the supplied elements are dirty
+        // Returns true if any of the selected elements are dirty
         isDirty: function () {
-            if (this.not(':dirtyignored').is(':dirty')) return true;
-            if (this.find(':not(:dirtyignored)').is(':dirty')) return true;
+            var nonFormSelector = ':dirty:not(form)';
+            if (this.filter(nonFormSelector).length > 0 || this.find(nonFormSelector).length > 0) return true;
 
             var helpers = $.DirtyForms.helpers;
             for (var i = 0; i < helpers.length; i++) {
@@ -113,40 +113,44 @@ License MIT
             return this;
         },
         // Scans the selected elements and descendants for any new fields and stores their original values.
-        // Ignores any original values that had been set previously.
+        // Ignores any original values that had been set previously. Also resets the dirty status of all fields
+        // whose ignore status has changed since the last scan.
         rescan: function () {
             dirtylog('rescan called');
             var dirtyForms = $.DirtyForms;
 
-            this.not(':dirtyignored').each(function () {
+            return this.each(function () {
                 var $node = $(this);
 
-                // Rescan helpers
-                $.each(dirtyForms.helpers, function (key, helper) {
-                    if ('rescan' in helper) {
-                        helper.rescan($node);
-                    }
-                });
+                if (!$node.is(':dirtyignored')) {
+                    // Rescan helpers
+                    $.each(dirtyForms.helpers, function (key, helper) {
+                        if ('rescan' in helper) {
+                            helper.rescan($node);
+                        }
+                    });
+                }
 
                 // Work with node and all non-ignored descendants that match the fieldSelector
-                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).not(':dirtyignored').each(function () {
+                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).each(function () {
                     var $field = $(this);
 
                     // Skip previously added fields
-                    if (!hasOriginalValue($field)) {
+                    if (!hasOriginalValue($field) && !$node.is(':dirtyignored')) {
                         // Store the original value
                         storeOriginalValue($field);
                     }
+
+                    setDirtyStatus($field, isFieldDirty($field));
                 });
             });
-            return this;
         }
     };
 
     // Custom selectors $('form:dirty')
     $.extend($.expr[":"], {
         dirty: function (a) {
-            return $(a).hasClass($.DirtyForms.dirtyClass);
+            return $(a).not(':dirtyignored').hasClass($.DirtyForms.dirtyClass);
         },
         dirtyignored: function (a) {
             var dirtyForms = $.DirtyForms;
@@ -154,7 +158,7 @@ License MIT
             var getIgnoreSelector = function () {
                 var result = dirtyForms.ignoreSelector;
                 $.each(dirtyForms.helpers, function (key, obj) {
-                    if ("ignoreSelector" in obj) {
+                    if ('ignoreSelector' in obj) {
                         if (result.length > 0) { result += ','; }
                         result += obj.ignoreSelector;
                     }
@@ -236,8 +240,6 @@ License MIT
     };
 
     var getFieldValue = function ($field) {
-        if ($field.is(':dirtyignored')) return null;
-
         var value;
         if ($field.is('select')) {
             value = '';

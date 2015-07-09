@@ -219,7 +219,7 @@ Marks all non-ignored fields that match the selector (or are descendants of the 
 
 #### `$('form#my-watched-form').dirtyForms('rescan')`
 
-Scans all non-ignored fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Note that the default behavior attempts to capture original values during focus and keydown events, but this method can be useful if you are doing automation that requires you have original values or you have helpers that are being dynamically added to the page.
+Scans all non-ignored fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Also synchronizes the dirty state of all fields with any changes to the ignore status, which can be helpful if you are styling elements differently if they have the dirty class.
 
 
 #### `$.DirtyForms.choiceCommit( event )`
@@ -302,7 +302,7 @@ Also available is **defer.dirtyforms** for accessing elements on the page prior 
 
 ## Selectors
 
-**:dirty** will select all elements with the dirty class attached. form:dirty would be all forms that are currently dirty for example.
+**:dirty** will select all non-ignored elements with the dirty class attached. For example, `form:dirty` would select all non-ignored forms that are currently dirty.
 
 **:dirtyignored** will select all elements that are currently ignored by Dirty Forms.
 
