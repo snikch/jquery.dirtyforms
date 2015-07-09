@@ -50,7 +50,7 @@ License MIT
                 bindExit();
 
                 // Listen for events from all fields on all forms
-                $('body').on('change keyup input propertychange', dirtyForms.fieldSelector, onFieldChange)
+                $('body').on('change input propertychange keyup', dirtyForms.fieldSelector, onFieldChange)
                          .on('focus keydown', dirtyForms.fieldSelector, onFocus)
                          .on('click', ':reset', onReset);
 
@@ -327,9 +327,13 @@ License MIT
         }
     };
 
-    var onFieldChange = function () {
+    var onFieldChange = function (ev) {
         var $field = $(this);
-        delay(function () { setFieldStatus($field); }, 100);
+        if (ev.type !== 'change') {
+            delay(function () { setFieldStatus($field); }, 100);
+        } else {
+            setFieldStatus($field);
+        }
     };
 
     var onReset = function () {
