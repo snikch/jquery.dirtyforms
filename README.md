@@ -212,14 +212,22 @@ $('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-
 Returns true if any non-ignored elements that match or are descendants of the selector are dirty.
 
 
-#### `$('form#my-watched-form').dirtyForms('setClean')`
+#### `$('form#my-watched-form').dirtyForms('setClean', includeIgnored)`
 
-Marks all non-ignored fields that match the selector (or are descendants of the selector) clean. Also calls the `setClean` method of all nested helpers. In other words, removes the `dirtyClass` and resets the state so any changes from the current point will cause the form to be dirty. If the operation marks all elements within a form clean, it will also mark the form clean even if it is not included in the selector.
+Marks all fields that match the selector (or are descendants of the selector) clean. Also calls the `setClean` method of all nested helpers. In other words, removes the `dirtyClass` and resets the state so any changes from the current point will cause the form to be dirty. If the operation marks all elements within a form clean, it will also mark the form clean even if it is not included in the selector.
+
+##### includeIgnored (Optional)
+
+Set to true to include ignored fields in the operation. The default is false.
 
 
-#### `$('form#my-watched-form').dirtyForms('rescan')`
+#### `$('form#my-watched-form').dirtyForms('rescan', includeIgnored)`
 
-Scans all non-ignored fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Also synchronizes the dirty state of all fields with any changes to the ignore status, which can be helpful if you are styling elements differently if they have the dirty class.
+Scans all fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Also synchronizes the dirty state of fields with any changes to the ignore status, which can be helpful if you are styling elements differently if they have the dirty class (when the `includeIgnored` parameter is true).
+
+##### includeIgnored (Optional)
+
+Set to true to include ignored fields in the operation. The default is false.
 
 
 #### `$.DirtyForms.choiceCommit( event )`

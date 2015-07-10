@@ -85,44 +85,47 @@ License MIT
         // If all of the fields in a form are marked not dirty, the form itself will be marked not dirty even
         // if it is not included in the selector. Also resets original values to the current state - 
         // essentially "forgetting" the node or its descendants are dirty.
-        setClean: function () {
+        setClean: function (includeIgnored) {
             dirtylog('setClean called');
             var dirtyForms = $.DirtyForms;
 
-            this.not(':dirtyignored').each(function () {
+            return this.each(function () {
                 var $node = $(this);
 
-                // Clean helpers
-                $.each(dirtyForms.helpers, function (key, helper) {
-                    if ('setClean' in helper) {
-                        helper.setClean($node);
-                    }
-                });
+                if (includeIgnored || !$node.is(':dirtyignored')) {
+                    // Clean helpers
+                    $.each(dirtyForms.helpers, function (key, helper) {
+                        if ('setClean' in helper) {
+                            helper.setClean($node);
+                        }
+                    });
+                }
 
                 // Work with node and all non-ignored descendants that match the fieldSelector
-                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).not(':dirtyignored').each(function () {
+                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).each(function () {
                     var $field = $(this);
 
-                    // Remove the dirty class
-                    setDirtyStatus($field, false);
+                    if (includeIgnored || !$field.is(':dirtyignored')) {
+                        // Reset by storing the original value again
+                        storeOriginalValue($field);
 
-                    // Reset by storing the original value again
-                    storeOriginalValue($field);
+                        // Remove the dirty class
+                        setDirtyStatus($field, false);
+                    }
                 });
             });
-            return this;
         },
         // Scans the selected elements and descendants for any new fields and stores their original values.
         // Ignores any original values that had been set previously. Also resets the dirty status of all fields
         // whose ignore status has changed since the last scan.
-        rescan: function () {
+        rescan: function (includeIgnored) {
             dirtylog('rescan called');
             var dirtyForms = $.DirtyForms;
 
             return this.each(function () {
                 var $node = $(this);
 
-                if (!$node.is(':dirtyignored')) {
+                if (includeIgnored || !$node.is(':dirtyignored')) {
                     // Rescan helpers
                     $.each(dirtyForms.helpers, function (key, helper) {
                         if ('rescan' in helper) {
@@ -135,13 +138,16 @@ License MIT
                 $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).each(function () {
                     var $field = $(this);
 
-                    // Skip previously added fields
-                    if (!hasOriginalValue($field) && !$node.is(':dirtyignored')) {
-                        // Store the original value
-                        storeOriginalValue($field);
-                    }
+                    if (includeIgnored || !$field.is(':dirtyignored')) {
+                        // Skip previously added fields
+                        if (!hasOriginalValue($field)) {
+                            // Store the original value
+                            storeOriginalValue($field);
+                        }
 
-                    setDirtyStatus($field, isFieldDirty($field));
+                        // Set the dirty status
+                        setDirtyStatus($field, isFieldDirty($field));
+                    }
                 });
             });
         }
@@ -339,7 +345,7 @@ License MIT
     var onReset = function () {
         var $form = $(this).closest('form');
         // Need a delay here because reset is called before the state of the form is reset.
-        setTimeout(function () { $form.dirtyForms('setClean'); }, 100);
+        setTimeout(function () { $form.dirtyForms('setClean', true); }, 100);
     };
 
     var bindExit = function () {
