@@ -235,7 +235,7 @@ License MIT
         deciding: false,
         decidingEvent: false,
         clearDeciding: function () {
-            this.deciding = this.decidingEvent = this.dialogStash = false;
+            this.deciding = this.decidingEvent = this.dialogStash = $.DirtyForms.choiceContinue = false;
         }
     };
 
