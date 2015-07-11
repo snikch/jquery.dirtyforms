@@ -152,7 +152,7 @@ License MIT
 
     // Public General Plugin properties and methods $.DirtyForms
     $.DirtyForms = {
-        message: 'You\'ve made changes on this page which aren\'t saved. If you leave you will lose these changes.',
+        message: "You've made changes on this page which aren't saved. If you leave you will lose these changes.",
         title: 'Are you sure you want to do that?',
         dirtyClass: 'dirty',
         ignoreClass: 'ignoredirty',
