@@ -42,7 +42,7 @@ License MIT
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
         init: function (options) {
-            var dirtyForms = $.DirtyForms;
+            var fieldSelector = $.DirtyForms.fieldSelector;
 
             if (!state.initialized) {
                 // Override any default options
@@ -50,22 +50,18 @@ License MIT
                 bindExit();
 
                 // Listen for events from all fields on all forms
-                $('body').on('change input propertychange keyup', dirtyForms.fieldSelector, onFieldChange)
-                         .on('focus keydown', dirtyForms.fieldSelector, onFocus)
+                $('body').on('change input propertychange keyup', fieldSelector, onFieldChange)
+                         .on('focus keydown', fieldSelector, onFocus)
                          .on('click', ':reset', onReset);
 
                 state.initialized = true;
             }
 
-            // Work with all forms and descendant forms of the selector
-            this.filter('form').add(this.find('form')).each(function () {
-                var $form = $(this);
-                dirtylog('Storing original field values for form ' + $form.attr('id'));
+            // Store original values of the fields
+            elementsInRange(this, fieldSelector, true).each(function () {
+                storeOriginalValue($(this));
+            }).parents('form').trigger('scan.dirtyforms');
 
-                var $fields = $form.find(dirtyForms.fieldSelector);
-                $fields.each(function () { storeOriginalValue($(this)); });
-                $form.trigger('scan.dirtyforms', [$form]);
-            });
             return this;
         },
         // Returns true if any of the selected elements are dirty
@@ -87,69 +83,47 @@ License MIT
         // essentially "forgetting" the node or its descendants are dirty.
         setClean: function (includeIgnored) {
             dirtylog('setClean called');
-            var dirtyForms = $.DirtyForms;
 
-            return this.each(function () {
-                var $node = $(this);
+            var doSetClean = function () {
+                var $field = $(this);
 
-                if (includeIgnored || !$node.is(':dirtyignored')) {
-                    // Clean helpers
-                    $.each(dirtyForms.helpers, function (key, helper) {
-                        if ('setClean' in helper) {
-                            helper.setClean($node);
-                        }
-                    });
-                }
+                // Reset by storing the original value again
+                storeOriginalValue($field);
 
-                // Work with node and all non-ignored descendants that match the fieldSelector
-                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).each(function () {
-                    var $field = $(this);
+                // Remove the dirty class
+                setDirtyStatus($field, false);
+            };
 
-                    if (includeIgnored || !$field.is(':dirtyignored')) {
-                        // Reset by storing the original value again
-                        storeOriginalValue($field);
+            elementsInRange(this, $.DirtyForms.fieldSelector, includeIgnored)
+                .each(doSetClean)
+                .parents('form').trigger('setclean.dirtyforms', [includeIgnored]);
 
-                        // Remove the dirty class
-                        setDirtyStatus($field, false);
-                    }
-                });
-            });
+            return fireHelperMethod(this, 'setClean', includeIgnored);
         },
         // Scans the selected elements and descendants for any new fields and stores their original values.
         // Ignores any original values that had been set previously. Also resets the dirty status of all fields
         // whose ignore status has changed since the last scan.
         rescan: function (includeIgnored) {
             dirtylog('rescan called');
-            var dirtyForms = $.DirtyForms;
 
-            return this.each(function () {
-                var $node = $(this);
+            var doRescan = function () {
+                var $field = $(this);
 
-                if (includeIgnored || !$node.is(':dirtyignored')) {
-                    // Rescan helpers
-                    $.each(dirtyForms.helpers, function (key, helper) {
-                        if ('rescan' in helper) {
-                            helper.rescan($node);
-                        }
-                    });
+                // Skip previously added fields
+                if (!hasOriginalValue($field)) {
+                    // Store the original value
+                    storeOriginalValue($field);
                 }
 
-                // Work with node and all non-ignored descendants that match the fieldSelector
-                $node.filter(dirtyForms.fieldSelector).add($node.find(dirtyForms.fieldSelector)).each(function () {
-                    var $field = $(this);
+                // Set the dirty status
+                setDirtyStatus($field, isFieldDirty($field));
+            };
 
-                    if (includeIgnored || !$field.is(':dirtyignored')) {
-                        // Skip previously added fields
-                        if (!hasOriginalValue($field)) {
-                            // Store the original value
-                            storeOriginalValue($field);
-                        }
+            elementsInRange(this, $.DirtyForms.fieldSelector, includeIgnored)
+                .each(doRescan)
+                .parents('form').trigger('rescan.dirtyforms', [includeIgnored]);
 
-                        // Set the dirty status
-                        setDirtyStatus($field, isFieldDirty($field));
-                    }
-                });
-            });
+            return fireHelperMethod(this, 'rescan', includeIgnored);
         }
     };
 
@@ -183,7 +157,7 @@ License MIT
         dirtyClass: 'dirty',
         ignoreClass: 'ignoredirty',
         ignoreSelector: '',
-        // exclude all HTML 4 except text and password, but include HTML 5 except search
+        // exclude all HTML 4 except checkbox, option, text and password, but include HTML 5 except search
         fieldSelector: "input:not([type='button'],[type='image'],[type='submit']," +
             "[type='reset'],[type='file'],[type='search']),select,textarea",
         watchTopDocument: false,
@@ -243,6 +217,26 @@ License MIT
         clearDeciding: function () {
             this.deciding = this.decidingEvent = this.dialogStash = $.DirtyForms.choiceContinue = false;
         }
+    };
+
+    var elementsInRange = function ($this, selector, includeIgnored) {
+        var $elements = $this.filter(selector).add($this.find(selector));
+        if (!includeIgnored) {
+            $elements = $elements.not(':dirtyignored');
+        }
+        return $elements;
+    };
+
+    var fireHelperMethod = function ($this, method, includeIgnored) {
+        return $this.each(function () {
+            var $node = $(this);
+
+            if (includeIgnored || !$node.is(':dirtyignored')) {
+                $.each($.DirtyForms.helpers, function (key, helper) {
+                    if (helper[method]) { helper[method]($node); }
+                });
+            }
+        });
     };
 
     var getFieldValue = function ($field) {
@@ -311,8 +305,8 @@ License MIT
             dirtylog('Setting dirty status to ' + isDirty + ' on form ' + $form.attr('id'));
             $form.toggleClass(dirtyClass, isDirty);
 
-            if (isDirty) $form.trigger('dirty.dirtyforms', [$form]);
-            if (!isDirty) $form.trigger('clean.dirtyforms', [$form]);
+            if (isDirty) $form.trigger('dirty.dirtyforms');
+            if (!isDirty) $form.trigger('clean.dirtyforms');
         }
     };
 

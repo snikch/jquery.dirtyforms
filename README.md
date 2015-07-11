@@ -270,6 +270,36 @@ This method will return true if the dialog has fired and neither `$.DirtyForms.d
 
 ## Triggers
 
+#### Form Triggers
+
+Simply bind a function to any of these hooks to respond to the corresponding trigger. The form that triggered the event can be accessed through the `event.target` property.
+
+```javascript
+$(document).bind('dirty.dirtyforms', function(event) { 
+	// Access the form that triggered the event
+    var $form = $(event.target);
+});
+
+// Or, bind to a specific form to listen for the event
+$('form#my-form').bind('dirty.dirtyforms', function () {
+
+});
+```
+
+**dirty.dirtyforms**: Raised when a form changes from clean state to dirty state.
+
+**clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')`.
+
+**scan.dirtyforms**: Raised after the form is scanned for new fields (whether during initialization or when subsequently calling `.dirtyForms()`).
+
+**rescan.dirtyforms**: Raised after the form is rescanned for new fields (when calling `.dirtyForms('rescan')`).
+
+**setClean.dirtyforms**: Raised after the `.dirtyForms('setClean')`) method is called.
+
+
+
+#### Document Triggers
+
 Simply bind a function to any of these hooks to respond to the corresponding trigger.
 
 ```javascript
@@ -278,21 +308,16 @@ $(document).bind('choicecommit.dirtyforms', function() {
 });
 ```
 
-**dirty.dirtyforms**: Raised when a form changes from clean state to dirty state. Passes the form (a jQuery object) as the first parameter.
 
-**clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')`. Passes the form (a jQuery object) as the first parameter.
+**decidingcancelled.dirtyforms**: Raised when the `$.DirtyForms.decidingCancel()` method is called before it runs any actions.
 
-**scan.dirtyforms**: Raised after the form is scanned for new fields (whether during initialization or when subsequently calling `.dirtyForms()`). Passes the form (a jQuery object) as the first parameter.
+**decidingcancelledAfter.dirtyforms**: Raised when the `$.DirtyForms.decidingCancel()` method is called after it runs all actions.
 
-**decidingcancelled.dirtyforms**: Raised when the *decidingCancel()* method is called before it runs any actions.
+**decidingcontinued.dirtyforms**: Raised when the `$.DirtyForms.decidingContinue()` method is called before it runs any actions.
 
-**decidingcancelledAfter.dirtyforms**: Raised when the *decidingCancel()* method is called after it runs all actions.
+**choicecommit.dirtyforms**: Raised when the `$.DirtyForms.choiceCommit` method is called before it runs any actions.
 
-**decidingcontinued.dirtyforms**: Raised when the *decidingContinue()* method is called before it runs any actions.
-
-**choicecommit.dirtyforms**: Raised when the *choiceCommit* method is called before it runs any actions.
-
-**choicecommitAfter.dirtyforms**: Raised when the *choiceCommit* method is called after it runs all actions.
+**choicecommitAfter.dirtyforms**: Raised when the `$.DirtyForms.choiceCommit` method is called after it runs all actions.
 
 **defer.dirtyforms**: Raised prior to showing the dialog box to the user.
 
