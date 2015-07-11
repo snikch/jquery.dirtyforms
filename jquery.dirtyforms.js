@@ -50,7 +50,7 @@ License MIT
                 bindExit();
 
                 // Listen for events from all fields on all forms
-                $('body').on('change input propertychange keyup', fieldSelector, onFieldChange)
+                $(document).on('change input propertychange keyup', fieldSelector, onFieldChange)
                          .on('focus keydown', fieldSelector, onFocus)
                          .on('click', ':reset', onReset);
 
