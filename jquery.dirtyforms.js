@@ -59,24 +59,32 @@ License MIT
 
             return this;
         },
-        // Returns true if any of the selected elements are dirty
-        isDirty: function () {
+        // Returns true if any of the selected elements or their children are dirty
+        isDirty: function (excludeHelpers) {
             var nonFormSelector = ':dirty:not(form)';
             if (this.filter(nonFormSelector).length > 0 || this.find(nonFormSelector).length > 0) return true;
 
-            var helpers = $.DirtyForms.helpers;
-            for (var i = 0; i < helpers.length; i++) {
-                if ('isDirty' in helpers[i] && helpers[i].isDirty(this)) {
-                    return true;
-                }
+            var isDirty = false;
+            if (!excludeHelpers) {
+                this.not(':dirtyignored').each(function (index) {
+                    var $node = $(this);
+
+                    $.each($.DirtyForms.helpers, function (i, helper) {
+                        if (helper.isDirty && helper.isDirty($node, index)) {
+                            isDirty = true;
+                            return false;
+                        }
+                    });
+                });
+
             }
-            return false;
+            return isDirty;
         },
         // Marks the element(s) and any helpers within the element not dirty.
         // If all of the fields in a form are marked not dirty, the form itself will be marked not dirty even
         // if it is not included in the selector. Also resets original values to the current state - 
         // essentially "forgetting" the node or its descendants are dirty.
-        setClean: function (includeIgnored) {
+        setClean: function (excludeIgnored, excludeHelpers) {
             dirtylog('setClean called');
 
             var doSetClean = function () {
@@ -89,16 +97,17 @@ License MIT
                 setDirtyStatus($field, false);
             };
 
-            elementsInRange(this, $.DirtyForms.fieldSelector, includeIgnored)
+            elementsInRange(this, $.DirtyForms.fieldSelector, excludeIgnored)
                 .each(doSetClean)
-                .parents('form').trigger('setclean.dirtyforms', [includeIgnored]);
+                .parents('form').trigger('setclean.dirtyforms', [excludeIgnored]);
 
-            return fireHelperMethod(this, 'setClean', includeIgnored);
+            if (excludeHelpers) return this;
+            return fireHelperMethod(this, 'setClean', excludeIgnored);
         },
         // Scans the selected elements and descendants for any new fields and stores their original values.
         // Ignores any original values that had been set previously. Also resets the dirty status of all fields
         // whose ignore status has changed since the last scan.
-        rescan: function (includeIgnored) {
+        rescan: function (excludeIgnored, excludeHelpers) {
             dirtylog('rescan called');
 
             var doRescan = function () {
@@ -114,11 +123,12 @@ License MIT
                 setDirtyStatus($field, isFieldDirty($field));
             };
 
-            elementsInRange(this, $.DirtyForms.fieldSelector, includeIgnored)
+            elementsInRange(this, $.DirtyForms.fieldSelector, excludeIgnored)
                 .each(doRescan)
-                .parents('form').trigger('rescan.dirtyforms', [includeIgnored]);
+                .parents('form').trigger('rescan.dirtyforms', [excludeIgnored]);
 
-            return fireHelperMethod(this, 'rescan', includeIgnored);
+            if (excludeHelpers) return this;
+            return fireHelperMethod(this, 'rescan', excludeIgnored);
         }
     };
 
@@ -242,7 +252,7 @@ License MIT
         onReset: function () {
             var $form = $(this).closest('form');
             // Need a delay here because reset is called before the state of the form is reset.
-            setTimeout(function () { $form.dirtyForms('setClean', true); }, 100);
+            setTimeout(function () { $form.dirtyForms('setClean'); }, 100);
         },
         onAnchorClick: function (ev) {
             bindFn(ev);
@@ -297,21 +307,21 @@ License MIT
         }
     };
 
-    var elementsInRange = function ($this, selector, includeIgnored) {
+    var elementsInRange = function ($this, selector, excludeIgnored) {
         var $elements = $this.filter(selector).add($this.find(selector));
-        if (!includeIgnored) {
+        if (excludeIgnored) {
             $elements = $elements.not(':dirtyignored');
         }
         return $elements;
     };
 
-    var fireHelperMethod = function ($this, method, includeIgnored) {
-        return $this.each(function () {
+    var fireHelperMethod = function ($this, method, excludeIgnored) {
+        return $this.each(function (index) {
             var $node = $(this);
 
-            if (includeIgnored || !$node.is(':dirtyignored')) {
-                $.each($.DirtyForms.helpers, function (key, helper) {
-                    if (helper[method]) { helper[method]($node); }
+            if (!excludeIgnored || !$node.is(':dirtyignored')) {
+                $.each($.DirtyForms.helpers, function (i, helper) {
+                    if (helper[method]) { helper[method]($node, index, excludeIgnored); }
                 });
             }
         });

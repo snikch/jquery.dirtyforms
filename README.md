@@ -114,12 +114,16 @@ $('form.sodirty').dirtyForms();
 // Enable Debugging
 $.DirtyForms.debug = true;
 
-// Two custom selectors are available
-// Select all forms that are dirty
-$('form:dirty');
+// Select all forms that are dirty, and set them clean.
+// This will make them forget the current dirty state and any changes
+// after this call will make the form dirty again.
+$('form:dirty').dirtyForms('setClean');
 
-// Select all forms that are being watched for changes
-$('form:dirtylistening');
+// Rescan to sync the dirty state with any dynamically added forms/fields
+// or changes to the ignore state. This comes in handy when styling fields
+// with CSS that are dirty.
+$('form').dirtyForms('rescan');
+
 ```
 
 ## Ignoring Things
@@ -136,10 +140,10 @@ Alternatively, add the value of `$.DirtyForms.ignoreClass` to any elements you w
 $('#ignored-element').addClass($.DirtyForms.ignoreClass);
 ```
 
-If you want to ignore more than one element at a time, you can add the value of `$.DirtyForms.ignoreClass` (with the default value `dirtyignore`) to a containing element.
+If you want to ignore more than one element at a time, you can add the value of `$.DirtyForms.ignoreClass` (with the default value `ignoredirty`) to a containing element.
 
 ```HTML
-<div class="dirtyignore">
+<div class="ignoredirty">
 
     <!-- Everything here will be ignored - anchor, input, textarea, and select -->
 
@@ -206,27 +210,39 @@ $('form').dirtyForms({ message: 'You better save first.', dirtyClass: 'sooooooo-
 > For a list of available options, see [Options](#options).
 
 
-#### `var isDirty = $('form#my-watched-form').dirtyForms('isDirty')`
+#### `var isDirty = $('form#my-watched-form').dirtyForms('isDirty', excludeHelpers)`
 
 Returns true if any non-ignored elements that match or are descendants of the selector are dirty.
 
+##### excludeHelpers (Optional)
 
-#### `$('form#my-watched-form').dirtyForms('setClean', includeIgnored)`
+Set to true to exclude helpers from the operation. The default is false.
+
+
+#### `$('form#my-watched-form').dirtyForms('setClean', excludeIgnored, excludeHelpers)`
 
 Marks all fields that match the selector (or are descendants of the selector) clean. Also calls the `setClean` method of all nested helpers. In other words, removes the `dirtyClass` and resets the state so any changes from the current point will cause the form to be dirty. If the operation marks all elements within a form clean, it will also mark the form clean even if it is not included in the selector.
 
-##### includeIgnored (Optional)
+##### excludeIgnored (Optional)
 
-Set to true to include ignored fields in the operation. The default is false.
+Set to true to exclude ignored fields from the operation. The default is false.
+
+##### excludeHelpers (Optional)
+
+Set to true to exclude helpers from the operation. The default is false.
 
 
-#### `$('form#my-watched-form').dirtyForms('rescan', includeIgnored)`
+#### `$('form#my-watched-form').dirtyForms('rescan', excludeIgnored, excludeHelpers)`
 
-Scans all fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Also synchronizes the dirty state of fields with any changes to the ignore status, which can be helpful if you are styling elements differently if they have the dirty class (when the `includeIgnored` parameter is true).
+Scans all fields that match the selector (or are descendants of the selector) and stores their original values of any dynamically added fields. Also calls the `rescan` method of all nested helpers. Ignores any original values that had been set previously during prior scans or the `.dirtyForms('setClean')` method. Also synchronizes the dirty state of fields with any changes to the ignore status, which can be helpful if you are styling elements differently if they have the dirty class.
 
-##### includeIgnored (Optional)
+##### excludeIgnored (Optional)
 
-Set to true to include ignored fields in the operation. The default is false.
+Set to true to exclude ignored fields from the operation. The default is false.
+
+##### excludeHelpers (Optional)
+
+Set to true to exclude helpers from the operation. The default is false.
 
 
 #### `$.DirtyForms.choiceCommit( event )`
@@ -343,7 +359,7 @@ Also available is **defer.dirtyforms** for accessing elements on the page prior 
 
 ## Helpers
 
-Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this, you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
+Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this system you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
 
 This is useful when you're using replacement inputs or textarea, such as with TinyMCE or CKEditor. See [Available Helpers](#available-helpers).
 
@@ -363,7 +379,7 @@ $.DirtyForms.helpers.push(myHelper);
 
 ##### Members
 
-#### `isDirty( $node )` (Optional)
+#### `isDirty( $node, index )` (Optional)
 
 Should return the dirty status of the helper. You can use jQuery to select all of the helpers within the node and test their dirty status.
 
@@ -386,7 +402,7 @@ isDirty: function ($node) {
 ```
 
 
-#### `setClean( $node )` (Optional)
+#### `setClean( $node, index, excludeIgnored )` (Optional)
 
 Should reset the dirty status of the helper so `isDirty(form)` will return false the next time it is called.
 
@@ -404,9 +420,9 @@ setClean: function ($node) {
 }
 ```
 
-#### `rescan( $node )` (Optional)
+#### `rescan( $node, index, excludeIgnored )` (Optional)
 
-If the helper requires extra logic in order to track the original state, this method can be used to track the values of any dynamically added elements.
+If the helper requires extra logic in order to track the original state, this method can be used to track the values of any elements that were dynamically added since the last scan or rescan.
 
 
 
@@ -462,7 +478,7 @@ See the [TinyMCE Helper Source Code](https://github.com/snikch/jquery.dirtyforms
 
 ## Dialogs
 
-The default browser dialog can be overriden by setting a new dialog object, and providing implementations for the following members.
+The default browser dialog can be overridden by setting a new dialog object, and providing implementations for the following members.
 
 #### `fire(message, title)` (Required)
 
@@ -874,5 +890,33 @@ $(document).bind('bind.dirtyforms', function (ev, events) {
         }
     };
 });
+
+
+// With either of the above 2 options, optionally add a helper
+// so the dirty state of the top document can be maintained.
+// We pass in the true parameter to ignore helpers so we don't
+// get a recursive loop.
+var topDocumentHelper = {
+    isNotTopDocument: window.top !== window.self,
+    isDirty: function ($node, index) {
+        // Prevent from calling when the window is not in
+        // an IFrame and there is no need to execute for every node.
+        if (this.isNotTopDocument && index === 0) {
+            return $(window.top.document).dirtyForms('isDirty', true);
+        }
+        return false;
+    },
+    setClean: function ($node, index, excludeIgnored) {
+        if (this.isNotTopDocument && index === 0) {
+            $(window.top.document).dirtyForms('setClean', excludeIgnored, true);
+        }
+    },
+    rescan: function ($node, index, excludeIgnored) {
+        if (this.isNotTopDocument && index === 0) {
+            $(window.top.document).dirtyForms('rescan', excludeIgnored, true);
+        }
+    }
+};
+$.DirtyForms.helpers.push(topDocumentHelper);
 
 ```
