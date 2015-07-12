@@ -47,7 +47,12 @@ License MIT
             if (!state.initialized) {
                 // Override any default options
                 $.extend(true, $.DirtyForms, options);
-                bindExit();
+
+                bindExit(window, document, false);
+                if ($.DirtyForms.watchTopDocument && state.inIFrame) {
+                    dirtylog('Hosted within IFrame - binding');
+                    bindExit(window.top, window.top.document, true);
+                }
 
                 // Listen for events from all fields on all forms
                 $(document).on('change input propertychange keyup', fieldSelector, onFieldChange)
@@ -210,6 +215,7 @@ License MIT
     // Private State Management
     var state = {
         initialized: false,
+        inIFrame: window.top !== window.self,
         formStash: false,
         dialogStash: false,
         deciding: false,
@@ -342,18 +348,11 @@ License MIT
         setTimeout(function () { $form.dirtyForms('setClean', true); }, 100);
     };
 
-    var bindExit = function () {
-        var inIframe = (top !== self),
-            anchorSelector = 'a[href]:not([target="_blank"])';
-
-        $(document).on('click', anchorSelector, nonCancelingBindFn)
-                   .on('submit', 'form', nonCancelingBindFn);
-        $(window).bind('beforeunload', beforeunloadBindFn);
-        if ($.DirtyForms.watchTopDocument && inIframe) {
-            $(top.document).on('click', anchorSelector, nonCancelingBindFn)
-                           .on('submit', 'form', nonCancelingBindFn);
-            $(top.window).bind('beforeunload', beforeunloadBindFn);
-        }
+    var bindExit = function (window, document, isTopDocument) {
+        var data = { isTopDocument: isTopDocument };
+        $(document).on('click', 'a[href]:not([target="_blank"])', data, nonCancelingBindFn)
+                   .on('submit', 'form', data, nonCancelingBindFn);
+        $(window).bind('beforeunload', data, beforeunloadBindFn);
     };
 
     var clearUnload = function () {
@@ -472,20 +471,29 @@ License MIT
             dirtyForms.dialog.bind();
     };
 
-    var refire = function (e) {
+    var refire = function (ev) {
         $(document).trigger('beforeRefire.dirtyforms');
-        if (e.type === 'click') {
+
+        if (ev.type === 'click') {
             dirtylog("Refiring click event");
             var event = new $.Event('click');
-            $(e.target).trigger(event);
+            $(ev.target).trigger(event);
             if (!event.isDefaultPrevented()) {
-                var href = $(e.target).closest('[href]').attr('href');
-                dirtylog('Sending location to ' + href);
-                location.href = href;
-                return;
+                var $a = $(ev.target).closest('[href]'),
+                    href = $a.attr('href'),
+                    isLocal = $a[0].host === window.location.host;
+
+                if (ev.data.isTopDocument || !isLocal) {
+                    // For IFrame and non-local, redirect top document
+                    dirtylog('Sending top location to ' + href);
+                    window.top.location.href = href;
+                } else {
+                    dirtylog('Sending location to ' + href);
+                    window.location.href = href;
+                }
             }
         } else {
-            dirtylog("Refiring " + e.type + " event on " + e.target);
+            dirtylog("Refiring " + ev.type + " event on " + ev.target);
             var target;
             if (state.formStash) {
                 dirtylog('Appending stashed form to body');
@@ -493,9 +501,9 @@ License MIT
                 $('body').append(target);
             }
             else {
-                target = $(e.target).closest('form');
+                target = $(ev.target).closest('form');
             }
-            target.trigger(e.type);
+            target.trigger(ev.type);
         }
     };
 
