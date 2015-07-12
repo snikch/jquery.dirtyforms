@@ -42,28 +42,18 @@ License MIT
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
         init: function (options) {
-            var fieldSelector = $.DirtyForms.fieldSelector;
-
             if (!state.initialized) {
                 // Override any default options
                 $.extend(true, $.DirtyForms, options);
 
-                bindExit(window, document, false);
-                if ($.DirtyForms.watchTopDocument && state.inIFrame) {
-                    dirtylog('Hosted within IFrame - binding');
-                    bindExit(window.top, window.top.document, true);
-                }
-
-                // Listen for events from all fields on all forms
-                $(document).on('change input propertychange keyup', fieldSelector, onFieldChange)
-                         .on('focus keydown', fieldSelector, onFocus)
-                         .on('click', ':reset', onReset);
+                $(document).trigger('bind.dirtyforms', [events]);
+                events.bind(window, document, {});
 
                 state.initialized = true;
             }
 
             // Store original values of the fields
-            elementsInRange(this, fieldSelector, true).each(function () {
+            elementsInRange(this, $.DirtyForms.fieldSelector, true).each(function () {
                 storeOriginalValue($(this));
             }).parents('form').trigger('scan.dirtyforms');
 
@@ -165,7 +155,6 @@ License MIT
         // exclude all HTML 4 except checkbox, option, text and password, but include HTML 5 except search
         fieldSelector: "input:not([type='button'],[type='image'],[type='submit']," +
             "[type='reset'],[type='file'],[type='search']),select,textarea",
-        watchTopDocument: false,
         choiceContinue: false,
         helpers: [],
         dialog: false,
@@ -193,7 +182,7 @@ License MIT
         },
 
         decidingContinue: function (ev) {
-            clearUnload(); // fix for chrome/safari
+            events.clearUnload(); // fix for chrome/safari
             ev.preventDefault();
             $(document).trigger('decidingcontinued.dirtyforms');
             refire(state.decidingEvent);
@@ -215,13 +204,96 @@ License MIT
     // Private State Management
     var state = {
         initialized: false,
-        inIFrame: window.top !== window.self,
         formStash: false,
         dialogStash: false,
         deciding: false,
         decidingEvent: false,
         clearDeciding: function () {
             this.deciding = this.decidingEvent = this.dialogStash = $.DirtyForms.choiceContinue = false;
+        }
+    };
+
+    // Event management
+    var events = {
+        bind: function (window, document, data) {
+            $(window).bind('beforeunload', data, this.onBeforeUnload);
+
+            $(document).on('click', 'a[href]:not([target="_blank"])', data, this.onAnchorClick)
+                       .on('submit', 'form', data, this.onSubmit)
+                       .on('change input propertychange keyup', $.DirtyForms.fieldSelector, data, this.onFieldChange)
+                       .on('focus keydown', $.DirtyForms.fieldSelector, data, this.onFocus)
+                       .on('reset', 'form', data, this.onReset);
+        },
+        // For any fields added after the form was initialized, store the value when focused.
+        onFocus: function () {
+            var $field = $(this);
+            if (!hasOriginalValue($field)) {
+                storeOriginalValue($field);
+            }
+        },
+        onFieldChange: function (ev) {
+            var $field = $(this);
+            if (ev.type !== 'change') {
+                delay(function () { setFieldStatus($field); }, 100);
+            } else {
+                setFieldStatus($field);
+            }
+        },
+        onReset: function () {
+            var $form = $(this).closest('form');
+            // Need a delay here because reset is called before the state of the form is reset.
+            setTimeout(function () { $form.dirtyForms('setClean', true); }, 100);
+        },
+        onAnchorClick: function (ev) {
+            bindFn(ev);
+        },
+        onSubmit: function (ev) {
+            bindFn(ev);
+        },
+        onBeforeUnload: function (ev) {
+            var result = bindFn(ev);
+
+            if (result && state.doubleunloadfix !== true) {
+                dirtylog('Before unload will be called, resetting');
+                state.deciding = false;
+            }
+
+            state.doubleunloadfix = true;
+            setTimeout(function () { state.doubleunloadfix = false; }, 200);
+
+            // Bug Fix: Only return the result if it is a string,
+            // otherwise don't return anything.
+            if (typeof (result) == 'string') {
+                ev = ev || window.event;
+
+                // For IE and Firefox prior to version 4
+                if (ev) {
+                    ev.returnValue = result;
+                }
+
+                // For Safari
+                return result;
+            }
+        },
+        onRefireClick: function (ev) {
+            var event = new $.Event('click');
+            $(ev.target).trigger(event);
+            if (!event.isDefaultPrevented()) {
+                this.onRefireAnchorClick(ev);
+            }
+        },
+        onRefireAnchorClick: function (ev) {
+            var href = $(ev.target).closest('[href]').attr('href');
+            dirtylog('Sending location to ' + href);
+            window.location.href = href;
+        },
+        clearUnload: function () {
+            // I'd like to just be able to unbind this but there seems
+            // to be a bug in jQuery which doesn't unbind onbeforeunload
+            dirtylog('Clearing the beforeunload event');
+            $(window).unbind('beforeunload', this.onBeforeUnload);
+            window.onbeforeunload = null;
+            $(document).trigger('beforeunload.dirtyforms');
         }
     };
 
@@ -325,82 +397,13 @@ License MIT
         };
     })();
 
-    // For any fields added after the form was initialized, store the value when focused.
-    var onFocus = function () {
-        var $field = $(this);
-        if (!hasOriginalValue($field)) {
-            storeOriginalValue($field);
-        }
-    };
-
-    var onFieldChange = function (ev) {
-        var $field = $(this);
-        if (ev.type !== 'change') {
-            delay(function () { setFieldStatus($field); }, 100);
-        } else {
-            setFieldStatus($field);
-        }
-    };
-
-    var onReset = function () {
-        var $form = $(this).closest('form');
-        // Need a delay here because reset is called before the state of the form is reset.
-        setTimeout(function () { $form.dirtyForms('setClean', true); }, 100);
-    };
-
-    var bindExit = function (window, document, isTopDocument) {
-        var data = { isTopDocument: isTopDocument };
-        $(document).on('click', 'a[href]:not([target="_blank"])', data, nonCancelingBindFn)
-                   .on('submit', 'form', data, nonCancelingBindFn);
-        $(window).bind('beforeunload', data, beforeunloadBindFn);
-    };
-
-    var clearUnload = function () {
-        // I'd like to just be able to unbind this but there seems
-        // to be a bug in jQuery which doesn't unbind onbeforeunload
-        dirtylog('Clearing the beforeunload event');
-        $(window).unbind('beforeunload', beforeunloadBindFn);
-        window.onbeforeunload = null;
-        $(document).trigger('beforeunload.dirtyforms');
-    };
-
-    var nonCancelingBindFn = function (ev) {
-        bindFn(ev);
-    };
-
-    var beforeunloadBindFn = function (ev) {
-        var result = bindFn(ev);
-
-        if (result && state.doubleunloadfix !== true) {
-            dirtylog('Before unload will be called, resetting');
-            state.deciding = false;
-        }
-
-        state.doubleunloadfix = true;
-        setTimeout(function () { state.doubleunloadfix = false; }, 200);
-
-        // Bug Fix: Only return the result if it is a string,
-        // otherwise don't return anything.
-        if (typeof (result) == 'string') {
-            ev = ev || window.event;
-
-            // For IE and Firefox prior to version 4
-            if (ev) {
-                ev.returnValue = result;
-            }
-
-            // For Safari
-            return result;
-        }
-    };
-
     var bindFn = function (ev) {
         var $element = $(ev.target),
             eventType = ev.type,
             dirtyForms = $.DirtyForms;
         dirtylog('Entering: Leaving Event fired, type: ' + eventType + ', element: ' + ev.target + ', class: ' + $element.attr('class') + ' and id: ' + ev.target.id);
 
-        // Important: Do this check before calling clearUnload()
+        // Important: Do this check before calling events.clearUnload()
         if (ev.isDefaultPrevented()) {
             dirtylog('Leaving: Event has been stopped elsewhere');
             return false;
@@ -414,7 +417,7 @@ License MIT
 
         if ($element.is(':dirtyignored')) {
             dirtylog('Leaving: Element has ignore class or a descendant of an ignored element');
-            clearUnload();
+            events.clearUnload();
             return false;
         }
 
@@ -425,13 +428,13 @@ License MIT
 
         if (!$('form').dirtyForms('isDirty')) {
             dirtylog('Leaving: Not dirty');
-            clearUnload();
+            events.clearUnload();
             return false;
         }
 
         if (eventType == 'submit' && $element.dirtyForms('isDirty')) {
             dirtylog('Leaving: Form submitted is a dirty form');
-            clearUnload();
+            events.clearUnload();
             return true;
         }
 
@@ -473,31 +476,15 @@ License MIT
 
     var refire = function (ev) {
         $(document).trigger('beforeRefire.dirtyforms');
-
         if (ev.type === 'click') {
             dirtylog("Refiring click event");
-            var event = new $.Event('click');
-            $(ev.target).trigger(event);
-            if (!event.isDefaultPrevented()) {
-                var $a = $(ev.target).closest('[href]'),
-                    href = $a.attr('href'),
-                    isLocal = $a[0].host === window.location.host;
-
-                if (ev.data.isTopDocument || !isLocal) {
-                    // For IFrame and non-local, redirect top document
-                    dirtylog('Sending top location to ' + href);
-                    window.top.location.href = href;
-                } else {
-                    dirtylog('Sending location to ' + href);
-                    window.location.href = href;
-                }
-            }
+            events.onRefireClick(ev);
         } else {
             dirtylog("Refiring " + ev.type + " event on " + ev.target);
             var target;
-            if (state.formStash) {
+            if (settings.formStash) {
                 dirtylog('Appending stashed form to body');
-                target = state.formStash;
+                target = settings.formStash;
                 $('body').append(target);
             }
             else {

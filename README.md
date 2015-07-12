@@ -25,7 +25,7 @@ The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.
 - Works with your existing dialog framework for the best user experience (optional).
 - Falls back to the browser's dialog (if the browser supports it).
 - Pluggable helper system that reads and updates the dirty state of common rich text editor frameworks (optional).
-- IFrame support (Fires the dialog when the page that references Dirty Forms is hosted within an IFrame).
+- Event handler customization (for IFrame support).
 - Small size (about 6 KB minified).
 - Universal Module Definition (UMD) support for AMD, Node/CommonJS, Browserify, etc.
 - Hosted on jsDelivr CDN for easy combining of modules into a single HTTP request.
@@ -178,7 +178,6 @@ $.DirtyForms.title = 'Warning!!';
 | **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
 | **ignoreSelector**  | string  | `''` | A jQuery selector that can be set to ignore specific elements.  |  
 | **fieldSelector**  | string  | `input:not([type='button'],[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search']),select,textarea` | A jQuery selector indicating which input fields to include in the scan. |  
-| **watchTopDocument**  | bool  | `false` | Set to true to bind to the `onbeforeunload` event and anchor tags of the top document when the page that uses Dirty Forms is hosted inside of an IFrame.  |  
 | **choiceContinue**  | bool  | `false`  | Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until `choiceCommit()` is called.  |  
 | **helpers** | string  | `[]`  | An array for helper objects. See [Helpers](#helpers) below.  |  
 | **dialog**  | string  | `false`  | An object that will be used to fire the JavaScript/CSS dialog. See [Dialogs](#dialogs) below.  |  
@@ -324,6 +323,8 @@ $(document).bind('choicecommit.dirtyforms', function() {
 **beforeRefire.dirtyforms**: Raised before the original event is refired after a user chooses to leave the page.
 
 **beforeunload.dirtyforms**: Non-cancelable event, raised prior leaving the page which may happen either as result of user selection if forms were dirty, or due to a normal page exit of no changes were made.
+
+**bind.dirtyforms**: Raised before event binding (the first time that `.dirtyForms()` is called), allowing customization of event handlers. A common usage is to interoperate with IFrames. See [Customizing Event Handlers](#customizing-event-handlers) for details.
 
 -----
 
@@ -692,3 +693,186 @@ Stashing is meant for the following scenario.
 You don't need to use stashing if either of the above (or both) of the items don't apply to you.
 
 If you have a form and link which is in a modal dialog (a modal dialog created by some other part of your application) then when the Dirty Forms modal fires, the original modal is removed. So the stash saves the content from the original modal dialog while Dirty Forms shows its modal dialog, and then re-shows the original modal dialog with the edits if the user chooses to stay on the page.
+
+## Event Handler Customization
+
+If you need Dirty Forms to work with either parent or child IFrames, you can attach custom events and override the default event handling code. This is useful if you want to monitor events of an IFrame or change the target frame that is redirected instead of using the default behavior.
+
+You just need to hook the `bind.dirtyforms` event prior to the first call to `.dirtyForms()`. An `events` object is passed as the second parameter and it contains the following methods.
+
+### Event Object Methods
+
+#### `bind(window, document, data)`
+
+Binds all of the events for Dirty Forms.
+
+##### window
+
+The DOM window to use to bind the events to. The default uses the DOM window object from the Dirty Forms context.
+
+##### document
+
+The DOM document to use to bind the events to. The default uses the DOM document object from the Dirty Forms context.
+
+##### data
+
+The event data to be passed along to each of the event handlers. The default is an empty object (`{}`);
+
+
+#### `onFocus(event)`
+
+The event handler for the `focus` and `keydown` events of each field that matches the `fieldSelector`.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onFieldChange(event)`
+
+The event handler for the `change`, `input`, `propertychange`, and `keydown` events of each field that matches the `fieldSelector`.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onReset(event)`
+
+The event handler for the `reset` event of each form.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onAnchorClick(event)`
+
+The event handler for the `click` event of each anchor that has a valid `href` and is not `target="_blank"`.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onSubmit(event)`
+
+The event handler for the `submit` event of each form.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onBeforeUnload(event)`
+
+The event handler for the `beforeunload` event of the `window` object.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onRefireClick(event)`
+
+Called after the user decides to continue after the dialog is shown (not including the browser dialog).
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `onRefireAnchorClick(event)`
+
+Called by `onRefireClick()` after attempting to execute the event. If the execution didn't cause the page to redirect or reload, we end up here and the assumption is that the user clicked an anchor.
+
+##### event
+
+A jQuery event object containing context from the element that caused the event.
+
+
+#### `clearUnload()`
+
+Detaches the `beforeunload` event from the `window` object.
+
+
+### Example Usage
+
+> IMPORTANT: The handler for `bind.dirtyforms` must be declared before `.dirtyForms()` is called.
+
+```javascript
+
+// Add functionality to an event handler
+$(document).bind('bind.dirtyforms', function (ev, events) {
+    var showAlert = function(when) {
+		alert('hello world ' + when);
+	};
+
+    var originalBind = events.bind;
+
+    events.bind = function (ev) {
+		showAlert('before');
+		originalBind(ev);
+		showAlert('after');
+	};
+});
+
+
+// Bind additional events to existing handlers
+$(document).bind('bind.dirtyforms', function (ev, events) {
+    var originalBind = events.bind;
+
+    events.bind = function (window, document, data) {
+		originalBind(window, document, data);
+		$('button.mybutton').bind('click', onAnchorClick);
+	};
+});
+
+
+// Pass data between handlers via events
+$(document).bind('bind.dirtyforms', function (ev, events) {
+    var originalOnAnchorClick = events.onAnchorClick;
+	var originalOnRefireAnchorClick = events.onRefireAnchorClick;
+
+    events.onAnchorClick = function (ev) {
+		ev.data.hello = 'Hello there!';
+		originalOnAnchorClick(ev);
+	};
+	events.onRefireAnchorClick = function (ev) {
+		// Shows "Hello there!"
+		alert(ev.data.hello);
+		originalOnRefireAnchorClick(ev);
+	};
+});
+
+
+// Watch the top (parent) document for clicks when hosted within an IFrame
+$(document).bind('bind.dirtyforms', function (ev, events) {
+    events.bind(top, top.document);
+});
+
+
+// Watch the top document for clicks when hosted within an IFrame and
+// change the target window depending on whether the user clicked an anchor 
+// on the top page. If the anchor within an IFrame is non-local, redirect
+// the top browser window instead of within the IFrame.
+$(document).bind('bind.dirtyforms', function (ev, events) {
+    events.bind(top, top.document, { isTopDocument: true });
+
+	events.onRefireAnchorClick = function (ev) {
+        var $a = $(ev.target).closest('[href]'),
+            href = $a.attr('href'),
+            isLocal = $a[0].host === window.location.host;
+
+        if (ev.data.isTopDocument || !isLocal) {
+            // For IFrame and non-local, redirect top document
+            $.DirtyForms.dirtylog('Sending top location to ' + href);
+            window.top.location.href = href;
+        } else {
+            $.DirtyForms.dirtylog('Sending location to ' + href);
+            window.location.href = href;
+        }
+    };
+});
+
+```
