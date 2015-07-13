@@ -177,7 +177,7 @@ License MIT
         title: 'Are you sure you want to do that?',
         dirtyClass: 'dirty',
         listeningClass: 'dirtylisten',
-        ignoreClass: 'ignoredirty',
+        ignoreClass: 'dirtyignore',
         ignoreSelector: '',
         // exclude all HTML 4 except checkbox, option, text and password, but include HTML 5 except search
         fieldSelector: "input:not([type='button'],[type='image'],[type='submit']," +

@@ -140,10 +140,10 @@ Alternatively, add the value of `$.DirtyForms.ignoreClass` to any elements you w
 $('#ignored-element').addClass($.DirtyForms.ignoreClass);
 ```
 
-If you want to ignore more than one element at a time, you can add the value of `$.DirtyForms.ignoreClass` (with the default value `ignoredirty`) to a containing element.
+If you want to ignore more than one element at a time, you can add the value of `$.DirtyForms.ignoreClass` (with the default value `dirtyignore`) to a containing element.
 
 ```HTML
-<div class="ignoredirty">
+<div class="dirtyignore">
 
     <!-- Everything here will be ignored - anchor, input, textarea, and select -->
 
@@ -180,7 +180,7 @@ $.DirtyForms.title = 'Warning!!';
 | **message**  | string  | `You've made changes on this page which aren't saved. If you leave you will lose these changes.`  | Sets the message of the dialog (whether JavaScript/CSS dialog or the browser's built in dialog - note that some browsers do not show this message).   |   
 | **dirtyClass**  | string  | `dirty`  | The class applied to elements and forms when they're considered dirty. Note you can use this to style the elements to make them stand out if they are dirty (or for debugging).  |  
 | **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
-| **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
+| **ignoreClass**  | string  | `dirtyignore` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
 | **ignoreSelector**  | string  | `''` | A jQuery selector that can be set to ignore specific elements.  |  
 | **fieldSelector**  | string  | `input:not([type='button'],[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search']),select,textarea` | A jQuery selector indicating which input fields to include in the scan. |  
 | **choiceContinue**  | bool  | `false`  | Set to true from the dialog to indicate to continue execution of the link or button that was clicked or false to cancel. Execution of the choice will be deferred until `choiceCommit()` is called.  |  
