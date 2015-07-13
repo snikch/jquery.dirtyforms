@@ -12,31 +12,32 @@ License MIT
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
         // Node/CommonJS
-        module.exports = factory(require('jquery'));
+        module.exports = factory(require('jquery'), window, document);
     } else {
         // Browser globals
-        factory(jQuery);
+        factory(jQuery, window, document);
     }
-}(function ($) {
-    // Create a local reference for simplicity
-    var df = $.DirtyForms;
+}(function ($, window, document, undefined) {
+    // Use ECMAScript 5's strict mode
+    "use strict";
 
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
+        title: 'Are you sure you want to do that?',
         continueButtonClass: 'button medium red',
-        continueButtonText: 'Continue',
+        continueButtonText: 'Leave This Page',
         cancelButtonClass: 'button medium',
-        cancelButtonText: 'Stop',
+        cancelButtonText: 'Stay Here',
 
         // Typical Dirty Forms Properties and Methods
 
         // Selector for stashing the content of another dialog.
         selector: '#facebox .content',
-        fire: function (message, title) {
-            var content = '<h1>' + title + '</h1><p>' + message + '</p>' +
+        fire: function (message) {
+            var content = '<h1>' + this.title + '</h1><p>' + message + '</p>' +
                 '<p>' +
-                    '<a href="#" class="continue ' + df.ignoreClass + ' ' + this.continueButtonClass + '">' + this.continueButtonText + '</a>' +
-                    '<a href="#" class="cancel ' + df.ignoreClass + ' ' + this.cancelButtonClass + '">' + this.cancelButtonText + '</a>' +
+                    '<a href="#" class="continue ' + $.DirtyForms.ignoreClass + ' ' + this.continueButtonClass + '">' + this.continueButtonText + '</a>' +
+                    '<a href="#" class="cancel ' + $.DirtyForms.ignoreClass + ' ' + this.cancelButtonClass + '">' + this.cancelButtonText + '</a>' +
                 '</p>';
             $.facebox(content);
         },
@@ -49,9 +50,9 @@ License MIT
                     }
                 };
             };
-            $(document).bind('keydown.facebox', close(df.decidingCancel));
-            $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close(df.decidingCancel));
-            $('#facebox .continue').click(close(df.decidingContinue));
+            $(document).bind('keydown.facebox', close($.DirtyForms.decidingCancel));
+            $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close($.DirtyForms.decidingCancel));
+            $('#facebox .continue').click(close($.DirtyForms.decidingContinue));
         },
         stash: function () {
             var fb = $('#facebox');

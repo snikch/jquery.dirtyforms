@@ -12,21 +12,23 @@ License MIT
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
         // Node/CommonJS
-        module.exports = factory(require('jquery'));
+        module.exports = factory(require('jquery'), window, document);
     } else {
         // Browser globals
-        factory(jQuery);
+        factory(jQuery, window, document);
     }
-}(function ($) {
-    // Create a local reference for simplicity, declare some local variables
-    var df = $.DirtyForms,
-        modal_overlay,
+}(function ($, window, document, undefined) {
+    // Use ECMAScript 5's strict mode
+    "use strict";
+
+    var modal_overlay,
         notice,
         isPN2 = typeof PNotify === 'function';
 
     $.DirtyForms.dialog = {
 
         // Custom properties and methods to allow overriding (may differ per dialog)
+        title: 'Are you sure you want to do that?',
         class: 'dirty-dialog',
         continueButtonText: 'Leave This Page',
         cancelButtonText: 'Stay Here',
@@ -34,9 +36,9 @@ License MIT
         width: '330',
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message, title) {
+        fire: function (message) {
             var content = {
-                title: title,
+                title: this.title,
                 hide: false,
                 styling: this.styling,
                 width: this.width,
@@ -53,8 +55,8 @@ License MIT
                 text: '<span class="' + this.class + '">' +
                         '<p>' + message + '</p>' +
                         '<span style="display:block;text-align:center;">' +
-                            '<button type="button" class="dirty-continue ' + df.ignoreClass + '">' + this.continueButtonText + '</button> ' +
-                            '<button type="button" class="dirty-cancel ' + df.ignoreClass + '">' + this.cancelButtonText + '</button>' +
+                            '<button type="button" class="dirty-continue ' + $.DirtyForms.ignoreClass + '">' + this.continueButtonText + '</button> ' +
+                            '<button type="button" class="dirty-cancel ' + $.DirtyForms.ignoreClass + '">' + this.cancelButtonText + '</button>' +
                         '</span>' +
                     '</span>',
                 before_open: function (PNotify) {
@@ -98,9 +100,9 @@ License MIT
                 };
             };
             // Trap the escape key and force a close. Cancel it so PNotify doesn't intercept it.
-            $(document).keydown(close(df.decidingCancel));
-            $('.dirty-cancel,.ui-widget-overlay').click(close(df.decidingCancel));
-            $('.dirty-continue').click(close(df.decidingContinue));
+            $(document).keydown(close($.DirtyForms.decidingCancel));
+            $('.dirty-cancel,.ui-widget-overlay').click(close($.DirtyForms.decidingCancel));
+            $('.dirty-continue').click(close($.DirtyForms.decidingContinue));
         },
 
         // Support for Dirty Forms < 1.2

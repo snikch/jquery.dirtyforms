@@ -110,6 +110,12 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<th>Description</th>
 	</tr>
 	<tr>
+		<th align="left">title</th>
+		<td>string</td>
+		<td>'Are you sure you want to do that?'</td>
+		<td>Sets the title of the dialog.</td>
+	</tr>
+	<tr>
 		<th align="left">continueButtonClass</th>
 		<td>string</td>
 		<td nowrap="nowrap">'button medium red'</td>
@@ -118,7 +124,7 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 	<tr>
 		<th align="left">continueButtonText</th>
 		<td>string</td>
-		<td nowrap="nowrap">'Continue'</td>
+		<td nowrap="nowrap">'Leave This Page'</td>
 		<td>Allows getting or setting the text of the continue button of the dialog.</td>
 	</tr>
 	<tr>
@@ -130,7 +136,7 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 	<tr>
 		<th align="left">cancelButtonText</th>
 		<td>string</td>
-		<td nowrap="nowrap">'Stop'</td>
+		<td nowrap="nowrap">'Stay Here'</td>
 		<td>Allows getting or setting the text of the cancel button of the dialog.</td>
 	</tr>
 	<tr>

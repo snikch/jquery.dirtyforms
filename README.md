@@ -114,8 +114,10 @@ $(function() {
 	$('form.sodirty').dirtyForms();
 
 	// Customize the title and message.
+	// Note that title is not supported by browser dialogs, so you should 
+	// not set it if you are not using a custom dialog.
 	$('form').dirtyForms({ 
-		title: 'Wait!', 
+		dialog: { title: 'Wait!' }, 
 		message: 'You forgot to save your details. If you leave now, they will be lost forever.' 
 	});
 
@@ -207,16 +209,15 @@ $('html').removeClass($.DirtyForms.ignoreClass);
 The following options are available to set during declaration of `.dirtyForms()` or alternatively via **$.DirtyForms.OPTIONNAME = OPTIONVALUE** or get via **OPTIONVALUE = $.DirtyForms.OPTIONNAME**.
 
 ```javascript
-$('form').dirtyForms({ title: 'Warning!!' });
+$('form').dirtyForms({ message: 'Doh! You forgot to save.' });
 
 // OR
 
-$.DirtyForms.title = 'Warning!!';
+$.DirtyForms.message = 'Doh! You forgot to save.';
 ```
 
 | Name  | Type  | Default  | Description  |  
 |---|---|---|---|
-| **title**  | string  | `Are you sure you want to do that?`  | Sets the title of the dialog (JavaScript/CSS dialog only).  |  
 | **message**  | string  | `You've made changes on this page which aren't saved. If you leave you will lose these changes.`  | Sets the message of the dialog (whether JavaScript/CSS dialog or the browser's built in dialog - note that some browsers do not show this message).   |   
 | **dirtyClass**  | string  | `dirty`  | The class applied to elements and forms when they're considered dirty. Note you can use this to style the elements to make them stand out if they are dirty (or for debugging).  |  
 | **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
@@ -513,17 +514,13 @@ See the [TinyMCE Helper Source Code](https://github.com/snikch/jquery.dirtyforms
 
 The default browser dialog can be overridden by setting a new dialog object, and providing implementations for the following members.
 
-#### `fire(message, title)` (Required)
+#### `fire(message)` (Required)
 
 Opens the dialog.
 
 ##### message
 
-The main message to show in the dialog.
-
-##### title
-
-The title for the header of the dialog.
+The main message to show in the body of the dialog. Note that as of version 2.0, the title is typically a property of the dialog class.
 
 
 #### `bind()` (Optional)
@@ -587,6 +584,13 @@ A jQuery selector used to select the element that will be cloned and put into th
 > See the [Modal Dialog Stashing](#modal-dialog-stashing) section for more information.
 
 
+#### `title` (Optional Property)
+
+Although this property is not used by Dirty Forms, you can define it to make it possible for the end user of the dialog module to set the text of the dialog title.
+
+If contributing a new dialog module, please include this property and set the default value to `Are you sure you want to do that?`.
+
+
 #### `continueButtonText` (Optional Property)
 
 Although this property is not used by Dirty Forms, you can define it to make it possible for the end user of the dialog module to set the text of the continue button.
@@ -613,58 +617,71 @@ Although this property is not used by Dirty Forms, you can define it to make it 
 #### Dialog Example
 
 ```javascript
-// Selector is a selector string for dialog content. 
-// Used to select the element that will be cloned and put into the stash.
-selector : '#facebox .content',
+$.DirtyForms.dialog = {
+	// Optional properties that can be used to override externally (`$.DirtyForms.dialog.title = 'Oops';`).
+	title: 'Are you sure you want to do that?',
+	class: 'dirty-dialog',
+	continueButtonText: 'Leave This Page',
+	cancelButtonText: 'Stay Here',
 
-// Fire starts the dialog
-fire : function(message, title){
-	var content = '<h1>' + title + '</h1><p>' + message + '</p>' + 
-		'<p>' +
-			'<a href="#" class="' + $.DirtyForms.ignoreClass + ' continue">Continue</a>' +
-			'<a href="#" class="' + $.DirtyForms.ignoreClass + ' cancel">Stop</a>' +
-		'</p>';
-	$.facebox(content);
-},
+	// Selector is a selector string for dialog content. 
+	// Used to select the element that will be cloned and put into the stash.
+	selector : '#facebox .content',
 
-// Bind binds the continue and cancel functions to the correct links. For some dialog
-// frameworks, it is simpler just to do all of the work in the fire function.
-// In that case, this function can be omitted. Note that this function is called immediately
-// after fire is called.
-bind : function(){
-	$(document).bind('keydown.facebox', function (e) {
-		// Intercept the escape key and send the event to Dirty Forms
-		if (e.which === 27) {
-			$(document).trigger('close.facebox');
-            $.DirtyForms.decidingCancel(e);
-		}
-	});
-	$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
-	$('#facebox .continue').click($.DirtyForms.decidingContinue);
-	$(document).bind('decidingcancelled.dirtyforms', function(){
-		$(document).trigger('close.facebox');
-	});
-},
-
-// Stash returns the current contents of a dialog to be refired after the confirmation
-// Use to store the current dialog, when it's about to be replaced with the confirmation dialog.
-// This function can be omitted (or return false) if you don't wish to stash anything.
-stash : function(){
-	var fb = $('#facebox .content');
-	return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
-	   false :
-	   fb.clone(true);
-}
-
-// Refire handles closing an existing dialog AND fires a new one.
-// You can omit this method (or return false) if you don't need to use stashing/refiring.
-refire : function(content){
-	var rebox = function(){
+	// Fire starts the dialog
+	fire : function(message){
+		var content = 
+			'<span class="' + this.class + '">' + 
+				'<h1>' + this.title + '</h1>' + 
+				'<p>' + message + '</p>' + 
+				'<p>' +
+					'<a href="#" class="' + $.DirtyForms.ignoreClass + ' continue">' + this.continueButtonText + '</a>' +
+					'<a href="#" class="' + $.DirtyForms.ignoreClass + ' cancel">' + this.cancelButtonText + '</a>' +
+				'</p>' +
+			'</span>';
 		$.facebox(content);
-		$(document).unbind('afterClose.facebox', rebox);
+	},
+
+	// Bind binds the continue and cancel functions to the correct links. For some dialog
+	// frameworks, it is simpler just to do all of the work in the fire function.
+	// In that case, this function can be omitted. Note that this function is called immediately
+	// after fire is called.
+	bind : function(){
+		$(document).bind('keydown.facebox', function (e) {
+			// Intercept the escape key and send the event to Dirty Forms
+		if (e.which === 27) {
+				$(document).trigger('close.facebox');
+				$.DirtyForms.decidingCancel(e);
+			}
+		});
+		$('#facebox .cancel, #facebox .close').click($.DirtyForms.decidingCancel);
+		$('#facebox .continue').click($.DirtyForms.decidingContinue);
+		$(document).bind('cancel.dirtyforms', function(){
+			$(document).trigger('close.facebox');
+		});
+	},
+
+	// Stash returns the current contents of a dialog to be refired after the confirmation
+	// Use to store the current dialog, when it's about to be replaced with the confirmation dialog.
+	// This function can be omitted (or return false) if you don't wish to stash anything.
+	stash : function(){
+		var fb = $('#facebox .content');
+		return ($.trim(fb.html()) == '' || fb.css('display') != 'block') ?
+		   false :
+		   fb.clone(true);
+	},
+
+	// Refire handles closing an existing dialog AND fires a new one.
+	// You can omit this method (or return false) if you don't need to use stashing/refiring.
+	refire : function(content){
+		var rebox = function(){
+			$.facebox(content);
+			$(document).unbind('afterClose.facebox', rebox);
+		}
+		$(document).bind('afterClose.facebox', rebox);
 	}
-	$(document).bind('afterClose.facebox', rebox);
-},
+
+};
 
 ```
 
@@ -676,9 +693,9 @@ Alternatively, another pattern is supported for modal dialogs where the continui
 
 ```javascript
 $.DirtyForms.dialog = {
-	selector: '#unsavedChanges',
-	fire: function(message, dlgTitle) {
-		$('#unsavedChanges').dialog({title: dlgTitle, width: 400, modal: true});
+	title: 'Are you sure you want to do that?',
+	fire: function(message) {
+		$('#unsavedChanges').dialog({title: this.title, width: 400, modal: true});
 		$('#unsavedChanges').html(message);
 	},
 	bind: function() {

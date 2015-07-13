@@ -12,17 +12,18 @@ License MIT
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
         // Node/CommonJS
-        module.exports = factory(require('jquery'));
+        module.exports = factory(require('jquery'), window, document);
     } else {
         // Browser globals
-        factory(jQuery);
+        factory(jQuery, window, document);
     }
-}(function ($) {
-    // Create a local reference for simplicity
-    var df = $.DirtyForms;
+}(function ($, window, document, undefined) {
+    // Use ECMAScript 5's strict mode
+    "use strict";
 
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
+        title: 'Are you sure you want to do that?',
         class: 'dirty-dialog',
         continueButtonText: 'Leave This Page',
         cancelButtonText: 'Stay Here',
@@ -34,14 +35,14 @@ License MIT
         overlayOpacity: 0.5,
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message, title) {
+        fire: function (message) {
             $.blockUI({
                 message: '<span class="' + this.class + '">' +
-                        '<h3>' + title + '</h3>' +
+                        '<h3>' + this.title + '</h3>' +
                         '<p>' + message + '</p>' +
                         '<span>' +
-                            '<button type="button" class="dirty-continue ' + df.ignoreClass + '">' + this.continueButtonText + '</button> ' +
-                            '<button type="button" class="dirty-cancel ' + df.ignoreClass + '">' + this.cancelButtonText + '</button>' +
+                            '<button type="button" class="dirty-continue ' + $.DirtyForms.ignoreClass + '">' + this.continueButtonText + '</button> ' +
+                            '<button type="button" class="dirty-cancel ' + $.DirtyForms.ignoreClass + '">' + this.cancelButtonText + '</button>' +
                         '</span>' +
                     '</span>',
                 css: {
@@ -68,9 +69,9 @@ License MIT
                     }
                 };
             };
-            $(document).keydown(close(df.decidingCancel));
-            $('.' + this.class + ' .dirty-cancel').click(close(df.decidingCancel));
-            $('.' + this.class + ' .dirty-continue').click(close(df.decidingContinue));
+            $(document).keydown(close($.DirtyForms.decidingCancel));
+            $('.' + this.class + ' .dirty-cancel').click(close($.DirtyForms.decidingCancel));
+            $('.' + this.class + ' .dirty-continue').click(close($.DirtyForms.decidingContinue));
         },
 
         // Support for Dirty Forms < 1.2

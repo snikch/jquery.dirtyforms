@@ -174,7 +174,6 @@ License MIT
     // Public General Plugin properties and methods $.DirtyForms
     $.DirtyForms = {
         message: "You've made changes on this page which aren't saved. If you leave you will lose these changes.",
-        title: 'Are you sure you want to do that?',
         dirtyClass: 'dirty',
         listeningClass: 'dirtylisten',
         ignoreClass: 'dirtyignore',
@@ -490,7 +489,7 @@ License MIT
         }
 
         dirtylog('Deferring to the dialog');
-        dirtyForms.dialog.fire(dirtyForms.message, dirtyForms.title);
+        dirtyForms.dialog.fire(dirtyForms.message);
         if ($.isFunction(dirtyForms.dialog.bind))
             dirtyForms.dialog.bind();
     };

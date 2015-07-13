@@ -12,36 +12,39 @@ License MIT
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
         // Node/CommonJS
-        module.exports = factory(require('jquery'));
+        module.exports = factory(require('jquery'), window, document);
     } else {
         // Browser globals
-        factory(jQuery);
+        factory(jQuery, window, document);
     }
-}(function ($) {
-    // Create a local reference for simplicity
-    var df = $.DirtyForms,
-        dlg = $('<div style="display:none;" />');
+}(function ($, window, document, undefined) {
+    // Use ECMAScript 5's strict mode
+    "use strict";
 
-    $('body').append(dlg);
+    // Create a local reference for simplicity
+    var $dialog = $('<div style="display:none;" />');
+
+    $('body').append($dialog);
 
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
+        title: 'Are you sure you want to do that?',
         continueButtonText: 'Leave This Page',
         cancelButtonText: 'Stay Here',
         width: 400,
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message, dlgTitle) {
-            dlg.dialog({ title: dlgTitle, width: this.width, modal: true });
-            dlg.html(message);
+        fire: function (message) {
+            $dialog.dialog({ title: this.title, width: this.width, modal: true });
+            $dialog.html(message);
         },
         bind: function () {
-            dlg.dialog('option', 'buttons',
+            $dialog.dialog('option', 'buttons',
                 [
                     {
                         text: this.continueButtonText,
                         click: function () {
-                            df.choiceContinue = true;
+                            $.DirtyForms.choiceContinue = true;
                             $(this).dialog('close');
                         }
                     },
@@ -52,14 +55,16 @@ License MIT
                         }
                     }
                 ]
-            ).bind('dialogclose', df.choiceCommit);
+            ).bind('dialogclose', function (e) {
+                $.DirtyForms.choiceCommit(e);
+            });
 
             // Trap the escape key and force a close. Cancel it so jQuery UI doesn't intercept it.
             // This will fire the dialogclose event to commit the choice (which defaults to false).
             $(document).keydown(function (e) {
                 if (e.keyCode == 27) {
                     e.preventDefault();
-                    dlg.dialog('close');
+                    $dialog.dialog('close');
                     return false;
                 }
             });

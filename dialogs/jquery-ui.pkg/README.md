@@ -111,6 +111,12 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<th>Description</th>
 	</tr>
 	<tr>
+		<th align="left">title</th>
+		<td>string</td>
+		<td>'Are you sure you want to do that?'</td>
+		<td>Sets the title of the dialog.</td>
+	</tr>
+	<tr>
 		<th align="left">continueButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Leave This Page'</td>
