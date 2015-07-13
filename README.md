@@ -298,19 +298,20 @@ $(document).bind('dirty.dirtyforms', function(event) {
 
 // Or, bind to a specific form to listen for the event
 $('form#my-form').bind('dirty.dirtyforms', function () {
-
+	// Access the form that triggered the event
+    var $form = $(event.target);
 });
 ```
 
 **dirty.dirtyforms**: Raised when a form changes from clean state to dirty state.
 
-**clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')`.
+**clean.dirtyforms**: Raised when a form changes from dirty state to clean state. This may happen when the last element within the form is marked clean using `$('#element-id').dirtyForms('setClean')` or when the user undoes all of their edits.
 
 **scan.dirtyforms**: Raised after the form is scanned for new fields (whether during initialization or when subsequently calling `.dirtyForms()`).
 
 **rescan.dirtyforms**: Raised after the form is rescanned for new fields (when calling `.dirtyForms('rescan')`).
 
-**setClean.dirtyforms**: Raised after the `.dirtyForms('setClean')`) method is called.
+**setclean.dirtyforms**: Raised after the `.dirtyForms('setClean')`) method is called or when the user clicks the `reset` button.
 
 
 
@@ -319,37 +320,26 @@ $('form#my-form').bind('dirty.dirtyforms', function () {
 Simply bind a function to any of these hooks to respond to the corresponding trigger.
 
 ```javascript
-$(document).bind('choicecommit.dirtyforms', function() { 
-    // ...stuff to do before commiting the user's choice... 
+$(document).bind('continue.dirtyforms', function() { 
+    // ...stuff to do before continuing the user's choice... 
 });
 ```
 
 
-**decidingcancelled.dirtyforms**: Raised when the `$.DirtyForms.decidingCancel()` method is called before it runs any actions.
+**cancel.dirtyforms**: Raised when the `$.DirtyForms.decidingCancel()` method is called before it runs any actions. In other words, called when the user chooses cancel on the dialog (but not the browser's built in dialog).
 
-**decidingcancelledAfter.dirtyforms**: Raised when the `$.DirtyForms.decidingCancel()` method is called after it runs all actions.
+**aftercancel.dirtyforms**: Raised when the `$.DirtyForms.decidingCancel()` method is called after it runs all actions.
 
-**decidingcontinued.dirtyforms**: Raised when the `$.DirtyForms.decidingContinue()` method is called before it runs any actions.
+**continue.dirtyforms**: Raised when the `$.DirtyForms.decidingContinue()` method is called before it runs any actions. In other words, called when the user chooses continue on the dialog (but not the browser's built in dialog).
 
-**choicecommit.dirtyforms**: Raised when the `$.DirtyForms.choiceCommit` method is called before it runs any actions.
+**defer.dirtyforms**: Raised prior to showing the dialog box to the user. Useful for accessing elements on the page prior to showing the dialog.
 
-**choicecommitAfter.dirtyforms**: Raised when the `$.DirtyForms.choiceCommit` method is called after it runs all actions.
-
-**defer.dirtyforms**: Raised prior to showing the dialog box to the user.
-
-**beforeRefire.dirtyforms**: Raised before the original event is refired after a user chooses to leave the page.
+**refire.dirtyforms**: Raised before the original event is re-fired after a user chooses to leave the page. Passes the event that will be re-fired as the second parameter (this event is the first parameter). This event is useful if you need to do things like save data back to fields which is normally part of event propagation - ala TinyMCE.
 
 **beforeunload.dirtyforms**: Non-cancelable event, raised prior leaving the page which may happen either as result of user selection if forms were dirty, or due to a normal page exit of no changes were made.
 
 **bind.dirtyforms**: Raised before event binding (the first time that `.dirtyForms()` is called), allowing customization of event handlers. A common usage is to interoperate with IFrames. See [Customizing Event Handlers](#customizing-event-handlers) for details.
 
------
-
-You can attach callbacks to the **decidingcancelled.dirtyforms** and **decidingcontinued.dirtyforms** custom events. These events are called when the cancel, or continue method on the modal dialog is called (when the user clicks either continue, or cancel).
-
-These triggers are not available when used with the browser fallback dialog method.
-
-Also available is **defer.dirtyforms** for accessing elements on the page prior to the dialog box alerting the user is called, and **beforeRefire.dirtyforms**, called before the original event is refired after a user chooses to leave the page (useful if you need to do things like save data back to fields which is normally part of event propagation - ala tinyMce).
 
 ## Selectors
 
@@ -357,7 +347,7 @@ Also available is **defer.dirtyforms** for accessing elements on the page prior 
 
 **:dirtylistening** will select all elements that has the listening class attached. This will be all forms that are currently listening for changes.
 
-**:dirtyignored** will select all elements that are currently ignored by Dirty Forms.
+**:dirtyignored** will select all elements that are currently ignored by Dirty Forms through the `ignoreSelector`, a helper's `ignoreSelector` or an element or a descendant of an element that has the `$.DirtyForms.ignoreClass` applied.
 
 
 ## Helpers

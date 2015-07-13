@@ -194,13 +194,11 @@ License MIT
 
         choiceCommit: function (ev) {
             if (state.deciding) {
-                $(document).trigger('choicecommit.dirtyforms');
                 if (this.choiceContinue) {
                     this.decidingContinue(ev);
                 } else {
                     this.decidingCancel(ev);
                 }
-                $(document).trigger('choicecommitAfter.dirtyforms');
             }
         },
 
@@ -211,19 +209,19 @@ License MIT
         decidingContinue: function (ev) {
             events.clearUnload(); // fix for chrome/safari
             ev.preventDefault();
-            $(document).trigger('decidingcontinued.dirtyforms');
+            $(document).trigger('continue.dirtyforms');
             refire(state.decidingEvent);
             state.clearDeciding();
         },
 
         decidingCancel: function (ev) {
             ev.preventDefault();
-            $(document).trigger('decidingcancelled.dirtyforms');
+            $(document).trigger('cancel.dirtyforms');
             if (state.dialog && state.dialogStash && $.isFunction(this.dialog.refire)) {
                 dirtylog('Refiring the dialog with stashed content');
                 this.dialog.refire(state.dialogStash.html(), ev);
             }
-            $(document).trigger('decidingcancelledAfter.dirtyforms');
+            $(document).trigger('aftercancel.dirtyforms');
             state.clearDeciding();
         }
     };
@@ -498,7 +496,7 @@ License MIT
     };
 
     var refire = function (ev) {
-        $(document).trigger('beforeRefire.dirtyforms');
+        $(document).trigger('refire.dirtyforms', [ev]);
         if (ev.type === 'click') {
             dirtylog("Refiring click event");
             events.onRefireClick(ev);
