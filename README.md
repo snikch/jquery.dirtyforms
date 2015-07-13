@@ -105,24 +105,64 @@ jquery.dirtyforms.min.js.map
 ## Usage
 
 ```javascript
-// Enable for all forms
-$('form').dirtyForms();
+$(function() {
 
-// Enable for just forms of class 'sodirty'
-$('form.sodirty').dirtyForms();
+	// Enable for all forms.
+	$('form').dirtyForms();
 
-// Enable Debugging
-$.DirtyForms.debug = true;
+	// Enable for just forms of class 'sodirty'.
+	$('form.sodirty').dirtyForms();
 
-// Select all forms that are dirty, and set them clean.
-// This will make them forget the current dirty state and any changes
-// after this call will make the form dirty again.
-$('form:dirty').dirtyForms('setClean');
+	// Customize the title and message.
+	$('form').dirtyForms({ 
+		title: 'Wait!', 
+		message: 'You forgot to save your details. If you leave now, they will be lost forever.' 
+	});
 
-// Rescan to sync the dirty state with any dynamically added forms/fields
-// or changes to the ignore state. This comes in handy when styling fields
-// with CSS that are dirty.
-$('form').dirtyForms('rescan');
+	// Enable Debugging (non-minified file only).
+	$('form').dirtyForms({ debug: true });
+
+	// Check if anything inside a div with CSS class watch is dirty.
+	if ($('div.watch').dirtyForms('isDirty')) {
+		// There was something dirty inside of the div
+	}
+
+	// Select all forms that are dirty, and set them clean.
+	// This will make them forget the current dirty state and any changes
+	// after this call will make the form dirty again.
+	$('form:dirty').dirtyForms('setClean');
+
+	// Rescan to sync the dirty state with any dynamically added forms/fields
+	// or changes to the ignore state. This comes in handy when styling fields
+	// with CSS that are dirty.
+	$('form').dirtyForms('rescan');
+
+	// Select all forms that are listening for changes.
+	$('form:dirtylistening');
+
+	// Enable/disable the reset and submit buttons when the state transitions
+	// between dirty and clean. You will need to first set the initial button
+	// state to disabled (either in JavaScript or by setting the attributes in HTML).
+	$('form').find('[type="reset"],[type="submit"]').attr('disabled', 'disabled');
+	$('form').on('dirty.dirtyforms clean.dirtyforms', function (ev) {
+        var $form = $(ev.target);
+        var $submitResetButtons = $form.find('[type="reset"],[type="submit"]');
+        if (ev.type === 'dirty') {
+            $submitResetButtons.removeAttr('disabled');
+        } else {
+            $submitResetButtons.attr('disabled', 'disabled');
+        }
+    });
+
+	// Add a form dynamically and begin tracking it.
+	var $form = $('<form action="/" id="watched-form" method="post">' +
+		'<input id="inputa" type="text" />' +
+		'<button id="submita" type="submit" value="Submit">Submit</button>' +
+		'</form>');
+	$('body').append($form);
+	$form.dirtyForms();
+
+});
 
 ```
 
@@ -299,7 +339,7 @@ $(document).bind('dirty.dirtyforms', function(event) {
 // Or, bind to a specific form to listen for the event
 $('form#my-form').bind('dirty.dirtyforms', function () {
 	// Access the form that triggered the event
-    var $form = $(event.target);
+    var $form = $(this);
 });
 ```
 
@@ -857,7 +897,7 @@ $(document).bind('bind.dirtyforms', function (ev, events) {
 
 // Watch the top (parent) document for clicks when hosted within an IFrame
 $(document).bind('bind.dirtyforms', function (ev, events) {
-    events.bind(top, top.document);
+    events.bind(window.top, window.top.document);
 });
 
 
@@ -866,7 +906,7 @@ $(document).bind('bind.dirtyforms', function (ev, events) {
 // on the top page. If the anchor within an IFrame is non-local, redirect
 // the top browser window instead of within the IFrame.
 $(document).bind('bind.dirtyforms', function (ev, events) {
-    events.bind(top, top.document, { isTopDocument: true });
+    events.bind(window.top, window.top.document, { isTopDocument: true });
 
 	events.onRefireAnchorClick = function (ev) {
         var $a = $(ev.target).closest('[href]'),
@@ -885,8 +925,37 @@ $(document).bind('bind.dirtyforms', function (ev, events) {
 });
 
 
-// With either of the above 2 options, optionally add a helper
-// so the dirty state of the top document can be maintained.
+// Advanced usage - watch the top document, keep track of its dirty
+// state, and block the exit of changes to the top document using a helper.
+$(document).bind('bind.dirtyforms', function (ev, events) {
+    events.bind(window.top, window.top.document, { isTopDocument: true });
+
+	// Locate all of the forms in the top document, add the listening class
+	// so the :dirtylisten selector will work, attach events to keep track of 
+	// changes and initialize the state of dynamically added inputs. Also add
+	// a handler to track form resets.
+	$(window.top.document).find('form')
+		.addClass($.DirtyForms.listeningClass)
+		.on('change input propertychange keyup', $.DirtyForms.fieldSelector, events.onFieldChange)
+		.on('focus keydown', $.DirtyForms.fieldSelector, events.onFocus)
+		.on('reset', 'form', events.onReset);
+
+	events.onRefireAnchorClick = function (ev) {
+        var $a = $(ev.target).closest('[href]'),
+            href = $a.attr('href'),
+            isLocal = $a[0].host === window.location.host;
+
+        if (ev.data.isTopDocument || !isLocal) {
+            // For IFrame and non-local, redirect top document
+            $.DirtyForms.dirtylog('Sending top location to ' + href);
+            window.top.location.href = href;
+        } else {
+            $.DirtyForms.dirtylog('Sending location to ' + href);
+            window.location.href = href;
+        }
+    };
+});
+
 // We pass in the true parameter to ignore helpers so we don't
 // get a recursive loop.
 var topDocumentHelper = {
