@@ -42,21 +42,34 @@ License MIT
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
         init: function (options) {
+            var fieldSelector = $.DirtyForms.fieldSelector,
+                data = {};
+
             if (!state.initialized) {
                 // Override any default options
                 $.extend(true, $.DirtyForms, options);
 
                 $(document).trigger('bind.dirtyforms', [events]);
-                events.bind(window, document, {});
+                events.bind(window, document, data);
 
                 state.initialized = true;
             }
 
-            // Store original values of the fields
-            elementsInRange(this, $.DirtyForms.fieldSelector, true).each(function () {
-                storeOriginalValue($(this));
-            }).parents('form').trigger('scan.dirtyforms');
+            elementsInRange(this, 'form', true).each(function () {
+                var $form = $(this);
+                dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
 
+                // Store original values of the fields
+                $form.find(fieldSelector).each(function () {
+                    storeOriginalValue($(this));
+                });
+
+                $form.trigger('scan.dirtyforms')
+                     .addClass($.DirtyForms.listeningClass)
+                     .on('change input propertychange keyup', fieldSelector, data, events.onFieldChange)
+                     .on('focus keydown', fieldSelector, data, events.onFocus)
+                     .on('reset', 'form', data, events.onReset);
+            });
             return this;
         },
         // Returns true if any of the selected elements or their children are dirty
@@ -137,6 +150,9 @@ License MIT
         dirty: function (a) {
             return $(a).not(':dirtyignored').hasClass($.DirtyForms.dirtyClass);
         },
+        dirtylistening: function (a) {
+            return $(a).hasClass($.DirtyForms.listeningClass);
+        },
         dirtyignored: function (a) {
             var dirtyForms = $.DirtyForms;
 
@@ -160,6 +176,7 @@ License MIT
         message: "You've made changes on this page which aren't saved. If you leave you will lose these changes.",
         title: 'Are you sure you want to do that?',
         dirtyClass: 'dirty',
+        listeningClass: 'dirtylisten',
         ignoreClass: 'ignoredirty',
         ignoreSelector: '',
         // exclude all HTML 4 except checkbox, option, text and password, but include HTML 5 except search
@@ -227,12 +244,8 @@ License MIT
     var events = {
         bind: function (window, document, data) {
             $(window).bind('beforeunload', data, this.onBeforeUnload);
-
             $(document).on('click', 'a[href]:not([target="_blank"])', data, this.onAnchorClick)
-                       .on('submit', 'form', data, this.onSubmit)
-                       .on('change input propertychange keyup', $.DirtyForms.fieldSelector, data, this.onFieldChange)
-                       .on('focus keydown', $.DirtyForms.fieldSelector, data, this.onFocus)
-                       .on('reset', 'form', data, this.onReset);
+                       .on('submit', 'form', data, this.onSubmit);
         },
         // For any fields added after the form was initialized, store the value when focused.
         onFocus: function () {
@@ -436,7 +449,7 @@ License MIT
             return false;
         }
 
-        if (!$('form').dirtyForms('isDirty')) {
+        if (!$('form:dirtylistening').dirtyForms('isDirty')) {
             dirtylog('Leaving: Not dirty');
             events.clearUnload();
             return false;
@@ -492,9 +505,9 @@ License MIT
         } else {
             dirtylog("Refiring " + ev.type + " event on " + ev.target);
             var target;
-            if (settings.formStash) {
+            if ($.DirtyForms.formStash) {
                 dirtylog('Appending stashed form to body');
-                target = settings.formStash;
+                target = $.DirtyForms.formStash;
                 $('body').append(target);
             }
             else {

@@ -179,6 +179,7 @@ $.DirtyForms.title = 'Warning!!';
 | **title**  | string  | `Are you sure you want to do that?`  | Sets the title of the dialog (JavaScript/CSS dialog only).  |  
 | **message**  | string  | `You've made changes on this page which aren't saved. If you leave you will lose these changes.`  | Sets the message of the dialog (whether JavaScript/CSS dialog or the browser's built in dialog - note that some browsers do not show this message).   |   
 | **dirtyClass**  | string  | `dirty`  | The class applied to elements and forms when they're considered dirty. Note you can use this to style the elements to make them stand out if they are dirty (or for debugging).  |  
+| **listeningClass**  | string  | `dirtylisten`  | The class applied to elements that are having their inputs monitored for change.  |  
 | **ignoreClass**  | string  | `ignoredirty` | The CSS class applied to elements that you wish to be ignored by Dirty Forms. This class can also be applied to container elements (such as `<div>` or `<form>`) to ignore every element within the container.  |  
 | **ignoreSelector**  | string  | `''` | A jQuery selector that can be set to ignore specific elements.  |  
 | **fieldSelector**  | string  | `input:not([type='button'],[type='image'],[type='submit'],[type='reset'],[type='file'],[type='search']),select,textarea` | A jQuery selector indicating which input fields to include in the scan. |  
@@ -353,6 +354,8 @@ Also available is **defer.dirtyforms** for accessing elements on the page prior 
 ## Selectors
 
 **:dirty** will select all non-ignored elements with the dirty class attached. For example, `form:dirty` would select all non-ignored forms that are currently dirty.
+
+**:dirtylistening** will select all elements that has the listening class attached. This will be all forms that are currently listening for changes.
 
 **:dirtyignored** will select all elements that are currently ignored by Dirty Forms.
 
