@@ -785,6 +785,19 @@ The DOM document to use to bind the events to. The default uses the DOM document
 The event data to be passed along to each of the event handlers. The default is an empty object (`{}`);
 
 
+#### `bindForm($form, data)`
+
+Binds the events to a form and sets the listening class so the :dirtylistening selector will include it.
+
+##### $form
+
+A jQuery object containing a form or multiple forms to bind. This method is called once for each form specified in the selector used when calling `.dirtyForms()`.
+
+##### data
+
+The event data to be passed along to each of the event handlers. The default is an empty object (`{}`);
+
+
 #### `onFocus(event)`
 
 The event handler for the `focus` and `keydown` events of each field that matches the `fieldSelector`.
@@ -947,15 +960,10 @@ $(document).bind('bind.dirtyforms', function (ev, events) {
 $(document).bind('bind.dirtyforms', function (ev, events) {
     events.bind(window.top, window.top.document, { isTopDocument: true });
 
-	// Locate all of the forms in the top document, add the listening class
-	// so the :dirtylisten selector will work, attach events to keep track of 
-	// changes and initialize the state of dynamically added inputs. Also add
-	// a handler to track form resets.
-	$(window.top.document).find('form')
-		.addClass($.DirtyForms.listeningClass)
-		.on('change input propertychange keyup', $.DirtyForms.fieldSelector, events.onFieldChange)
-		.on('focus keydown', $.DirtyForms.fieldSelector, events.onFocus)
-		.on('reset', 'form', events.onReset);
+	// Locate all of the forms in the top document and bind them 
+	// to listen for events that change the dirty status.
+	var $forms = $(window.top.document).find('form');
+	events.bindForm($forms, {});
 
 	events.onRefireAnchorClick = function (ev) {
         var $a = $(ev.target).closest('[href]'),
@@ -973,8 +981,10 @@ $(document).bind('bind.dirtyforms', function (ev, events) {
     };
 });
 
-// We pass in the true parameter to ignore helpers so we don't
-// get a recursive loop.
+// Continued: A helper to report the dirty status from the top document, 
+// and to allow setClean and rescan methods to affect the top document. 
+// We pass in the true parameter to ignore helpers so we don't get 
+// a recursive loop.
 var topDocumentHelper = {
     isNotTopDocument: window.top !== window.self,
     isDirty: function ($node, index) {

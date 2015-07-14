@@ -42,8 +42,7 @@ License MIT
     // Public Element methods ( $('form').dirtyForms('methodName', args) )
     var methods = {
         init: function (options) {
-            var fieldSelector = $.DirtyForms.fieldSelector,
-                data = {};
+            var data = {};
 
             if (!state.initialized) {
                 // Override any default options
@@ -55,20 +54,17 @@ License MIT
                 state.initialized = true;
             }
 
-            elementsInRange(this, 'form', true).each(function () {
+            this.filter('form').each(function () {
                 var $form = $(this);
                 dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
 
                 // Store original values of the fields
-                $form.find(fieldSelector).each(function () {
+                $form.find($.DirtyForms.fieldSelector).each(function () {
                     storeOriginalValue($(this));
                 });
 
-                $form.trigger('scan.dirtyforms')
-                     .addClass($.DirtyForms.listeningClass)
-                     .on('change input propertychange keyup', fieldSelector, data, events.onFieldChange)
-                     .on('focus keydown', fieldSelector, data, events.onFocus)
-                     .on('reset', 'form', data, events.onReset);
+                $form.trigger('scan.dirtyforms');
+                events.bindForm($form, data);
             });
             return this;
         },
@@ -243,6 +239,13 @@ License MIT
             $(window).bind('beforeunload', data, this.onBeforeUnload);
             $(document).on('click', 'a[href]:not([target="_blank"])', data, this.onAnchorClick)
                        .on('submit', 'form', data, this.onSubmit);
+        },
+        bindForm: function ($form, data) {
+            var dirtyForms = $.DirtyForms;
+            $form.addClass(dirtyForms.listeningClass)
+                 .on('change input propertychange keyup', dirtyForms.fieldSelector, data, this.onFieldChange)
+                 .on('focus keydown', dirtyForms.fieldSelector, data, events.onFocus)
+                 .on('reset', 'form', data, events.onReset);
         },
         // For any fields added after the form was initialized, store the value when focused.
         onFocus: function () {
