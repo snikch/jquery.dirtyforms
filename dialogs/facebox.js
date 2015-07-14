@@ -40,8 +40,8 @@ License MIT
                     '<a href="#" class="cancel ' + $.DirtyForms.ignoreClass + ' ' + this.cancelButtonClass + '">' + this.cancelButtonText + '</a>' +
                 '</p>';
             $.facebox(content);
-        },
-        bind: function () {
+
+            // Bind Events
             var close = function (decision) {
                 return function (e) {
                     if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
@@ -62,6 +62,10 @@ License MIT
         },
         refire: function (content, ev) {
             $.facebox(content);
+        },
+
+        // Support for Dirty Forms < 1.2
+        bind: function () {
         }
     };
 

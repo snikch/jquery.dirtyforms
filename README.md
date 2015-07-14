@@ -523,38 +523,6 @@ Opens the dialog.
 The main message to show in the body of the dialog. Note that as of version 2.0, the title is typically a property of the dialog class.
 
 
-#### `bind()` (Optional)
-
-Binds the continue and cancel functions to the correct links. For some dialog frameworks, it is simpler just to do all of the work in the fire function. In that case, this function can be omitted. Note that this function is called immediately after fire is called.
-
-It is important to trap the `ESC` key (character code 27) in the keydown event in order to ensure it doesn't cause erratic behavior.
-
-```javascript
-// Trap the escape key and force a close. 
-// Cancel it so the dialog framework doesn't intercept it.
-$(document).keydown(function(e) {
-
-	// Look for the ESC key
-	if (e.which == 27) {
-	
-		// Cancel the event so it doesn't bubble
-		e.preventDefault();
-		
-		// Close the dialog
-		dlg.dialog('close');
-		
-		// Cancel the decision
-		$.DirtyForms.decidingCancel(e);
-		
-		// Return false
-		return false;
-	}
-	
-	// Make sure you don't return false here
-});
-```
-
-
 #### `stash()` (Optional)
 
 Stash returns the current contents of a dialog to be refired after the confirmation. Use to store the current dialog (from the application), when it's about to be replaced with the confirmation dialog. This function can be omitted (or return false) if you don't wish to stash anything.
@@ -628,7 +596,7 @@ $.DirtyForms.dialog = {
 	// Used to select the element that will be cloned and put into the stash.
 	selector : '#facebox .content',
 
-	// Fire starts the dialog
+	// Fire starts the dialog and binds the events to interact with Dirty Forms.
 	fire : function(message){
 		var content = 
 			'<span class="' + this.class + '">' + 
@@ -640,13 +608,9 @@ $.DirtyForms.dialog = {
 				'</p>' +
 			'</span>';
 		$.facebox(content);
-	},
 
-	// Bind binds the continue and cancel functions to the correct links. For some dialog
-	// frameworks, it is simpler just to do all of the work in the fire function.
-	// In that case, this function can be omitted. Note that this function is called immediately
-	// after fire is called.
-	bind : function(){
+		// Bind the events to close the dialog
+		// and make the right decision.
 		$(document).bind('keydown.facebox', function (e) {
 			// Intercept the escape key and send the event to Dirty Forms
 		if (e.which === 27) {
@@ -670,22 +634,18 @@ $.DirtyForms.dialog = {
 		   false :
 		   fb.clone(true);
 	},
-
+ 
 	// Refire handles closing an existing dialog AND fires a new one.
 	// You can omit this method (or return false) if you don't need to use stashing/refiring.
-	refire : function(content){
-		var rebox = function(){
-			$.facebox(content);
-			$(document).unbind('afterClose.facebox', rebox);
-		}
-		$(document).bind('afterClose.facebox', rebox);
-	}
+	refire: function (content, ev) {
+        $.facebox(content);
+    }
 
 };
 
 ```
 
-`fire()` accepts a `message` and `title`, and is responsible for creating the modal dialog. Note the two classes on each link. In the `bind()` method you will see that we bind the `$.DirtyForms.decidingCancel(e)` method to the `.cancel` link and the `.close` link, and we bind `$.DirtyForms.decidingContinue(e)` to the `.continue` link. You should bind both `$.DirtyForms.decidingCancel` and `$.DirtyForms.decidingContinue` in the `bind()` method (or alternatively you can create the entire dialog in the `fire()` method).
+`fire()` accepts a `message` and `title`, and is responsible for creating the modal dialog. Note the two classes on each link. We bind the `$.DirtyForms.decidingCancel(e)` method to the `.cancel` link and the `.close` link, and we bind `$.DirtyForms.decidingContinue(e)` to the `.continue` link. You should bind both `$.DirtyForms.decidingCancel` and `$.DirtyForms.decidingContinue` in the `fire()` method.
 
 > Be sure to register the keydown event for the escape key and pass the call on to `$.DirtyForms.decidingCancel(e)` or the default browser fallback will fail when the user hits the escape key.
 
@@ -697,8 +657,8 @@ $.DirtyForms.dialog = {
 	fire: function(message) {
 		$('#unsavedChanges').dialog({title: this.title, width: 400, modal: true});
 		$('#unsavedChanges').html(message);
-	},
-	bind: function() {
+
+		// Bind events
 		$('#unsavedChanges').dialog('option', 'buttons',
 			[
 				{
@@ -732,7 +692,7 @@ $.DirtyForms.dialog = {
             }
         });
 	}
-}
+};
 
 // Dynamically add the div element to the page for the dialog (a hidden div).
 $('body').append("<div id='unsavedChanges' style='display: none'></div>");
@@ -759,6 +719,7 @@ Stashing is meant for the following scenario.
 You don't need to use stashing if either of the above (or both) of the items don't apply to you.
 
 If you have a form and link which is in a modal dialog (a modal dialog created by some other part of your application) then when the Dirty Forms modal fires, the original modal is removed. So the stash saves the content from the original modal dialog while Dirty Forms shows its modal dialog, and then re-shows the original modal dialog with the edits if the user chooses to stay on the page.
+
 
 ## Event Handler Customization
 

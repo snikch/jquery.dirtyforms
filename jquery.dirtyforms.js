@@ -493,8 +493,6 @@ License MIT
 
         dirtylog('Deferring to the dialog');
         dirtyForms.dialog.fire(dirtyForms.message);
-        if ($.isFunction(dirtyForms.dialog.bind))
-            dirtyForms.dialog.bind();
     };
 
     var refire = function (ev) {

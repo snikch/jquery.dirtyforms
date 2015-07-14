@@ -86,8 +86,8 @@ License MIT
 
             // Patch for PNotify 1.x
             notice = isPN2 ? new PNotify(content) : $.pnotify(content);
-        },
-        bind: function () {
+
+            // Bind Events
             var close = function (decision) {
                 return function (e) {
                     if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
@@ -106,6 +106,8 @@ License MIT
         },
 
         // Support for Dirty Forms < 1.2
+        bind: function () {
+        },
         stash: function () {
             return false;
         },

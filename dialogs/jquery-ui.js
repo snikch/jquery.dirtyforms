@@ -37,8 +37,8 @@ License MIT
         fire: function (message) {
             $dialog.dialog({ title: this.title, width: this.width, modal: true });
             $dialog.html(message);
-        },
-        bind: function () {
+
+            // Bind Events
             $dialog.dialog('option', 'buttons',
                 [
                     {
@@ -71,6 +71,8 @@ License MIT
         },
 
         // Support for Dirty Forms < 1.2
+        bind: function () {
+        },
         stash: function () {
             return false;
         },
