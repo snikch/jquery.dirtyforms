@@ -114,8 +114,8 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 	<tr>
 		<th align="left">title</th>
 		<td>string</td>
-		<td>'Are you sure you want to do that?'</td>
-		<td>Sets the title of the dialog.</td>
+		<td>'<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Are you sure you want to do that?'</td>
+		<td>Sets the title of the dialog. Supports HTML.</td>
 	</tr>
 	<tr>
 		<th align="left">continueButtonClass</th>
@@ -160,12 +160,26 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<td>Sets the CSS class of the element that represents the message body. The element with this class will automatically have the message inserted into it before showing the dialog.</td>
 	</tr>
 	<tr>
+		<th align="left">preMessageText</th>
+		<td>string</td>
+		<td nowrap="nowrap">''</td>
+		<td>Sets the text that precedes the message text. May contain HTML.</td>
+	</tr>
+	<tr>
+		<th align="left">postMessageText</th>
+		<td>string</td>
+		<td nowrap="nowrap">''</td>
+		<td>Sets the text that follows the message text. May contain HTML.</td>
+	</tr>
+	<tr>
 		<th align="left">replaceText</th>
 		<td>boolean</td>
 		<td nowrap="nowrap">true</td>
-		<td>Set to false to prevent the title, message, continue button text, and cancel button text in the dialog from being overwritten by the configured values.</td>
+		<td>Set to false to prevent the title, message, continue button text, and cancel button text in the dialog from being overwritten by the configured values. This is useful if you want to configure your dialog text entirely in the HTML of the page.</td>
 	</tr>
 </table>
+
+> Setting the width of the bootstrap modal requires custom CSS to ensure it will work with different viewport sizes. See [this page](http://coolestguidesontheplanet.com/bootstrap/modal.php) for examples.
 
 
 ## Customization

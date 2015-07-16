@@ -119,31 +119,31 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<th align="left">continueButtonClass</th>
 		<td>string</td>
 		<td nowrap="nowrap">'button medium red'</td>
-		<td>Allows getting or setting the CSS class of the continue button of the dialog (an HTML anchor tag element).</td>
+		<td>Sets the CSS class of the continue button of the dialog (an HTML anchor tag element).</td>
 	</tr>
 	<tr>
 		<th align="left">continueButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Leave This Page'</td>
-		<td>Allows getting or setting the text of the continue button of the dialog.</td>
+		<td>Sets the text of the continue button of the dialog.</td>
 	</tr>
 	<tr>
 		<th align="left">cancelButtonClass</th>
 		<td>string</td>
 		<td nowrap="nowrap">'button medium'</td>
-		<td>Allows getting or setting the CSS class of the cancel button of the dialog (an HTML anchor tag element).</td>
+		<td>Sets the CSS class of the cancel button of the dialog (an HTML anchor tag element).</td>
 	</tr>
 	<tr>
 		<th align="left">cancelButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Stay Here'</td>
-		<td>Allows getting or setting the text of the cancel button of the dialog.</td>
+		<td>Sets the text of the cancel button of the dialog.</td>
 	</tr>
 	<tr>
-		<th align="left">selector</th>
+		<th align="left">stashSelector</th>
 		<td>string</td>
 		<td nowrap="nowrap">'#facebox .content'</td>
-		<td>When using stashing, this selector chooses the element of the modal dialog containing your form that will be included in the stash and later restored during refire (if the user clicks cancel).</td>
+		<td>When using stashing, setting this selector chooses the element of the modal dialog containing your form that will be included in the stash and later restored during unstash (if the user clicks cancel).</td>
 	</tr>
 </table>
 

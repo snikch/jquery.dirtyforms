@@ -126,30 +126,30 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<th align="left">class</th>
 		<td>string</td>
 		<td nowrap="nowrap">'dirty-dialog'</td>
-		<td>Allows getting or setting the CSS class of the SPAN element that contains all of the elements of the dialog.</td>
+		<td>Sets the CSS class of the SPAN element that contains all of the elements of the dialog.</td>
 	</tr>
 	<tr>
 		<th align="left">continueButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Leave This Page'</td>
-		<td>Allows getting or setting the text of the continue button of the dialog.</td>
+		<td>Sets the text of the continue button of the dialog.</td>
 	</tr>
 	<tr>
 		<th align="left">cancelButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Stay Here'</td>
-		<td>Allows getting or setting the text of the cancel button of the dialog.</td>
+		<td>Sets the text of the cancel button of the dialog.</td>
 	</tr>
 	<tr>
 		<th align="left">styling</th>
 		<td>string</td>
 		<td nowrap="nowrap">'bootstrap3'</td>
-		<td>Use this setting to set which CSS theme you want to style PNotify. Available choices: 'bootstrap3', 'jqueryui', or 'fontawesome'. See the theme section of the <a href="http://sciactive.com/pnotify/">PNotify documentation</a> for details.</td>
+		<td>Sets the CSS theme you want to style PNotify. Available choices: 'bootstrap3', 'jqueryui', or 'fontawesome'. See the theme section of the <a href="http://sciactive.com/pnotify/">PNotify documentation</a> for details.</td>
 	</tr>
 	<tr>
 		<th align="left">width</th>
 		<td>string</td>
 		<td nowrap="nowrap">'330'</td>
-		<td>Allows getting or setting the width of the dialog.</td>
+		<td>Sets the width of the dialog.</td>
 	</tr>
 </table>

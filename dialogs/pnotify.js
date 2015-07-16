@@ -36,7 +36,9 @@ License MIT
         width: '330',
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message) {
+        open: function (choice, message, ignoreClass) {
+            ignoreClass = ignoreClass || $.DirtyForms.ignoreClass;
+
             var content = {
                 title: this.title,
                 hide: false,
@@ -55,8 +57,8 @@ License MIT
                 text: '<span class="' + this.class + '">' +
                         '<p>' + message + '</p>' +
                         '<span style="display:block;text-align:center;">' +
-                            '<button type="button" class="dirty-continue ' + $.DirtyForms.ignoreClass + '">' + this.continueButtonText + '</button> ' +
-                            '<button type="button" class="dirty-cancel ' + $.DirtyForms.ignoreClass + '">' + this.cancelButtonText + '</button>' +
+                            '<button type="button" class="dirty-continue ' + ignoreClass + '">' + this.continueButtonText + '</button> ' +
+                            '<button type="button" class="dirty-cancel ' + ignoreClass + '">' + this.cancelButtonText + '</button>' +
                         '</span>' +
                     '</span>',
                 before_open: function (PNotify) {
@@ -88,21 +90,38 @@ License MIT
             notice = isPN2 ? new PNotify(content) : $.pnotify(content);
 
             // Bind Events
-            var close = function (decision) {
-                return function (e) {
-                    if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
-                        $(document).trigger('close.facebox');
-                        notice.remove();
-                        modal_overlay.fadeOut("fast");
-                        decision(e);
-                        return false;
-                    }
+            choice.bindEnterKey = true;
+            choice.continueSelector = '.' + this.class + ' .dirty-continue';
+            choice.cancelSelector = '.' + this.class + ' .dirty-cancel,.ui-widget-overlay';
+
+            // Support for Dirty Forms < 2.0
+            if (choice.isDF1) {
+                var close = function (decision) {
+                    return function (e) {
+                        if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
+                            notice.remove();
+                            modal_overlay.fadeOut("fast");
+                            decision(e);
+                            return false;
+                        }
+                    };
                 };
-            };
-            // Trap the escape key and force a close. Cancel it so PNotify doesn't intercept it.
-            $(document).keydown(close($.DirtyForms.decidingCancel));
-            $('.dirty-cancel,.ui-widget-overlay').click(close($.DirtyForms.decidingCancel));
-            $('.dirty-continue').click(close($.DirtyForms.decidingContinue));
+                // Trap the escape key and force a close. Cancel it so PNotify doesn't intercept it.
+                var decidingCancel = $.DirtyForms.decidingCancel;
+                $(document).keydown(close(decidingCancel));
+                $(choice.cancelSelector).click(close(decidingCancel));
+                $(choice.continueSelector).click(close($.DirtyForms.decidingContinue));
+            }
+        },
+        close: function () {
+            notice.remove();
+            modal_overlay.fadeOut("fast");
+        },
+
+        // Support for Dirty Forms < 2.0
+        fire: function (message, title) {
+            this.title = title;
+            this.open({ isDF1: true }, message);
         },
 
         // Support for Dirty Forms < 1.2

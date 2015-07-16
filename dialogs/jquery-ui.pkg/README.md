@@ -120,18 +120,30 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<th align="left">continueButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Leave This Page'</td>
-		<td>Allows getting or setting the text of the continue button of the dialog.</td>
+		<td>Sets the text of the continue button of the dialog.</td>
 	</tr>
 	<tr>
 		<th align="left">cancelButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Stay Here'</td>
-		<td>Allows getting or setting the text of the cancel button of the dialog.</td>
+		<td>Sets the text of the cancel button of the dialog.</td>
+	</tr>
+	<tr>
+		<th align="left">preMessageText</th>
+		<td>string</td>
+		<td>'<span class="ui-icon ui-icon-alert" style="float:left; margin:2px 7px 25px 0;"></span>'</td>
+		<td>Sets the text that precedes the message text. May contain HTML.</td>
+	</tr>
+	<tr>
+		<th align="left">postMessageText</th>
+		<td>string</td>
+		<td nowrap="nowrap">''</td>
+		<td>Sets the text that follows the message text. May contain HTML.</td>
 	</tr>
 	<tr>
 		<th align="left">width</th>
 		<td>int</td>
-		<td nowrap="nowrap">400</td>
+		<td nowrap="nowrap">430</td>
 		<td>The width of the dialog.</td>
 	</tr>
 </table>

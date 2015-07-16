@@ -18,10 +18,11 @@ License MIT
         factory(jQuery);
     }
 }(function ($) {
+    var exclamationGlyphicon = '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ';
 
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
-        title: 'Are you sure you want to do that?',
+        title: exclamationGlyphicon + 'Are you sure you want to do that?',
         continueButtonClass: 'dirty-continue',
         continueButtonText: 'Leave This Page',
         cancelButtonClass: 'dirty-cancel',
@@ -29,10 +30,12 @@ License MIT
         dialogID: 'dirty-dialog',
         titleID: 'dirty-title',
         messsageClass: 'dirty-message',
+        preMessageText: '',
+        postMessageText: '',
         replaceText: true,
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message) {
+        open: function (choice, message) {
             // Look for a pre-existing element with the dialogID.
             var $dialog = $('#' + this.dialogID);
 
@@ -43,14 +46,14 @@ License MIT
                 $dialog =
                     $('<div id="' + this.dialogID + '" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="' + this.titleID + '">' +
                         '<div class="modal-dialog" role="document">' +
-                            '<div class="modal-content">' +
-                                '<div class="modal-header">' +
+                            '<div class="modal-content panel-danger">' +
+                                '<div class="modal-header panel-heading">' +
                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                                     '<h3 class="modal-title" id="' + this.titleID + '"></h3>' +
                                 '</div>' +
-                                '<div class="modal-body ' + this.messsageClass + '"></div>' +
-                                '<div class="modal-footer">' +
-                                    '<button type="button" class="' + this.continueButtonClass + ' btn btn-primary" data-dismiss="modal"></button>' +
+                                '<div class="modal-body panel-body ' + this.messsageClass + '"></div>' +
+                                '<div class="modal-footer panel-footer">' +
+                                    '<button type="button" class="' + this.continueButtonClass + ' btn btn-danger" data-dismiss="modal"></button>' +
                                     '<button type="button" class="' + this.cancelButtonClass + ' btn btn-default" data-dismiss="modal"></button>' +
                                 '</div>' +
                             '</div>' +
@@ -66,24 +69,36 @@ License MIT
             if (this.replaceText) {
                 // Replace the text in the dialog (whether it is external or not).
                 $dialog.find('#' + this.titleID).html(this.title);
-                $dialog.find('.' + this.messsageClass).html(message);
+                $dialog.find('.' + this.messsageClass).html(this.preMessageText + message + this.postMessageText);
                 $dialog.find('.' + this.continueButtonClass).html(this.continueButtonText);
                 $dialog.find('.' + this.cancelButtonClass).html(this.cancelButtonText);
             }
 
             // Bind the events
-            $dialog.find('.' + this.continueButtonClass).click(function (e) {
-                $.DirtyForms.choiceContinue = true;
-            });
-            $dialog.on('hidden.bs.modal', function (e) {
-                $.DirtyForms.choiceCommit(e);
+            choice.bindEscKey = false;
+
+            var onContinueClick = function () {
+                choice.continue = $.DirtyForms.choiceContinue = true;
+            };
+            var onHidden = function (e) {
+                var commit = choice.isDF1 ? $.DirtyForms.choiceCommit : choice.commit;
+                commit(e);
                 if ($('body').data('df-dialog-appended') === true) {
                     $dialog.remove();
                 }
-            });
+            };
+            // NOTE: Bootstrap 3 requires jQuery 1.9, so we can use on and off here.
+            $dialog.find('.' + this.continueButtonClass).off('click', onContinueClick).on('click', onContinueClick);
+            $dialog.off('hidden.bs.modal', onHidden).on('hidden.bs.modal', onHidden);
 
             // Show the dialog
             $dialog.modal({ show: true });
+        },
+
+        // Support for Dirty Forms < 2.0
+        fire: function (message, title) {
+            this.title = exclamationGlyphicon + title;
+            this.open({ isDF1: true }, message);
         },
 
         // Support for Dirty Forms < 1.2

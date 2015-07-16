@@ -23,7 +23,6 @@ License MIT
 
     // Create a local reference for simplicity
     var $dialog = $('<div style="display:none;" />');
-
     $('body').append($dialog);
 
     $.DirtyForms.dialog = {
@@ -31,20 +30,28 @@ License MIT
         title: 'Are you sure you want to do that?',
         continueButtonText: 'Leave This Page',
         cancelButtonText: 'Stay Here',
-        width: 400,
+        preMessageText: '<span class="ui-icon ui-icon-alert" style="float:left; margin:2px 7px 25px 0;"></span>',
+        postMessageText: '',
+        width: 430,
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message) {
-            $dialog.dialog({ title: this.title, width: this.width, modal: true });
-            $dialog.html(message);
+        open: function (choice, message) {
+            var commit = choice.isDF1 ? $.DirtyForms.choiceCommit : choice.commit;
 
-            // Bind Events
-            $dialog.dialog('option', 'buttons',
-                [
+            $dialog.dialog({
+                open: function () {
+                    // Set the focus on close button
+                    $(this).parents('.ui-dialog').find('.ui-dialog-buttonpane button:eq(1)').focus();
+                },
+                close: commit,
+                title: this.title,
+                width: this.width,
+                modal: true,
+                buttons: [
                     {
                         text: this.continueButtonText,
                         click: function () {
-                            $.DirtyForms.choiceContinue = true;
+                            choice.continue = $.DirtyForms.choiceContinue = true;
                             $(this).dialog('close');
                         }
                     },
@@ -55,19 +62,32 @@ License MIT
                         }
                     }
                 ]
-            ).bind('dialogclose', function (e) {
-                $.DirtyForms.choiceCommit(e);
             });
+            $dialog.html(this.preMessageText + message + this.postMessageText);
 
-            // Trap the escape key and force a close. Cancel it so jQuery UI doesn't intercept it.
-            // This will fire the dialogclose event to commit the choice (which defaults to false).
-            $(document).keydown(function (e) {
-                if (e.keyCode == 27) {
-                    e.preventDefault();
-                    $dialog.dialog('close');
-                    return false;
-                }
-            });
+            // Support for Dirty Forms < 2.0
+            if (choice.isDF1) {
+                var onEscKey = function (e) {
+                    if (e.keyCode == 27) {
+                        e.preventDefault();
+                        $dialog.dialog('close');
+                        return false;
+                    }
+                };
+
+                // Trap the escape key and force a close. Cancel it so jQuery UI doesn't intercept it.
+                // This will fire the dialogclose event to commit the choice (which defaults to false).
+                $(document).unbind('keydown', onEscKey).keydown(onEscKey);
+            }
+        },
+        close: function () {
+            $dialog.dialog('close');
+        },
+
+        // Support for Dirty Forms < 2.0
+        fire: function (message, title) {
+            this.title = title;
+            this.open({ isDF1: true }, message);
         },
 
         // Support for Dirty Forms < 1.2

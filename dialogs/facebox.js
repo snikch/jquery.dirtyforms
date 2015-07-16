@@ -32,40 +32,67 @@ License MIT
         // Typical Dirty Forms Properties and Methods
 
         // Selector for stashing the content of another dialog.
-        selector: '#facebox .content',
-        fire: function (message) {
-            var content = '<h1>' + this.title + '</h1><p>' + message + '</p>' +
+        stashSelector: '#facebox .content',
+        open: function (choice, message, ignoreClass) {
+            ignoreClass = ignoreClass || $.DirtyForms.ignoreClass;
+
+            var content =
+                '<h1>' + this.title + '</h1>' +
+                '<p>' + message + '</p>' +
                 '<p>' +
-                    '<a href="#" class="continue ' + $.DirtyForms.ignoreClass + ' ' + this.continueButtonClass + '">' + this.continueButtonText + '</a>' +
-                    '<a href="#" class="cancel ' + $.DirtyForms.ignoreClass + ' ' + this.cancelButtonClass + '">' + this.cancelButtonText + '</a>' +
+                    '<a href="#" class="dirty-continue ' + ignoreClass + ' ' + this.continueButtonClass + '">' + this.continueButtonText + '</a>' +
+                    '<a href="#" class="dirty-cancel ' + ignoreClass + ' ' + this.cancelButtonClass + '">' + this.cancelButtonText + '</a>' +
                 '</p>';
             $.facebox(content);
 
             // Bind Events
-            var close = function (decision) {
-                return function (e) {
-                    if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
-                        $(document).trigger('close.facebox');
-                        decision(e);
-                    }
+            choice.bindEnterKey = true;
+            choice.cancelSelector = '#facebox .dirty-cancel, #facebox .close, #facebox_overlay';
+            choice.continueSelector = '#facebox .dirty-continue';
+
+            // Support for Dirty Forms < 2.0
+            if (choice.isDF1) {
+                var close = function (decision) {
+                    return function (e) {
+                        if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
+                            $(document).trigger('close.facebox');
+                            decision(e);
+                        }
+                    };
                 };
-            };
-            $(document).bind('keydown.facebox', close($.DirtyForms.decidingCancel));
-            $('#facebox .cancel, #facebox .close, #facebox_overlay').click(close($.DirtyForms.decidingCancel));
-            $('#facebox .continue').click(close($.DirtyForms.decidingContinue));
+                var decidingCancel = $.DirtyForms.decidingCancel;
+                $(document).bind('keydown.facebox', close(decidingCancel));
+                $(choice.cancelSelector).click(close(decidingCancel));
+                $(choice.continueSelector).click(close($.DirtyForms.decidingContinue));
+            }
+        },
+        close: function (continuing, unstashing) {
+            if (!unstashing) {
+                $(document).trigger('close.facebox');
+            }
         },
         stash: function () {
             var fb = $('#facebox');
             return ($.trim(fb.html()) === '' || fb.css('display') != 'block') ?
                false :
-               $('#facebox .content').clone(true);
+               $('#facebox .content').children().clone(true);
         },
-        refire: function (content, ev) {
-            $.facebox(content);
+        unstash: function (stash, ev) {
+            $.facebox(stash);
         },
+
+        // Support for Dirty Forms < 2.0
+        fire: function (message, title) {
+            this.title = title;
+            this.open({ isDF1: true }, message);
+        },
+        selector: $.DirtyForms.dialog.stashSelector,
 
         // Support for Dirty Forms < 1.2
         bind: function () {
+        },
+        refire: function (content, ev) {
+            this.unstash(content, ev);
         }
     };
 

@@ -35,14 +35,14 @@ License MIT
         overlayOpacity: 0.5,
 
         // Typical Dirty Forms Properties and Methods
-        fire: function (message) {
+        open: function (choice, message) {
             $.blockUI({
                 message: '<span class="' + this.class + '">' +
                         '<h3>' + this.title + '</h3>' +
                         '<p>' + message + '</p>' +
                         '<span>' +
-                            '<button type="button" class="dirty-continue ' + $.DirtyForms.ignoreClass + '">' + this.continueButtonText + '</button> ' +
-                            '<button type="button" class="dirty-cancel ' + $.DirtyForms.ignoreClass + '">' + this.cancelButtonText + '</button>' +
+                            '<button type="button" class="dirty-continue">' + this.continueButtonText + '</button> ' +
+                            '<button type="button" class="dirty-cancel">' + this.cancelButtonText + '</button>' +
                         '</span>' +
                     '</span>',
                 css: {
@@ -60,18 +60,35 @@ License MIT
             });
 
             // Bind Events
-            var close = function (decision) {
-                return function (e) {
-                    if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
-                        $.unblockUI();
-                        decision(e);
-                        return false;
-                    }
+            choice.bindEnterKey = true;
+            choice.continueSelector = '.' + this.class + ' .dirty-continue';
+            choice.cancelSelector = '.' + this.class + ' .dirty-cancel,.blockOverlay';
+
+            // Support for Dirty Forms < 2.0
+            if (choice.isDF1) {
+                var close = function (decision) {
+                    return function (e) {
+                        if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
+                            $.unblockUI();
+                            decision(e);
+                            return false;
+                        }
+                    };
                 };
-            };
-            $(document).keydown(close($.DirtyForms.decidingCancel));
-            $('.' + this.class + ' .dirty-cancel').click(close($.DirtyForms.decidingCancel));
-            $('.' + this.class + ' .dirty-continue').click(close($.DirtyForms.decidingContinue));
+                var decidingCancel = $.DirtyForms.decidingCancel;
+                $(document).keydown(close(decidingCancel));
+                $(choice.cancelSelector).click(close(decidingCancel));
+                $(choice.continueSelector).click(close($.DirtyForms.decidingContinue));
+            }
+        },
+        close: function () {
+            $.unblockUI();
+        },
+
+        // Support for Dirty Forms < 2.0
+        fire: function (message, title) {
+            this.title = title;
+            this.open({ isDF1: true }, message);
         },
 
         // Support for Dirty Forms < 1.2
