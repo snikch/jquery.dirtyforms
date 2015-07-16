@@ -24,9 +24,9 @@ The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.
 - Advanced state management - tracks the original values of fields so they are "clean" when reset to the original value.
 - Works with your existing dialog framework for the best user experience (optional).
 - Falls back to the browser's dialog (if the browser supports it).
-- Pluggable helper system that reads and updates the dirty state of common rich text editor frameworks (optional).
+- Pluggable helper system that reads and updates the dirty state of custom widgets and common rich text editor frameworks (optional).
 - Event handler customization (for IFrame support).
-- Small size (about 6 KB minified).
+- Small size (about 2.5 KB gzipped).
 - Universal Module Definition (UMD) support for AMD, Node/CommonJS, Browserify, etc.
 - Hosted on jsDelivr CDN for easy combining of modules into a single HTTP request.
 
