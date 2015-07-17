@@ -27,7 +27,8 @@
                     if ($(this).tinymce().isDirty()) {
                         isDirty = true;
                         $.DirtyForms.dirtylog('Node was totally dirty.');
-                        return true;
+                        // Return false to break out of the .each() function
+                        return false;
                     }
                 });
             }

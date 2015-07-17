@@ -178,21 +178,27 @@
             this.each(function (e) {
                 if ($(this).hasClass(settings.dirtyClass)) {
                     isDirty = true;
-                    return true;
+                    // Return false to break out of the .each() function
+                    return false;
                 }
             });
+            // Skip helpers if we are already dirty.
+            if (isDirty) return true;
+
             $.each(settings.helpers, function (key, obj) {
                 if ("isDirty" in obj) {
                     if (obj.isDirty(node)) {
                         isDirty = true;
-                        return true;
+                        // Return false to break out of the .each() function
+                        return false;
                     }
                 }
                 // For backward compatibility, we call isNodeDirty (deprecated)
                 if ("isNodeDirty" in obj) {
                     if (obj.isNodeDirty(node)) {
                         isDirty = true;
-                        return true;
+                        // Return false to break out of the .each() function
+                        return false;
                     }
                 }
             });

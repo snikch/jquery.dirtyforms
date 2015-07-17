@@ -19,23 +19,33 @@
         isDirty: function (form) {
             editors = ckeditors(form);
             $.DirtyForms.dirtylog('Checking ' + editors.length + ' ckeditors for dirtyness.');
-            var dirty = 0;
-            editors.each(function () { if (this.checkDirty()) dirty += 1; });
-            $.DirtyForms.dirtylog('There were ' + dirty + ' dirty ckeditors.');
-            return dirty > 0;
+            var isDirty = false;
+            editors.each(function (editorIndex) {
+                if (this.checkDirty()) {
+                    isDirty = true;
+
+                    $.DirtyForms.dirtylog('CKEditor with index ' + editorIndex + ' was dirty, exiting...');
+                    // Return false to break out of the .each() function
+                    return false;
+                }
+            });
+            return isDirty;
         },
         setClean: function (form) {
             ckeditors(form).each(function () { this.resetDirty(); });
         }
     };
     var ckeditors = function (form) {
+        var $form = form.jquery ? form : $(form);
         editors = [];
         try {
             for (var key in CKEDITOR.instances) {
                 if (CKEDITOR.instances.hasOwnProperty(key)) {
                     editor = CKEDITOR.instances[key];
-                    if ($(editor.element.$).parents().index($(form)) != -1)
+                    if ($(editor.element.$).parents().index($form) != -1) {
+                        $.DirtyForms.dirtylog('Adding CKEditor with key ' + key);
                         editors.push(editor);
+                    }
                 }
             }
         }
@@ -46,4 +56,3 @@
     };
     $.DirtyForms.helpers.push(ckeditor);
 }));
-
