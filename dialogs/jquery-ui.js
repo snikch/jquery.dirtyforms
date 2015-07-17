@@ -68,7 +68,7 @@ License MIT
             // Support for Dirty Forms < 2.0
             if (choice.isDF1) {
                 var onEscKey = function (e) {
-                    if (e.keyCode == 27) {
+                    if (e.which == 27) {
                         e.preventDefault();
                         $dialog.dialog('close');
                         return false;

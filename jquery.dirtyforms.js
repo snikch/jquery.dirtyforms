@@ -217,9 +217,8 @@ License MIT
     };
 
     var bindKeys = function (ev) {
-        if (choice.bindEscKey && ev.keyCode === 27 || choice.bindEnterKey && ev.keyCode === 13) {
-            doCommit(ev, false);
-            return false;
+        if (choice.bindEscKey && ev.which == 27 || choice.bindEnterKey && ev.which == 13) {
+            return doCommit(ev, false);
         }
     };
 
