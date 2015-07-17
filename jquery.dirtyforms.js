@@ -46,7 +46,11 @@
                     var close = function (decision) {
                         return function (e) {
                             if (e.type !== 'keydown' || (e.type === 'keydown' && e.keyCode === 27)) {
-                                $(document).trigger('close.facebox');
+                                // Facebox hack: If we call close when returning from the stash, the
+                                // stash dialog will close, so we guard against calling close in that case. 
+                                if (!settings.dialogStash) {
+                                    $(document).trigger('close.facebox');
+                                }
                                 decision(e);
                             }
                         };
