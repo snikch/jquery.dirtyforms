@@ -50,12 +50,15 @@ License MIT
             choice.cancelSelector = '#facebox .dirty-cancel, #facebox .close, #facebox_overlay';
             choice.continueSelector = '#facebox .dirty-continue';
 
-            // Support for Dirty Forms < 2.0
             if (choice.isDF1) {
                 var close = function (decision) {
                     return function (e) {
                         if (e.type !== 'keydown' || (e.type === 'keydown' && e.which == 27)) {
-                            $(document).trigger('close.facebox');
+                            // Facebox hack: If we call close when returning from the stash, the
+                            // stash dialog will close, so we guard against calling close in that case. 
+                            if (!$.DirtyForms.dialogStash) {
+                                $(document).trigger('close.facebox');
+                            }
                             decision(e);
                         }
                     };
@@ -67,15 +70,20 @@ License MIT
             }
         },
         close: function (continuing, unstashing) {
+            // Facebox hack: If we call close when returning from the stash, the
+            // stash dialog will close, so we guard against calling close in that case. 
             if (!unstashing) {
                 $(document).trigger('close.facebox');
             }
         },
         stash: function () {
+            var isDF1 = typeof $.DirtyForms.isDeciding === 'function';
             var fb = $('#facebox');
             return ($.trim(fb.html()) === '' || fb.css('display') != 'block') ?
-               false :
-               $('#facebox .content').children().clone(true);
+                false :
+                isDF1 ?
+                    $('#facebox .content').clone(true) :
+                    $('#facebox .content').children().clone(true);
         },
         unstash: function (stash, ev) {
             $.facebox(stash);
