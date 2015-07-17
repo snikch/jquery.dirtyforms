@@ -443,7 +443,7 @@ It is important to trap the `ESC` key (character code 27) in the keydown event i
 $(document).keydown(function(e) {
 
 	// Look for the ESC key
-	if (e.keyCode == 27) {
+	if (e.which == 27) {
 	
 		// Cancel the event so it doesn't bubble
 		e.preventDefault();
@@ -539,7 +539,7 @@ fire : function(message, title){
 bind : function(){
 	$(document).bind('keydown.facebox', function (e) {
 		// Intercept the escape key and send the event to Dirty Forms
-		if (e.keyCode === 27) {
+		if (e.which === 27) {
 			$(document).trigger('close.facebox');
             $.DirtyForms.decidingCancel(e);
 		}
@@ -613,7 +613,7 @@ $.DirtyForms.dialog = {
 		// Calling dialog('close') will fire the 'dialogclose' event,
 		// which will in turn commit the choice to Dirty Forms.
 		$(document).bind('keydown', function(e) {
-			if (e.keyCode == 27) {
+			if (e.which == 27) {
 				e.preventDefault();
 				$.DirtyForms.choiceContinue = false;
                 $('#unsavedChanges').dialog('close');
