@@ -10,12 +10,12 @@
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
         // Node/CommonJS
-        module.exports = factory(require('jquery'));
+        module.exports = factory(require('jquery'), window, document);
     } else {
         // Browser globals
-        factory(jQuery);
+        factory(jQuery, window, document);
     }
-}(function ($) {
+}(function ($, window, document, undefined) {
     // Use ECMAScript 5's strict mode
     "use strict";
 
