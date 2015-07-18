@@ -11,13 +11,11 @@ Oh, and it's pretty easy to use.
 ```javascript
 $('form').dirtyForms();
 ```
-
-Existing solutions were not flexible enough, so I wrote this to make sure that all of our use cases at Learnable would be supported. This included using TinyMCE as a rich text editor and ensuring dirty tinymce instances mark their form as dirty. I've also ensured that event bubbling on links and forms are propagated correctly. Dirty Forms will only attempt to alert the user if the event has not had the preventDefault() method called, and will accordingly refire events if the user chooses to continue from the page - ensuring all click handlers, and form submission handlers are correctly fired. For this reason, Dirty Forms should be the last jQuery plugin included, as it needs to be the last bound handler in the event stack (except of course for Dirty Forms [helpers](#helpers) and [dialog modules](#dialogs)).
-
-The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.7) is used to attach click and submit handlers so even elements that are introduced to the page after the page has loaded, e.g. loaded dynamically through AJAX, will be handled correctly, and a 'form stash' was created to capture and save event targets at the beginning of the event / decision stage so that elements that are no longer in the DOM can still have events fired on them (e.g. when a form is in a modal box, then the modal box is replaced by the Dirty Forms confirmation, the form will be stashed, and if the event is refired, it will be added back to the DOM then have the event triggered on it).
+Existing solutions were not flexible enough, so Dirty Forms was created to support a wider range of scenarios including support for dynamically added inputs and forms, TinyMCE and CKEditor rich text editor "dirtyness" support, custom widget "dirtyness" support, interoperability with any dialog framework (or the browser's built-in dialog), a "stash" that can be used in cases where dialogs don't have stacking support and you want to have a form inside of a dialog, and correct handling of events to refire when the user decides to continue to an off-page destination.
 
 ## Features
 
+- NO dependencies (except for jQuery of course).
 - Supports multiple forms.
 - Works on forms of any size.
 - Wide browser support.
@@ -44,6 +42,9 @@ The jQuery `.on()` method (or `.delegate()` method in jQuery prior to version 1.
 > If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
 
 ## Download & Installation
+
+> Dirty Forms should be the last jQuery plugin included in the page, as it needs to be the last bound handler in the event stack (except of course for Dirty Forms [helpers](#helpers) and [dialog modules](#dialogs)).
+
 There are several different ways to get the code. Some examples below:
 
 #### CDN
@@ -393,7 +394,7 @@ $(document).bind('continue.dirtyforms', function() {
 
 Dirty Forms was created because the similar plugins that existed were not flexible enough. To provide more flexibility a basic helper framework has been added. With this system you can add in new helper objects which will provide additional ability to check for whether a form is dirty or not.
 
-This is useful when you're using replacement inputs or textarea, such as with TinyMCE or CKEditor. See [Available Helpers](#available-helpers).
+This is useful for custom widgets or when you're using 3rd party frameworks such as with TinyMCE or CKEditor.
 
 #### Available Helpers
 
