@@ -278,16 +278,16 @@ License MIT
     // Event management
     var events = {
         bind: function (window, document, data) {
-            $(window).bind('beforeunload', data, this.onBeforeUnload);
-            $(document).on('click', 'a[href]:not([target="_blank"])', data, this.onAnchorClick)
-                       .on('submit', 'form', data, this.onSubmit);
+            $(window).bind('beforeunload', data, events.onBeforeUnload);
+            $(document).on('click', 'a[href]:not([target="_blank"])', data, events.onAnchorClick)
+                       .on('submit', 'form', data, events.onSubmit);
         },
         bindForm: function ($form, data) {
             var dirtyForms = $.DirtyForms;
             $form.addClass(dirtyForms.listeningClass)
-                 .on('change input propertychange keyup', dirtyForms.fieldSelector, data, this.onFieldChange)
-                 .on('focus keydown', dirtyForms.fieldSelector, data, this.onFocus)
-                 .on('reset', 'form', data, this.onReset);
+                 .on('change input propertychange keyup', dirtyForms.fieldSelector, data, events.onFieldChange)
+                 .on('focus keydown', dirtyForms.fieldSelector, data, events.onFocus)
+                 .on('reset', 'form', data, events.onReset);
         },
         // For any fields added after the form was initialized, store the value when focused.
         onFocus: function () {
@@ -344,7 +344,7 @@ License MIT
             var event = new $.Event('click');
             $(ev.target).trigger(event);
             if (!event.isDefaultPrevented()) {
-                this.onRefireAnchorClick(ev);
+                events.onRefireAnchorClick(ev);
             }
         },
         onRefireAnchorClick: function (ev) {
@@ -356,7 +356,7 @@ License MIT
             // I'd like to just be able to unbind this but there seems
             // to be a bug in jQuery which doesn't unbind onbeforeunload
             dirtylog('Clearing the beforeunload event');
-            $(window).unbind('beforeunload', this.onBeforeUnload);
+            $(window).unbind('beforeunload', events.onBeforeUnload);
             window.onbeforeunload = null;
             $(document).trigger('beforeunload.dirtyforms');
         }
@@ -519,7 +519,7 @@ License MIT
         dirtylog('Setting deciding active');
         state.deciding = true;
         state.decidingEvent = ev;
-        
+
         // Stash the dialog (with a form). This is done so it can be shown again via unstash().
         if ($.isFunction(dirtyForms.dialog.stash)) {
             dirtylog('Stashing dialog content');
