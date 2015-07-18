@@ -92,3 +92,8 @@ This helper is completely automatic - there are no properties or methods to inte
 ```
 
 > If not using a CDN, you need to apply the dependencies in the same order as in the example above.
+
+
+## Support
+
+For help or to report a bug please [open an issue](https://github.com/snikch/jquery.dirtyforms/issues/new) at the [Dirty Forms development site](https://github.com/snikch/jquery.dirtyforms/).

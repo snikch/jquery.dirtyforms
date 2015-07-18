@@ -237,3 +237,8 @@ $('form').dirtyForms({
 $.DirtyForms.dialog.title = 'This is an alternative custom title';
 
 ```
+
+
+## Support
+
+For help or to report a bug please [open an issue](https://github.com/snikch/jquery.dirtyforms/issues/new) at the [Dirty Forms development site](https://github.com/snikch/jquery.dirtyforms/).

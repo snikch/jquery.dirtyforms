@@ -147,3 +147,8 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<td>The width of the dialog.</td>
 	</tr>
 </table>
+
+
+## Support
+
+For help or to report a bug please [open an issue](https://github.com/snikch/jquery.dirtyforms/issues/new) at the [Dirty Forms development site](https://github.com/snikch/jquery.dirtyforms/).

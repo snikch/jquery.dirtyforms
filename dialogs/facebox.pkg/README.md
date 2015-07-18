@@ -148,3 +148,8 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 </table>
 
 > For information about stashing, see the [Modal Dialog Stashing](https://github.com/snikch/jquery.dirtyforms#modal-dialog-stashing) section.
+
+
+## Support
+
+For help or to report a bug please [open an issue](https://github.com/snikch/jquery.dirtyforms/issues/new) at the [Dirty Forms development site](https://github.com/snikch/jquery.dirtyforms/).
