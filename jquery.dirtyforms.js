@@ -326,17 +326,10 @@ License MIT
             state.doubleunloadfix = true;
             setTimeout(function () { state.doubleunloadfix = false; }, 200);
 
-            // Bug Fix: Only return the result if it is a string,
-            // otherwise don't return anything.
+            // Only return the result if it is a string, otherwise don't return anything.
             if (typeof result === 'string') {
-                ev = ev || window.event;
-
-                // For IE and Firefox prior to version 4
-                if (ev) {
-                    ev.returnValue = result;
-                }
-
-                // For Safari
+                // For IE and Firefox prior to version 4, set the returnValue.
+                ev.returnValue = result;
                 return result;
             }
         },
