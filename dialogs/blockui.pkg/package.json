@@ -33,10 +33,7 @@
     "ecosystem:jquery"
   ],
   "author": "Shad Storhaug <shad@shadstorhaug.com>",
-  "license": {
-    "type": "MIT",
-    "url": "http://www.opensource.org/licenses/mit-license.php"
-  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/snikch/jquery.dirtyforms/issues"
   },
