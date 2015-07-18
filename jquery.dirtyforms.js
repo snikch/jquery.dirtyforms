@@ -513,19 +513,21 @@ License MIT
         if (!dirtyForms.dialog) return;
 
         // Using the GUI dialog...
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+
+        dirtylog('Setting deciding active');
         state.deciding = true;
         state.decidingEvent = ev;
-        dirtylog('Setting deciding active');
-
+        
+        // Stash the dialog (with a form). This is done so it can be shown again via unstash().
         if ($.isFunction(dirtyForms.dialog.stash)) {
-            dirtylog('Saving dialog content');
+            dirtylog('Stashing dialog content');
             state.dialogStash = dirtyForms.dialog.stash();
             dirtylog('Dialog Stash: ' + state.dialogStash);
         }
 
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
-
+        // Stash the form from the dialog. This is done so we can fire events on it if the user makes a continue choice.
         var stashSelector = dirtyForms.dialog.stashSelector;
         if (typeof stashSelector === 'string' && $element.is('form') && $element.parents(stashSelector).length > 0) {
             dirtylog('Stashing form');
