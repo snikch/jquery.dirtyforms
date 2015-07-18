@@ -81,9 +81,13 @@ License MIT
                     $.each($.DirtyForms.helpers, function (i, helper) {
                         if (helper.isDirty && helper.isDirty($node, index)) {
                             isDirty = true;
+                            // Exit out of the .each() function
                             return false;
                         }
                     });
+
+                    // Exit out of the .each() function
+                    if (isDirty) return false;
                 });
 
             }
