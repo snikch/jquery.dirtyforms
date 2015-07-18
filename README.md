@@ -232,7 +232,7 @@ If the onClick event returns `false`, the click will be ignored by Dirty Forms.
 <a href="http://www.google.com" onclick="alert('This click is ignored');return false;">Go to Google</a>
 ```
 
-> **NOTE:** Due to a bug in jQuery 1.4.2, Dirty Forms will not ignore anchors in this case, so you will need to use the `ignoreClass` instead.
+> **NOTE:** Due to a bug in jQuery < 1.5, Dirty Forms will not ignore anchors in this case, so you will need to use the `ignoreClass` instead.
 
 #### `.preventDefault()` is Called
 
