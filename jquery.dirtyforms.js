@@ -217,7 +217,7 @@ License MIT
     };
 
     var bindKeys = function (ev) {
-        if (choice.bindEscKey && ev.which == 27 || choice.bindEnterKey && ev.which == 13) {
+        if (ev.data.bindEscKey && ev.which == 27 || ev.data.bindEnterKey && ev.which == 13) {
             return doCommit(ev, false);
         }
     };
@@ -236,7 +236,7 @@ License MIT
         }
         if (choice.bindEscKey || choice.bindEnterKey) {
             $(document).unbind('keydown', bindKeys)
-                       .keydown(bindKeys);
+                       .keydown(choice, bindKeys);
         }
     };
 
