@@ -25,8 +25,8 @@ License MIT
         // Custom properties and methods to allow overriding (may differ per dialog)
         title: 'Are you sure you want to do that?',
         class: 'dirty-dialog',
-        continueButtonText: 'Leave This Page',
-        cancelButtonText: 'Stay Here',
+        proceedButtonText: 'Leave This Page',
+        stayButtonText: 'Stay Here',
         width: '400px',
         padding: '10px',
         color: '#000',
@@ -41,8 +41,8 @@ License MIT
                         '<h3>' + this.title + '</h3>' +
                         '<p>' + message + '</p>' +
                         '<span>' +
-                            '<button type="button" class="dirty-continue">' + this.continueButtonText + '</button> ' +
-                            '<button type="button" class="dirty-cancel">' + this.cancelButtonText + '</button>' +
+                            '<button type="button" class="dirty-proceed">' + this.proceedButtonText + '</button> ' +
+                            '<button type="button" class="dirty-stay">' + this.stayButtonText + '</button>' +
                         '</span>' +
                     '</span>',
                 css: {
@@ -61,14 +61,14 @@ License MIT
 
             // Bind Events
             choice.bindEnterKey = true;
-            choice.continueSelector = '.' + this.class + ' .dirty-continue';
-            choice.cancelSelector = '.' + this.class + ' .dirty-cancel,.blockOverlay';
+            choice.proceedSelector = '.' + this.class + ' .dirty-proceed';
+            choice.staySelector = '.' + this.class + ' .dirty-stay,.blockOverlay';
 
             // Support for Dirty Forms < 2.0
             if (choice.isDF1) {
                 var close = function (decision) {
                     return function (e) {
-                        if (e.type !== 'keydown' || (e.type === 'keydown' && e.which == 27)) {
+                        if (e.type !== 'keydown' || (e.type === 'keydown' && (e.which == 27 || e.which == 13))) {
                             $.unblockUI();
                             decision(e);
                             return false;
@@ -77,8 +77,8 @@ License MIT
                 };
                 var decidingCancel = $.DirtyForms.decidingCancel;
                 $(document).keydown(close(decidingCancel));
-                $(choice.cancelSelector).click(close(decidingCancel));
-                $(choice.continueSelector).click(close($.DirtyForms.decidingContinue));
+                $(choice.staySelector).click(close(decidingCancel));
+                $(choice.proceedSelector).click(close($.DirtyForms.decidingContinue));
             }
         },
         close: function () {

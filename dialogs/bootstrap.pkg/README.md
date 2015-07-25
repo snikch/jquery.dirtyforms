@@ -118,25 +118,25 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<td>Sets the title of the dialog. Supports HTML.</td>
 	</tr>
 	<tr>
-		<th align="left">continueButtonClass</th>
+		<th align="left">proceedButtonClass</th>
 		<td>string</td>
-		<td nowrap="nowrap">'dirty-continue'</td>
-		<td>Sets the CSS class of the continue button of the dialog (an HTML button tag element). The element with this class will automatically have the continueButtonText inserted into it and a click event handler bound to it before showing the dialog.</td>
+		<td nowrap="nowrap">'dirty-proceed'</td>
+		<td>Sets the CSS class of the continue button of the dialog (an HTML button tag element). The element with this class will automatically have the proceedButtonText inserted into it and a click event handler bound to it before showing the dialog.</td>
 	</tr>
 	<tr>
-		<th align="left">continueButtonText</th>
+		<th align="left">proceedButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Leave This Page'</td>
 		<td>Sets the text of the continue button of the dialog.</td>
 	</tr>
 	<tr>
-		<th align="left">cancelButtonClass</th>
+		<th align="left">stayButtonClass</th>
 		<td>string</td>
-		<td nowrap="nowrap">'dirty-cancel'</td>
-		<td>Sets the CSS class of the cancel button of the dialog (an HTML button tag element). The element with this class will automatically have the cancelButtonText inserted into it before showing the dialog.</td>
+		<td nowrap="nowrap">'dirty-stay'</td>
+		<td>Sets the CSS class of the cancel button of the dialog (an HTML button tag element). The element with this class will automatically have the stayButtonText inserted into it before showing the dialog.</td>
 	</tr>
 	<tr>
-		<th align="left">cancelButtonText</th>
+		<th align="left">stayButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Stay Here'</td>
 		<td>Sets the text of the cancel button of the dialog.</td>
@@ -189,8 +189,8 @@ Because Bootstrap requires ultimate control over the HTML in order to function, 
 1. dialogID (required)
 2. titleID (optional)
 3. messageClass (optional)
-3. continueButtonClass (required)
-4. cancelButtonClass (optional)
+3. proceedButtonClass (required)
+4. stayButtonClass (optional)
 
 
 ### Example
@@ -199,18 +199,18 @@ Because Bootstrap requires ultimate control over the HTML in order to function, 
 
 $('<div id="custom-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-title">' +
 	'<div class="modal-dialog" role="document">' +
-		'<div class="modal-content">' +
-			'<div class="modal-header">' +
+		'<div class="modal-content panel-danger">' +
+			'<div class="modal-header panel-heading">' +
 				'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' + 
 					'<span aria-hidden="true">&times;</span>' + 
 				'</button>' +
 				'<h3 class="modal-title" id="custom-title"></h3>' +      
 			'</div>' +
-			'<div class="modal-body custom-message"></div>' +
-			'<div class="modal-body">This is some custom text to include in the dialog.</div>' +
-			'<div class="modal-footer">' +
-				'<button type="button" class="custom-continue btn btn-primary" data-dismiss="modal"></button>' +
-				'<button type="button" class="custom-cancel btn btn-default" data-dismiss="modal"></button>' +
+			'<div class="modal-body panel-body custom-message"></div>' +
+			'<div class="modal-body panel-body">This is some custom text to include in the dialog.</div>' +
+			'<div class="modal-footer panel-footer">' +
+				'<button type="button" class="custom-proceed btn btn-primary" data-dismiss="modal"></button>' +
+				'<button type="button" class="custom-stay btn btn-default" data-dismiss="modal"></button>' +
 			'</div>' +
 		'</div>' +
 	'</div>' +
@@ -227,8 +227,8 @@ $('form').dirtyForms({
 		dialogID: 'custom-dialog', 
 		titleID: 'custom-title', 
 		messageClass: 'custom-message', 
-		continueButtonClass: 'custom-continue', 
-		cancelButtonClass: 'custom-cancel' 
+		proceedButtonClass: 'custom-proceed', 
+		stayButtonClass: 'custom-stay' 
 	}
 });
 

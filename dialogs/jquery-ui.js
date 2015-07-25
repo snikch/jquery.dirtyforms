@@ -28,8 +28,8 @@ License MIT
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
         title: 'Are you sure you want to do that?',
-        continueButtonText: 'Leave This Page',
-        cancelButtonText: 'Stay Here',
+        proceedButtonText: 'Leave This Page',
+        stayButtonText: 'Stay Here',
         preMessageText: '<span class="ui-icon ui-icon-alert" style="float:left; margin:2px 7px 25px 0;"></span>',
         postMessageText: '',
         width: 430,
@@ -49,14 +49,14 @@ License MIT
                 modal: true,
                 buttons: [
                     {
-                        text: this.continueButtonText,
+                        text: this.proceedButtonText,
                         click: function () {
-                            choice.continue = $.DirtyForms.choiceContinue = true;
+                            choice.proceed = $.DirtyForms.choiceContinue = true;
                             $(this).dialog('close');
                         }
                     },
                     {
-                        text: this.cancelButtonText,
+                        text: this.stayButtonText,
                         click: function () {
                             $(this).dialog('close');
                         }

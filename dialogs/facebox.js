@@ -24,31 +24,29 @@ License MIT
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
         title: 'Are you sure you want to do that?',
-        continueButtonClass: 'button medium red',
-        continueButtonText: 'Leave This Page',
-        cancelButtonClass: 'button medium',
-        cancelButtonText: 'Stay Here',
+        proceedButtonClass: 'button medium red',
+        proceedButtonText: 'Leave This Page',
+        stayButtonClass: 'button medium',
+        stayButtonText: 'Stay Here',
 
         // Typical Dirty Forms Properties and Methods
 
         // Selector for stashing the content of another dialog.
         stashSelector: '#facebox .content',
         open: function (choice, message, ignoreClass) {
-            ignoreClass = ignoreClass || $.DirtyForms.ignoreClass;
-
             var content =
                 '<h1>' + this.title + '</h1>' +
                 '<p>' + message + '</p>' +
                 '<p>' +
-                    '<a href="#" class="dirty-continue ' + ignoreClass + ' ' + this.continueButtonClass + '">' + this.continueButtonText + '</a>' +
-                    '<a href="#" class="dirty-cancel ' + ignoreClass + ' ' + this.cancelButtonClass + '">' + this.cancelButtonText + '</a>' +
+                    '<a href="#" class="dirty-proceed ' + ignoreClass + ' ' + this.proceedButtonClass + '">' + this.proceedButtonText + '</a>' +
+                    '<a href="#" class="dirty-stay ' + ignoreClass + ' ' + this.stayButtonClass + '">' + this.stayButtonText + '</a>' +
                 '</p>';
             $.facebox(content);
 
             // Bind Events
             choice.bindEnterKey = true;
-            choice.cancelSelector = '#facebox .dirty-cancel, #facebox .close, #facebox_overlay';
-            choice.continueSelector = '#facebox .dirty-continue';
+            choice.staySelector = '#facebox .dirty-stay, #facebox .close, #facebox_overlay';
+            choice.proceedSelector = '#facebox .dirty-proceed';
 
             if (choice.isDF1) {
                 var close = function (decision) {
@@ -65,8 +63,8 @@ License MIT
                 };
                 var decidingCancel = $.DirtyForms.decidingCancel;
                 $(document).bind('keydown.facebox', close(decidingCancel));
-                $(choice.cancelSelector).click(close(decidingCancel));
-                $(choice.continueSelector).click(close($.DirtyForms.decidingContinue));
+                $(choice.staySelector).click(close(decidingCancel));
+                $(choice.proceedSelector).click(close($.DirtyForms.decidingContinue));
             }
         },
         close: function (continuing, unstashing) {
@@ -92,7 +90,7 @@ License MIT
         // Support for Dirty Forms < 2.0
         fire: function (message, title) {
             this.title = title;
-            this.open({ isDF1: true }, message);
+            this.open({ isDF1: true }, message, $.DirtyForms.ignoreClass);
         },
         selector: $.DirtyForms.dialog.stashSelector,
 

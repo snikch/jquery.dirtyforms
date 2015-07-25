@@ -30,15 +30,13 @@ License MIT
         // Custom properties and methods to allow overriding (may differ per dialog)
         title: 'Are you sure you want to do that?',
         class: 'dirty-dialog',
-        continueButtonText: 'Leave This Page',
-        cancelButtonText: 'Stay Here',
+        proceedButtonText: 'Leave This Page',
+        stayButtonText: 'Stay Here',
         styling: 'bootstrap3',
         width: '330',
 
         // Typical Dirty Forms Properties and Methods
         open: function (choice, message, ignoreClass) {
-            ignoreClass = ignoreClass || $.DirtyForms.ignoreClass;
-
             var content = {
                 title: this.title,
                 hide: false,
@@ -57,8 +55,8 @@ License MIT
                 text: '<span class="' + this.class + '">' +
                         '<p>' + message + '</p>' +
                         '<span style="display:block;text-align:center;">' +
-                            '<button type="button" class="dirty-continue ' + ignoreClass + '">' + this.continueButtonText + '</button> ' +
-                            '<button type="button" class="dirty-cancel ' + ignoreClass + '">' + this.cancelButtonText + '</button>' +
+                            '<button type="button" class="dirty-proceed ' + ignoreClass + '">' + this.proceedButtonText + '</button> ' +
+                            '<button type="button" class="dirty-stay ' + ignoreClass + '">' + this.stayButtonText + '</button>' +
                         '</span>' +
                     '</span>',
                 before_open: function (PNotify) {
@@ -91,8 +89,8 @@ License MIT
 
             // Bind Events
             choice.bindEnterKey = true;
-            choice.continueSelector = '.' + this.class + ' .dirty-continue';
-            choice.cancelSelector = '.' + this.class + ' .dirty-cancel,.ui-widget-overlay';
+            choice.proceedSelector = '.' + this.class + ' .dirty-proceed';
+            choice.staySelector = '.' + this.class + ' .dirty-stay,.ui-widget-overlay';
 
             // Support for Dirty Forms < 2.0
             if (choice.isDF1) {
@@ -109,8 +107,8 @@ License MIT
                 // Trap the escape key and force a close. Cancel it so PNotify doesn't intercept it.
                 var decidingCancel = $.DirtyForms.decidingCancel;
                 $(document).keydown(close(decidingCancel));
-                $(choice.cancelSelector).click(close(decidingCancel));
-                $(choice.continueSelector).click(close($.DirtyForms.decidingContinue));
+                $(choice.staySelector).click(close(decidingCancel));
+                $(choice.proceedSelector).click(close($.DirtyForms.decidingContinue));
             }
         },
         close: function () {
@@ -121,7 +119,7 @@ License MIT
         // Support for Dirty Forms < 2.0
         fire: function (message, title) {
             this.title = title;
-            this.open({ isDF1: true }, message);
+            this.open({ isDF1: true }, message, $.DirtyForms.ignoreClass);
         },
 
         // Support for Dirty Forms < 1.2

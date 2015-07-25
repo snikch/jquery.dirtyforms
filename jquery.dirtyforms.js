@@ -205,14 +205,14 @@ License MIT
 
     // Dialog Decision Management
     var choice = {
-        continue: false,
+        proceed: false,
         commit: function (ev) {
-            return doCommit(ev, choice.continue);
+            return doCommit(ev, choice.proceed);
         },
         bindEscKey: true,
         bindEnterKey: false,
-        continueSelector: '',
-        cancelSelector: ''
+        proceedSelector: '',
+        staySelector: ''
     };
     var choiceDefaults = choice;
 
@@ -227,16 +227,16 @@ License MIT
     };
 
     var bindDialog = function (choice) {
-        var cancelSelector = choice.cancelSelector,
-            continueSelector = choice.continueSelector;
+        var staySelector = choice.staySelector,
+            proceedSelector = choice.proceedSelector;
 
-        if (cancelSelector !== '') {
-            $(cancelSelector).unbind('click', doCommit)
+        if (staySelector !== '') {
+            $(staySelector).unbind('click', doCommit)
                              .click(doCommit);
         }
-        if (continueSelector !== '') {
-            $(continueSelector).unbind('click', doContinue)
-                               .click(doContinue);
+        if (proceedSelector !== '') {
+            $(proceedSelector).unbind('click', doProceed)
+                               .click(doProceed);
         }
         if (choice.bindEscKey || choice.bindEnterKey) {
             $(document).unbind('keydown', bindKeys)
@@ -244,35 +244,35 @@ License MIT
         }
     };
 
-    var callDialogClose = function (continuing, unstashing) {
+    var callDialogClose = function (proceeding, unstashing) {
         if ($.isFunction($.DirtyForms.dialog.close)) {
             dirtylog('Calling dialog close');
-            $.DirtyForms.dialog.close(continuing, unstashing);
+            $.DirtyForms.dialog.close(proceeding, unstashing);
         }
     };
 
-    var doContinue = function (ev) {
+    var doProceed = function (ev) {
         return doCommit(ev, true);
     };
 
-    var doCommit = function (ev, continuing) {
+    var doCommit = function (ev, proceeding) {
         if (!state.deciding) return;
         ev.preventDefault();
 
-        if (continuing === true) {
+        if (proceeding === true) {
             events.clearUnload(); // fix for chrome/safari
-            $(document).trigger('continue.dirtyforms');
-            callDialogClose(continuing, false);
+            $(document).trigger('proceed.dirtyforms');
+            callDialogClose(proceeding, false);
             refire(state.decidingEvent);
         } else {
-            $(document).trigger('cancel.dirtyforms');
+            $(document).trigger('stay.dirtyforms');
             var isUnstashing = $.DirtyForms.dialog !== false && state.dialogStash !== false && $.isFunction($.DirtyForms.dialog.unstash);
-            callDialogClose(continuing, isUnstashing);
+            callDialogClose(proceeding, isUnstashing);
             if (isUnstashing) {
                 dirtylog('Refiring the dialog with stashed content');
                 $.DirtyForms.dialog.unstash(state.dialogStash, ev);
             }
-            $(document).trigger('aftercancel.dirtyforms');
+            $(document).trigger('afterstay.dirtyforms');
         }
 
         state.clearDeciding();
@@ -288,9 +288,14 @@ License MIT
         },
         bindForm: function ($form, data) {
             var dirtyForms = $.DirtyForms;
+
+            // Test whether we are dealing with IE < 10
+            var input = document.createElement('input');
+            var isIE8_9 = ('onpropertychange' in input);
+            var inputEvents = 'change input' + (isIE8_9 ? ' keyup selectionchange cut paste' : '');
             $form.addClass(dirtyForms.listeningClass)
-                 .on('change input propertychange keyup', dirtyForms.fieldSelector, data, events.onFieldChange)
                  .on('focus keydown', dirtyForms.fieldSelector, data, events.onFocus)
+                 .on(inputEvents, dirtyForms.fieldSelector, data, events.onFieldChange)
                  .on('reset', 'form', data, events.onReset);
         },
         // For any fields added after the form was initialized, store the value when focused.
@@ -524,7 +529,7 @@ License MIT
             dirtylog('Dialog Stash: ' + state.dialogStash);
         }
 
-        // Stash the form from the dialog. This is done so we can fire events on it if the user makes a continue choice.
+        // Stash the form from the dialog. This is done so we can fire events on it if the user makes a proceed choice.
         var stashSelector = dirtyForms.dialog.stashSelector;
         if (typeof stashSelector === 'string' && $element.is('form') && $element.parents(stashSelector).length > 0) {
             dirtylog('Stashing form');

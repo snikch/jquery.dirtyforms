@@ -116,25 +116,25 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 		<td>Sets the title of the dialog.</td>
 	</tr>
 	<tr>
-		<th align="left">continueButtonClass</th>
+		<th align="left">proceedButtonClass</th>
 		<td>string</td>
 		<td nowrap="nowrap">'button medium red'</td>
 		<td>Sets the CSS class of the continue button of the dialog (an HTML anchor tag element).</td>
 	</tr>
 	<tr>
-		<th align="left">continueButtonText</th>
+		<th align="left">proceedButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Leave This Page'</td>
 		<td>Sets the text of the continue button of the dialog.</td>
 	</tr>
 	<tr>
-		<th align="left">cancelButtonClass</th>
+		<th align="left">stayButtonClass</th>
 		<td>string</td>
 		<td nowrap="nowrap">'button medium'</td>
 		<td>Sets the CSS class of the cancel button of the dialog (an HTML anchor tag element).</td>
 	</tr>
 	<tr>
-		<th align="left">cancelButtonText</th>
+		<th align="left">stayButtonText</th>
 		<td>string</td>
 		<td nowrap="nowrap">'Stay Here'</td>
 		<td>Sets the text of the cancel button of the dialog.</td>

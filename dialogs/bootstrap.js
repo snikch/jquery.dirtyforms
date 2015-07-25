@@ -23,10 +23,10 @@ License MIT
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
         title: exclamationGlyphicon + 'Are you sure you want to do that?',
-        continueButtonClass: 'dirty-continue',
-        continueButtonText: 'Leave This Page',
-        cancelButtonClass: 'dirty-cancel',
-        cancelButtonText: 'Stay Here',
+        proceedButtonClass: 'dirty-proceed',
+        proceedButtonText: 'Leave This Page',
+        stayButtonClass: 'dirty-stay',
+        stayButtonText: 'Stay Here',
         dialogID: 'dirty-dialog',
         titleID: 'dirty-title',
         messsageClass: 'dirty-message',
@@ -53,8 +53,8 @@ License MIT
                                 '</div>' +
                                 '<div class="modal-body panel-body ' + this.messsageClass + '"></div>' +
                                 '<div class="modal-footer panel-footer">' +
-                                    '<button type="button" class="' + this.continueButtonClass + ' btn btn-danger" data-dismiss="modal"></button>' +
-                                    '<button type="button" class="' + this.cancelButtonClass + ' btn btn-default" data-dismiss="modal"></button>' +
+                                    '<button type="button" class="' + this.proceedButtonClass + ' btn btn-danger" data-dismiss="modal"></button>' +
+                                    '<button type="button" class="' + this.stayButtonClass + ' btn btn-default" data-dismiss="modal"></button>' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
@@ -70,15 +70,15 @@ License MIT
                 // Replace the text in the dialog (whether it is external or not).
                 $dialog.find('#' + this.titleID).html(this.title);
                 $dialog.find('.' + this.messsageClass).html(this.preMessageText + message + this.postMessageText);
-                $dialog.find('.' + this.continueButtonClass).html(this.continueButtonText);
-                $dialog.find('.' + this.cancelButtonClass).html(this.cancelButtonText);
+                $dialog.find('.' + this.proceedButtonClass).html(this.proceedButtonText);
+                $dialog.find('.' + this.stayButtonClass).html(this.stayButtonText);
             }
 
             // Bind the events
             choice.bindEscKey = false;
 
             var onContinueClick = function () {
-                choice.continue = $.DirtyForms.choiceContinue = true;
+                choice.proceed = $.DirtyForms.choiceContinue = true;
             };
             var onHidden = function (e) {
                 var commit = choice.isDF1 ? $.DirtyForms.choiceCommit : choice.commit;
@@ -88,7 +88,7 @@ License MIT
                 }
             };
             // NOTE: Bootstrap 3 requires jQuery 1.9, so we can use on and off here.
-            $dialog.find('.' + this.continueButtonClass).off('click', onContinueClick).on('click', onContinueClick);
+            $dialog.find('.' + this.proceedButtonClass).off('click', onContinueClick).on('click', onContinueClick);
             $dialog.off('hidden.bs.modal', onHidden).on('hidden.bs.modal', onHidden);
 
             // Show the dialog
