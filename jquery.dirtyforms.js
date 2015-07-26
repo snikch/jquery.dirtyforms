@@ -552,9 +552,9 @@ License MIT
         } else {
             dirtylog("Refiring " + ev.type + " event on " + ev.target);
             var target;
-            if ($.DirtyForms.formStash) {
+            if (state.formStash) {
                 dirtylog('Appending stashed form to body');
-                target = $.DirtyForms.formStash;
+                target = state.formStash;
                 $('body').append(target);
             }
             else {
