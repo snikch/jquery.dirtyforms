@@ -54,7 +54,7 @@ License MIT
                 state.initialized = true;
             }
 
-            this.filter('form').each(function () {
+            this.filter('form').not(':dirtylistening').each(function () {
                 var $form = $(this);
                 dirtylog('Adding form ' + $form.attr('id') + ' to forms to watch');
 
