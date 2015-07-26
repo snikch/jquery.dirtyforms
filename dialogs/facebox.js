@@ -75,13 +75,20 @@ License MIT
             }
         },
         stash: function () {
-            var isDF1 = typeof $.DirtyForms.isDeciding === 'function';
-            var fb = $('#facebox');
-            return ($.trim(fb.html()) === '' || fb.css('display') != 'block') ?
+            var isDF1 = typeof $.DirtyForms.isDeciding === 'function',
+                $fb = $('#facebox'),
+                $content = $fb.find('.content');
+
+            // Store the DOM state as actual HTML DOM values
+            $content.find('datalist,select,textarea,input').not('[type="button"],[type="submit"],[type="reset"],[type="image"]').each(function () {
+                storeFieldValue($(this));
+            });
+
+            return ($.trim($fb.html()) === '' || $fb.css('display') != 'block') ?
                 false :
                 isDF1 ?
-                    $('#facebox .content').clone(true) :
-                    $('#facebox .content').children().clone(true);
+                    $content.clone(true) :
+                    $content.children().clone(true);
         },
         unstash: function (stash, ev) {
             $.facebox(stash);
@@ -99,6 +106,29 @@ License MIT
         },
         refire: function (content, ev) {
             this.unstash(content, ev);
+        }
+    };
+
+    var storeFieldValue = function ($field) {
+        if ($field.is('select,datalist')) {
+            $field.find('option').each(function () {
+                var $option = $(this);
+                if ($option.is(':selected')) {
+                    $option.attr('selected', 'selected');
+                } else {
+                    $option.removeAttr('selected');
+                }
+            });
+        } else if ($field.is(":checkbox,:radio")) {
+            if ($field.is(':checked')) {
+                $field.attr('checked', 'checked');
+            } else {
+                $field.removeAttr('checked');
+            }
+        } else if ($field.is('textarea')) {
+            $field.text($field.val());
+        } else {
+            $field.attr('value', $field.val());
         }
     };
 

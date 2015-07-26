@@ -16,7 +16,7 @@ This module causes Dirty Forms to use Facebox as its dialog when the user attemp
 
 Prerequesites must be included in this order:
 
-- [jQuery](http://jquery.com) (>= 1.4.2)
+- [jQuery](http://jquery.com) (>= 1.4.2) - Stashing support for select elements requires jQuery >= 1.6
 - [jquery.facebox](https://github.com/NightOwl888/facebox) (>= 1.4.1) - both the JS and CSS
 - [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms)
 
