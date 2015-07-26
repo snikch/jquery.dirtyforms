@@ -10,3 +10,18 @@
 [submodule "dist/jquery.dirtyforms.helpers.tinymce"]
 	path = dist/jquery.dirtyforms.helpers.tinymce
 	url = https://github.com/NightOwl888/jquery.dirtyforms.helpers.tinymce.dist.git
+[submodule "dist/jquery.dirtyforms.dialogs.blockui"]
+	path = dist/jquery.dirtyforms.dialogs.blockui
+	url = https://github.com/NightOwl888/jquery.dirtyforms.dialogs.blockui.dist.git
+[submodule "dist/jquery.dirtyforms.dialogs.facebox"]
+	path = dist/jquery.dirtyforms.dialogs.facebox
+	url = https://github.com/NightOwl888/jquery.dirtyforms.dialogs.facebox.dist.git
+[submodule "dist/jquery.dirtyforms.dialogs.jquery-ui"]
+	path = dist/jquery.dirtyforms.dialogs.jquery-ui
+	url = https://github.com/NightOwl888/jquery.dirtyforms.dialogs.jquery-ui.dist.git
+[submodule "dist/jquery.dirtyforms.dialogs.pnotify"]
+	path = dist/jquery.dirtyforms.dialogs.pnotify
+	url = https://github.com/NightOwl888/jquery.dirtyforms.dialogs.pnotify.dist.git
+[submodule "dist/jquery.dirtyforms.dialogs.bootstrap"]
+	path = dist/jquery.dirtyforms.dialogs.bootstrap
+	url = https://github.com/NightOwl888/jquery.dirtyforms.dialogs.bootstrap.dist.git
