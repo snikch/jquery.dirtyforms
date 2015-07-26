@@ -260,10 +260,11 @@ License MIT
         ev.preventDefault();
 
         if (proceeding === true) {
+            var refireEvent = state.decidingEvent;
+            $(document).trigger('proceed.dirtyforms', [refireEvent]);
             events.clearUnload(); // fix for chrome/safari
-            $(document).trigger('proceed.dirtyforms');
             callDialogClose(proceeding, false);
-            refire(state.decidingEvent);
+            refire(refireEvent);
         } else {
             $(document).trigger('stay.dirtyforms');
             var isUnstashing = $.DirtyForms.dialog !== false && state.dialogStash !== false && $.isFunction($.DirtyForms.dialog.unstash);
@@ -545,7 +546,6 @@ License MIT
     };
 
     var refire = function (ev) {
-        $(document).trigger('refire.dirtyforms', [ev]);
         if (ev.type === 'click') {
             dirtylog("Refiring click event");
             events.onRefireClick(ev);

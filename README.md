@@ -374,9 +374,8 @@ $(document).bind('proceed.dirtyforms', function() {
 |---|---|---|
 | **stay.dirtyforms**  | event  | Raised when the `choice.commit()` method is called with `choice.proceed` set to `false` before running any stay actions. In other words, called immediately when the user makes a stay choice.  |
 | **afterstay.dirtyforms**  | event  | Raised when the `choice.commit()` method is called with `choice.proceed` set to `false` after running any stay actions.  |
-| **proceed.dirtyforms**  | event  | Raised when the `choice.commit()` method is called with `choice.proceed` set to `true` before running any proceed actions. In other words, called immediately when the user makes a proceed choice.  |
+| **proceed.dirtyforms**  | event, refireEvent  | Raised when the `choice.commit()` method is called with `choice.proceed` set to `true` before running any proceed actions. In other words, called immediately when the user makes a proceed choice. Passes the event that will be re-fired as the second parameter. Useful if you need to do things like save data back to fields which is normally part of event propagation - ala TinyMCE.  |
 | **defer.dirtyforms**  | event  | Raised prior to showing the dialog to the user (whether a custom dialog, or the browser's dialog). Useful for accessing elements on the page prior to showing the dialog. |
-| **refire.dirtyforms**  | event, refireEvent | Raised before the original event is re-fired after a user makes a proceed choice. Passes the event that will be re-fired as the second parameter. Useful if you need to do things like save data back to fields which is normally part of event propagation - ala TinyMCE.  |
 | **beforeunload.dirtyforms**  | event | Non-cancelable event, raised prior leaving the page which may happen either as result of user selection if forms were dirty or due to a normal page exit of no changes were made.  |
 | **bind.dirtyforms**  | event  | Raised before event binding (the first time that `.dirtyForms()` is called), allowing customization of event handlers. Useful to interoperate with IFrames. See [Customizing Event Handlers](#customizing-event-handlers) for details.  |
 
