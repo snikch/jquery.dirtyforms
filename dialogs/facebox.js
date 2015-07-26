@@ -24,9 +24,9 @@ License MIT
     $.DirtyForms.dialog = {
         // Custom properties and methods to allow overriding (may differ per dialog)
         title: 'Are you sure you want to do that?',
-        proceedButtonClass: 'button medium red',
+        proceedButtonClass: '',
         proceedButtonText: 'Leave This Page',
-        stayButtonClass: 'button medium',
+        stayButtonClass: '',
         stayButtonText: 'Stay Here',
 
         // Typical Dirty Forms Properties and Methods

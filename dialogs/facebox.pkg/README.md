@@ -118,7 +118,7 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 	<tr>
 		<th align="left">proceedButtonClass</th>
 		<td>string</td>
-		<td nowrap="nowrap">'button medium red'</td>
+		<td nowrap="nowrap">''</td>
 		<td>Sets the CSS class of the continue button of the dialog (an HTML anchor tag element).</td>
 	</tr>
 	<tr>
@@ -130,7 +130,7 @@ The following options are available to set via **$.DirtyForms.dialog.OPTIONNAME 
 	<tr>
 		<th align="left">stayButtonClass</th>
 		<td>string</td>
-		<td nowrap="nowrap">'button medium'</td>
+		<td nowrap="nowrap">''</td>
 		<td>Sets the CSS class of the cancel button of the dialog (an HTML anchor tag element).</td>
 	</tr>
 	<tr>
