@@ -1,6 +1,3 @@
-[submodule "lib/facebox"]
-	path = lib/facebox
-	url = https://github.com/snikch/facebox.git
 [submodule "dist/jquery.dirtyforms"]
 	path = dist/jquery.dirtyforms
 	url = https://github.com/NightOwl888/jquery.dirtyforms.dist.git
