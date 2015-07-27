@@ -1,5 +1,5 @@
 /*!
-jQuery UI dialog module (for jQuery Dirty Forms) | v2.0.0-beta00001 | github.com/snikch/jquery.dirtyforms
+jQuery UI dialog module (for jQuery Dirty Forms) | v2.0.0-beta00002 | github.com/snikch/jquery.dirtyforms
 (c) 2015 Shad Storhaug
 License MIT
 */
