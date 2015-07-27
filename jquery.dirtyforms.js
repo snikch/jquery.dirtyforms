@@ -197,10 +197,7 @@ License MIT
         formStash: false,
         dialogStash: false,
         deciding: false,
-        decidingEvent: false,
-        clearDeciding: function () {
-            this.deciding = this.decidingEvent = this.dialogStash = false;
-        }
+        decidingEvent: false
     };
 
     // Dialog Decision Management
@@ -262,7 +259,7 @@ License MIT
             $(document).trigger('afterstay.dirtyforms');
         }
 
-        state.clearDeciding();
+        state.deciding = state.decidingEvent = state.dialogStash = state.formStash = false;
         return false;
     };
 
