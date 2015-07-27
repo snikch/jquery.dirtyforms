@@ -204,21 +204,7 @@ License MIT
     };
 
     // Dialog Decision Management
-    var choice = {
-        proceed: false,
-        commit: function (ev) {
-            return doCommit(ev, choice.proceed);
-        },
-        bindEscKey: true,
-        bindEnterKey: false,
-        proceedSelector: '',
-        staySelector: ''
-    };
-    var choiceDefaults = choice;
-
-    var resetChoice = function () {
-        $.extend(choice, choiceDefaults);
-    };
+    var choice;
 
     var bindKeys = function (ev) {
         if (ev.data.bindEscKey && ev.which == 27 || ev.data.bindEnterKey && ev.which == 13) {
@@ -540,7 +526,19 @@ License MIT
         }
 
         dirtylog('Deferring to the dialog');
-        resetChoice();
+
+        // Create a new choice object
+        choice = {
+            proceed: false,
+            commit: function (ev) {
+                return doCommit(ev, choice.proceed);
+            },
+            bindEscKey: true,
+            bindEnterKey: false,
+            proceedSelector: '',
+            staySelector: ''
+        };
+
         dirtyForms.dialog.open(choice, dirtyForms.message, dirtyForms.ignoreClass);
         bindDialog(choice);
     };
