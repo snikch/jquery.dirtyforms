@@ -1,7 +1,7 @@
 {
   "name": "jquery.dirtyforms.dialogs.pnotify",
   "main": "jquery.dirtyforms.dialogs.pnotify.min.js",
-  "version": "1.1.0",
+  "version": "2.0.0-beta00003",
   "homepage": "https://github.com/snikch/jquery.dirtyforms",
   "authors": [
     "Shad Storhaug <shad@shadstorhaug.com>"
@@ -29,7 +29,7 @@
     ".git"
   ],
   "dependencies": {
-	"jquery": ">=1.6.4",
+    "jquery": ">=1.6.4",
     "jquery.dirtyforms": ">=1.0.0",
     "pnotify": ">=1.3"
   }

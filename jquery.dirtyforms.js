@@ -1,5 +1,5 @@
 /*!
-Dirty Forms jQuery Plugin | v2.0.0-beta00002 | github.com/snikch/jquery.dirtyforms
+Dirty Forms jQuery Plugin | v2.0.0-beta00003 | github.com/snikch/jquery.dirtyforms
 (c) 2010-2015 Mal Curtis
 License MIT
 */
