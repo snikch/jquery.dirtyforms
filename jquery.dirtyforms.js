@@ -181,14 +181,14 @@ License MIT
         // exclude all HTML 4 except checkbox, option, text and password, but include HTML 5 except search
         fieldSelector: "input:not([type='button'],[type='image'],[type='submit']," +
             "[type='reset'],[type='file'],[type='search']),select,textarea",
-        helpers: [],
-        dialog: false,
         /*<log>*/
         debug: false,
         dirtylog: function (msg) {
             dirtylog(msg);
-        }
+        },
         /*</log>*/
+        helpers: [],
+        dialog: false
     };
 
     // Private State Management
