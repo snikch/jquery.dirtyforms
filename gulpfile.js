@@ -254,7 +254,7 @@ gulp.task('bump-version', function () {
     }
 });
 
-gulp.task('bump-source-version', /*['bump-version'],*/ function () {
+gulp.task('bump-source-version', ['bump-version'], function () {
     return gulp.src(settings.src, { base: './' })
         // Replace the version number in the header comment
         // and in the CDN URLs
