@@ -21,8 +21,10 @@ License MIT
     // Use ECMAScript 5's strict mode
     "use strict";
 
+    var ignoreSelector = '.cke_dialog_ui_button,.cke_tpl_list a';
+
     var ckeditor = {
-        ignoreSelector: '.cke_dialog_ui_button, .cke_tpl_list a',
+        ignoreSelector: ignoreSelector,
         isDirty: function ($form) {
             var $editors = ckeditors($form);
             $.DirtyForms.dirtylog('Checking ' + $editors.length + ' ckeditors for dirtyness.');
@@ -40,7 +42,10 @@ License MIT
         },
         setClean: function ($form) {
             ckeditors($form).each(function () { this.resetDirty(); });
-        }
+        },
+
+        // Support for Dirty Forms < 2.0
+        ignoreAnchorSelector: ignoreSelector
     };
     var ckeditors = function (form) {
         var $form = form.jquery ? form : $(form);
