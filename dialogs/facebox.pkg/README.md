@@ -28,12 +28,12 @@ There are several different ways to get the code. Some examples below:
 #### CDN
 The Facebox dialog module is available over jsDelivr CDN and can directly included to every page.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.dialogs.facebox.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00001/jquery.dirtyforms.dialogs.facebox.min.js"></script>
 ```
 
 jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, jquery.dirtyforms, and jquery.dirtyforms.dialogs.facebox in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,jquery.dirtyforms@1.1.0(jquery.dirtyforms.min.js+jquery.dirtyforms.dialogs.facebox.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,jquery.dirtyforms@2.0.0-beta00001(jquery.dirtyforms.min.js+jquery.dirtyforms.dialogs.facebox.min.js)"></script>
 ```
 
 #### Self-Hosted
@@ -70,7 +70,7 @@ A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-
 #### CDN
 
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.dialogs.facebox.min.js.map"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00001/jquery.dirtyforms.dialogs.facebox.min.js.map"></script>
 ```
 
 #### Package Managers
@@ -92,8 +92,8 @@ This dialog module is automatic. Simply include the reference to the dialog modu
 // JavaScript
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/jquery.facebox/latest/jquery.facebox.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.1.0/jquery.dirtyforms.dialogs.facebox.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00001/jquery.dirtyforms.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00001/jquery.dirtyforms.dialogs.facebox.min.js" type="text/javascript"></script>
 ```
 
 > If not using a CDN, you need to apply the dependencies in the same order as in the example above.
