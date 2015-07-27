@@ -26,12 +26,12 @@ There are several different ways to get the code. Some examples below:
 #### CDN
 The CKEditor helper is available over jsDelivr CDN and can directly included to every page.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.2.3/jquery.dirtyforms.helpers.ckeditor.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00002/jquery.dirtyforms.helpers.ckeditor.min.js"></script>
 ```
 
 jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, ckeditor, jquery.dirtyforms, and jquery.dirtyforms.helpers.ckeditor in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,ckeditor(ckeditor.js),jquery.dirtyforms@1.2.3(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.ckeditor.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,ckeditor(ckeditor.js),jquery.dirtyforms@2.0.0-beta00002(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.ckeditor.min.js)"></script>
 ```
 
 #### Self-Hosted
@@ -68,7 +68,7 @@ A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-
 #### CDN
 
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/1.2.3/jquery.dirtyforms.helpers.ckeditor.min.js.map"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00002/jquery.dirtyforms.helpers.ckeditor.min.js.map"></script>
 ```
 
 #### Package Managers
@@ -86,8 +86,8 @@ This helper is completely automatic - there are no properties or methods to inte
 ```HTML
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/ckeditor/latest/ckeditor.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.2.3/jquery.dirtyforms.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/1.2.3/jquery.dirtyforms.helpers.ckeditor.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00002/jquery.dirtyforms.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00002/jquery.dirtyforms.helpers.ckeditor.min.js" type="text/javascript"></script>
 ```
 
 > If not using a CDN, you need to apply the dependencies in the same order as in the example above.
