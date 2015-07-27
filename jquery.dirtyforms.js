@@ -299,22 +299,22 @@ License MIT
                  .on('reset', 'form', data, events.onReset);
         },
         // For any fields added after the form was initialized, store the value when focused.
-        onFocus: function () {
-            var $field = $(this);
+        onFocus: function (ev) {
+            var $field = $(ev.target);
             if (!hasOriginalValue($field)) {
                 storeOriginalValue($field);
             }
         },
         onFieldChange: function (ev) {
-            var $field = $(this);
+            var $field = $(ev.target);
             if (ev.type !== 'change') {
                 delay(function () { setFieldStatus($field); }, 100);
             } else {
                 setFieldStatus($field);
             }
         },
-        onReset: function () {
-            var $form = $(this).closest('form');
+        onReset: function (ev) {
+            var $form = $(ev.target).closest('form');
             // Need a delay here because reset is called before the state of the form is reset.
             setTimeout(function () { $form.dirtyForms('setClean'); }, 100);
         },
