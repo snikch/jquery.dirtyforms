@@ -96,7 +96,7 @@ License MIT
             if (choice.isDF1) {
                 var close = function (decision) {
                     return function (e) {
-                        if (e.type !== 'keydown' || (e.type === 'keydown' && e.which == 27)) {
+                        if (e.type !== 'keydown' || (e.type === 'keydown' && (e.which == 27 || e.which == 13))) {
                             notice.remove();
                             modal_overlay.fadeOut("fast");
                             decision(e);

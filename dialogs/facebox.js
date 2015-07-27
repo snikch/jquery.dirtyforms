@@ -51,7 +51,7 @@ License MIT
             if (choice.isDF1) {
                 var close = function (decision) {
                     return function (e) {
-                        if (e.type !== 'keydown' || (e.type === 'keydown' && e.which == 27)) {
+                        if (e.type !== 'keydown' || (e.type === 'keydown' && (e.which == 27 || e.which == 13))) {
                             // Facebox hack: If we call close when returning from the stash, the
                             // stash dialog will close, so we guard against calling close in that case. 
                             if (!$.DirtyForms.dialogStash) {
