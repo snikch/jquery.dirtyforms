@@ -214,10 +214,13 @@ gulp.task('npm-pack', ['build'], function (cb) {
         var cwd = settings.dest + subModule;
         var relativeWorkingPath = path.relative('./', cwd);
 
-        console.log('Packing ' + relativeWorkingPath + ' for NPM...');
-        if (shell.exec('cd "' + relativeDestPath + '" && npm pack "' + subModule + '"').code != 0) {
-            shell.echo('Error: NPM pack for ' + relativeWorkingPath + ' failed');
-            shell.exit(1);
+        if (fs.existsSync(cwd + '/package.json')) {
+
+            console.log('Packing ' + relativeWorkingPath + ' for NPM...');
+            if (shell.exec('cd "' + relativeDestPath + '" && npm pack "' + subModule + '"').code != 0) {
+                shell.echo('Error: NPM pack for ' + relativeWorkingPath + ' failed');
+                shell.exit(1);
+            }
         }
     }
     cb();
