@@ -31,9 +31,9 @@ The Always Dirty helper is available over jsDelivr CDN and can directly included
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00003/jquery.dirtyforms.helpers.alwaysdirty.min.js"></script>
 ```
 
-jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, jquery.dirtyforms, and jquery.dirtyforms.helpers.alwaysdirty in one request.
+jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.dirtyforms, and jquery.dirtyforms.helpers.alwaysdirty in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,jquery.dirtyforms@2.0.0-beta00003(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.alwaysdirty.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.dirtyforms@2.0.0-beta00003(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.alwaysdirty.min.js)"></script>
 ```
 
 #### Self-Hosted

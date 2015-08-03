@@ -21,7 +21,7 @@ Prerequesites must be included in this order:
 
 Both of the TinyMCE files are included in the [TinyMCE jQuery package](http://www.tinymce.com/download/download.php).
 
-**Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog continue function to fail in dirtyForms.
+**Note:** There are [known compatibility issues](http://bugs.jquery.com/ticket/11527) between jQuery 1.7.2 and higher and TinyMCE versions lower than 3.5b3. These issues can cause the dialog proceed function to fail in dirtyForms.
 
 > If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
 
@@ -34,9 +34,9 @@ The TinyMCE helper is available over jsDelivr CDN and can directly included to e
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00003/jquery.dirtyforms.helpers.tinymce.min.js"></script>
 ```
 
-jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, TinyMCE, the jQuery TinyMCE plugin, jquery.dirtyforms, and jquery.dirtyforms.helpers.tinymce in one request.
+jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, TinyMCE, the jQuery TinyMCE plugin, jquery.dirtyforms, and jquery.dirtyforms.helpers.tinymce in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,tinymce(tinymce.min.js+jquery.tinymce.min.js),jquery.facebox,jquery.dirtyforms@2.0.0-beta00003(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.tinymce.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,tinymce(tinymce.min.js+jquery.tinymce.min.js),jquery.dirtyforms@2.0.0-beta00003(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.tinymce.min.js)"></script>
 ```
 
 #### Self-Hosted

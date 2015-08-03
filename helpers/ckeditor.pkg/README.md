@@ -29,9 +29,9 @@ The CKEditor helper is available over jsDelivr CDN and can directly included to 
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00003/jquery.dirtyforms.helpers.ckeditor.min.js"></script>
 ```
 
-jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, jquery.facebox, ckeditor, jquery.dirtyforms, and jquery.dirtyforms.helpers.ckeditor in one request.
+jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, ckeditor, jquery.dirtyforms, and jquery.dirtyforms.helpers.ckeditor in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.facebox,ckeditor(ckeditor.js),jquery.dirtyforms@2.0.0-beta00003(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.ckeditor.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,ckeditor(ckeditor.js),jquery.dirtyforms@2.0.0-beta00003(jquery.dirtyforms.min.js+jquery.dirtyforms.helpers.ckeditor.min.js)"></script>
 ```
 
 #### Self-Hosted
