@@ -9,6 +9,7 @@
   "description": "A module to enable automatic Bootstrap Modal dialog support when using JQuery Dirty Forms.",
   "keywords": [
     "bootstrap",
+	"modal",
     "dirty",
     "forms",
     "HTML",
