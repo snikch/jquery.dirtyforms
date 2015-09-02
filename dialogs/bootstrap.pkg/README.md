@@ -17,8 +17,8 @@ This module causes Dirty Forms to use Bootstrap Modal as its dialog when the use
 Prerequesites must be included in this order:
 
 - [jQuery](http://jquery.com) (>= 1.9.1)
-- [bootstrap](http://getbootstrap.com/) (>= 3.0.0) - both the JS and CSS
-- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms)
+- [bootstrap](http://getbootstrap.com/) (>= 3.0.0) - both the CSS and JS
+- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms) (>= 1.0.0)
 
 > If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
 

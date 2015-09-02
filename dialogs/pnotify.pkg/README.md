@@ -18,7 +18,7 @@ Prerequesites must be included in this order:
 
 - CSS theme from [BootStrap 3](http://getbootstrap.com/), [jQuery UI](http://jqueryui.com/themeroller/), or [Font Awesome](http://fontawesome.io/)
 - [jQuery](http://jquery.com) (>= 1.6.0)
-- [PNotify](http://sciactive.com/pnotify/) (>= 1.3) - both the JS and CSS
+- [PNotify](http://sciactive.com/pnotify/) (>= 1.3) - both the CSS and JS
 - [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms) (>= 1.0.0)
 
 > If you are using a [Package Manager](#package-managers), the JavaScript dependencies will be installed automatically, but you will need to manually get a CSS theme if you are not already using one. Also, depending on your environment you may still need to add references to the JavaScript manually.

@@ -18,7 +18,7 @@ Prerequesites must be included in this order:
 
 - [jQuery](http://jquery.com) (>= 1.7)
 - [BlockUI](http://malsup.com/jquery/block/) (>= 2.70)
-- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms)
+- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms) (>= 1.0.0)
 
 > If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
 
