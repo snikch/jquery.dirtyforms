@@ -280,7 +280,7 @@ License MIT
             $form.addClass(dirtyForms.listeningClass)
                  .on('focus keydown', dirtyForms.fieldSelector, data, events.onFocus)
                  .on(inputEvents, dirtyForms.fieldSelector, data, events.onFieldChange)
-                 .on('reset', 'form', data, events.onReset);
+                 .bind('reset', data, events.onReset);
         },
         // For any fields added after the form was initialized, store the value when focused.
         onFocus: function (ev) {
