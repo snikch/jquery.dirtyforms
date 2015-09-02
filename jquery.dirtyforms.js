@@ -274,8 +274,7 @@ License MIT
             var dirtyForms = $.DirtyForms;
 
             // Test whether we are dealing with IE < 10
-            var input = document.createElement('input');
-            var isIE8_9 = ('onpropertychange' in input);
+            var isIE8_9 = ('onpropertychange' in document.createElement('input'));
             var inputEvents = 'change input' + (isIE8_9 ? ' keyup selectionchange cut paste' : '');
             $form.addClass(dirtyForms.listeningClass)
                  .on('focus keydown', dirtyForms.fieldSelector, data, events.onFocus)
