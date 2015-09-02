@@ -15,9 +15,9 @@ This helper causes Dirty Forms to read and/or update the dirty status from TinyM
 Prerequesites must be included in this order:
 
 - [jQuery](http://jquery.com) (>= 1.4.2)
-- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms)
 - tinymce
 - jquery.tinymce
+- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms) (>= 1.0.0)
 
 Both of the TinyMCE files are included in the [TinyMCE jQuery package](http://www.tinymce.com/download/download.php).
 

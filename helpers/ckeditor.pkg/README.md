@@ -15,8 +15,8 @@ This helper causes Dirty Forms to read and/or update the dirty status from CKEdi
 Prerequesites must be included in this order:
 
 - [jQuery](http://jquery.com) (>= 1.4.2)
-- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms)
 - [CKEditor](http://ckeditor.com/download)
+- [jquery.dirtyforms](https://github.com/snikch/jquery.dirtyforms) (>= 1.0.0)
 
 > If you are using a [Package Manager](#package-managers), these dependencies will be installed automatically, but depending on your environment you may still need to add references to them manually.
 
