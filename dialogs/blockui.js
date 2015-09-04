@@ -1,5 +1,5 @@
 /*!
-BlockUI dialog module (for jQuery Dirty Forms) | v2.0.0-beta00003 | github.com/snikch/jquery.dirtyforms
+BlockUI dialog module (for jQuery Dirty Forms) | v2.0.0-beta00004 | github.com/snikch/jquery.dirtyforms
 (c) 2015 Shad Storhaug
 License MIT
 */

@@ -1,5 +1,5 @@
 /*!
-Always dirty helper module (for jQuery Dirty Forms) | v2.0.0-beta00003 | github.com/snikch/jquery.dirtyforms
+Always dirty helper module (for jQuery Dirty Forms) | v2.0.0-beta00004 | github.com/snikch/jquery.dirtyforms
 (c) 2015 Mal Curtis
 License MIT
 */
