@@ -26,18 +26,20 @@ License MIT
     var ckeditor = {
         ignoreSelector: ignoreSelector,
         isDirty: function ($form) {
-            var $editors = ckeditors($form);
-            $.DirtyForms.dirtylog('Checking ' + $editors.length + ' ckeditors for dirtyness.');
-            var isDirty = false;
-            $editors.each(function (editorIndex) {
-                if (this.checkDirty()) {
-                    isDirty = true;
+            var $editors = ckeditors($form),
+                isDirty = false;
+            if ($editors.length > 0) {
+                $.DirtyForms.dirtylog('Checking ' + $editors.length + ' ckeditors for dirtyness.');
+                $editors.each(function (editorIndex) {
+                    if (this.checkDirty()) {
+                        isDirty = true;
 
-                    $.DirtyForms.dirtylog('CKEditor with index ' + editorIndex + ' was dirty, exiting...');
-                    // Return false to break out of the .each() function
-                    return false;
-                }
-            });
+                        $.DirtyForms.dirtylog('CKEditor with index ' + editorIndex + ' was dirty, exiting...');
+                        // Return false to break out of the .each() function
+                        return false;
+                    }
+                });
+            }
             return isDirty;
         },
         setClean: function ($form) {
@@ -50,6 +52,9 @@ License MIT
     var ckeditors = function (form) {
         var $form = form.jquery ? form : $(form);
         var editors = [];
+        if (!window.CKEDITOR || !window.CKEDITOR.instances) {
+            return $(editors);
+        }
         try {
             for (var key in window.CKEDITOR.instances) {
                 if (window.CKEDITOR.instances.hasOwnProperty(key)) {
