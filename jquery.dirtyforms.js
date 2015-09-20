@@ -274,7 +274,7 @@ License MIT
     var events = {
         bind: function (window, document, data) {
             $(window).bind('beforeunload', data, events.onBeforeUnload);
-            $(document).on('click', 'a[href]:not([target="_blank"])', data, events.onAnchorClick)
+            $(document).on('click', 'a:not([target="_blank"])', data, events.onAnchorClick)
                        .on('submit', 'form', data, events.onSubmit);
         },
         bindForm: function ($form, data) {
@@ -340,9 +340,11 @@ License MIT
             }
         },
         onRefireAnchorClick: function (ev) {
-            var href = $(ev.target).closest('[href]').attr('href');
-            dirtylog('Sending location to ' + href);
-            window.location.href = href;
+            var href = $(ev.target).closest('a[href]').attr('href');
+            if (href !== undefined) {
+                dirtylog('Sending location to ' + href);
+                window.location.href = href;
+            }
         },
         clearUnload: function () {
             // I'd like to just be able to unbind this but there seems
