@@ -70,14 +70,33 @@ License MIT
         },
         // Returns true if any of the selected elements or their children are dirty
         isDirty: function (excludeHelpers) {
-            var nonFormSelector = ':dirty:not(form)';
-            if (this.filter(nonFormSelector).length > 0 || this.find(nonFormSelector).length > 0) return true;
+            var ignoreSelector = getIgnoreSelector(),
+                dirtyClass = $.DirtyForms.dirtyClass,
+                isDirty = false;
 
-            var isDirty = false;
-            if (!excludeHelpers) {
-                this.not(':dirtyignored').each(function (index) {
-                    var $node = $(this);
+            this.each(function (index) {
+                var $node = $(this),
+                    ignored = isFieldIgnored($node, ignoreSelector);
 
+                if ($node.hasClass(dirtyClass) && !ignored) {
+                    isDirty = true;
+                    // Exit out of the .each() function
+                    return false;
+                }
+
+                // Check any descendant nodes (if this is a container element)
+                $node.find('.' + dirtyClass).each(function () {
+                    if (!isFieldIgnored($(this), ignoreSelector)) {
+                        isDirty = true;
+                        // Exit out of the .each() function
+                        return false;
+                    }
+                });
+                // Exit out of the .each() function
+                if (isDirty) return false;
+
+                if (!ignored && !excludeHelpers) {
+                    // Test helpers for this node.
                     $.each($.DirtyForms.helpers, function (i, helper) {
                         if (helper.isDirty && helper.isDirty($node, index)) {
                             isDirty = true;
@@ -88,9 +107,9 @@ License MIT
 
                     // Exit out of the .each() function
                     if (isDirty) return false;
-                });
+                }
+            });
 
-            }
             return isDirty;
         },
         // Marks the element(s) and any helpers within the element not dirty.
@@ -115,7 +134,7 @@ License MIT
                 .parents('form').trigger('setclean.dirtyforms', [excludeIgnored]);
 
             if (excludeHelpers) return this;
-            return fireHelperMethod(this, 'setClean', excludeIgnored);
+            return fireHelperMethod(this, 'setClean', excludeIgnored, getIgnoreSelector());
         },
         // Scans the selected elements and descendants for any new fields and stores their original values.
         // Ignores any original values that had been set previously. Also resets the dirty status of all fields
@@ -141,7 +160,7 @@ License MIT
                 .parents('form').trigger('rescan.dirtyforms', [excludeIgnored]);
 
             if (excludeHelpers) return this;
-            return fireHelperMethod(this, 'rescan', excludeIgnored);
+            return fireHelperMethod(this, 'rescan', excludeIgnored, getIgnoreSelector());
         }
     };
 
@@ -151,24 +170,11 @@ License MIT
             var $element = $(element);
             return $element.hasClass($.DirtyForms.dirtyClass) && !$element.is(':dirtyignored');
         },
-        dirtylistening: function (a) {
-            return $(a).hasClass($.DirtyForms.listeningClass);
+        dirtylistening: function (element) {
+            return $(element).hasClass($.DirtyForms.listeningClass);
         },
-        dirtyignored: function (a) {
-            var dirtyForms = $.DirtyForms;
-
-            var getIgnoreSelector = function () {
-                var result = dirtyForms.ignoreSelector;
-                $.each(dirtyForms.helpers, function (key, obj) {
-                    if ('ignoreSelector' in obj) {
-                        if (result.length > 0) { result += ','; }
-                        result += obj.ignoreSelector;
-                    }
-                });
-                return result;
-            };
-
-            return $(a).closest('.' + dirtyForms.ignoreClass).length > 0 || $(a).is(getIgnoreSelector());
+        dirtyignored: function (element) {
+            return isFieldIgnored($(element), false);
         }
     });
 
@@ -356,11 +362,11 @@ License MIT
         return $elements;
     };
 
-    var fireHelperMethod = function ($this, method, excludeIgnored) {
+    var fireHelperMethod = function ($this, method, excludeIgnored, ignoreSelector) {
         return $this.each(function (index) {
             var $node = $(this);
 
-            if (!excludeIgnored || !$node.is(':dirtyignored')) {
+            if (!excludeIgnored || !isFieldIgnored($node, ignoreSelector)) {
                 $.each($.DirtyForms.helpers, function (i, helper) {
                     if (helper[method]) { helper[method]($node, index, excludeIgnored); }
                 });
@@ -399,13 +405,32 @@ License MIT
         return ($field.data('df-orig') !== undefined || $field.data('df-empty') === true);
     };
 
-    var isFieldDirty = function ($field) {
-        if ($field.is(':dirtyignored') || !hasOriginalValue($field)) return false;
+    var getIgnoreSelector = function () {
+        var dirtyForms = $.DirtyForms,
+            result = dirtyForms.ignoreSelector;
+        $.each(dirtyForms.helpers, function (key, obj) {
+            if ('ignoreSelector' in obj) {
+                if (result.length > 0) { result += ','; }
+                result += obj.ignoreSelector;
+            }
+        });
+        return result;
+    };
+
+    var isFieldIgnored = function ($field, ignoreSelector) {
+        if (!ignoreSelector) {
+            ignoreSelector = getIgnoreSelector();
+        }
+        return $field.is(ignoreSelector) || $field.closest('.' + $.DirtyForms.ignoreClass).length > 0;
+    };
+
+    var isFieldDirty = function ($field, ignoreSelector) {
+        if (!hasOriginalValue($field) || isFieldIgnored($field, ignoreSelector)) return false;
         return (getFieldValue($field) != $field.data('df-orig'));
     };
 
-    var setFieldStatus = function ($field) {
-        if ($field.is(':dirtyignored')) return;
+    var setFieldStatus = function ($field, ignoreSelector) {
+        if (isFieldIgnored($field, ignoreSelector)) return;
 
         // Option groups are a special case because they change more than the current element.
         if ($field.is(':radio[name]')) {
@@ -414,10 +439,10 @@ License MIT
 
             $form.find(":radio[name='" + name + "']").each(function () {
                 var $radio = $(this);
-                setDirtyStatus($radio, isFieldDirty($radio));
+                setDirtyStatus($radio, isFieldDirty($radio, ignoreSelector));
             });
         } else {
-            setDirtyStatus($field, isFieldDirty($field));
+            setDirtyStatus($field, isFieldDirty($field, ignoreSelector));
         }
     };
 
