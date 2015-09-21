@@ -18,8 +18,12 @@ License MIT
         factory(jQuery, window, document);
     }
 }(function ($, window, document, undefined) {
-    // Use ECMAScript 5's strict mode
-    "use strict";
+    // Can't use ECMAScript 5's strict mode because several apps 
+    // including ASP.NET trace the stack via arguments.caller.callee 
+    // and Firefox dies if you try to trace through "use strict" call chains. 
+    // See jQuery issue (#13335)
+    // Support: Firefox 18+
+    //"use strict";
 
     var tinymceSelector = ':tinymce:not(.dirty-forms-temp)',
         ignoreSelector = '.mceEditor a,.mceMenu a,[name^="mce_"]';
