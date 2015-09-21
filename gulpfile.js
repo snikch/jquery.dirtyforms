@@ -291,6 +291,39 @@ gulp.task('git-version', function (cb) {
     }
 });
 
+gulp.task('git-submodule-reset', function (cb) {
+    var modulesLength = settings.subModules.length;
+    for (var i = 0; i < modulesLength; i++) {
+        var subModule = settings.subModules[i];
+        var cwd = settings.dest + subModule;
+        var relativeWorkingPath = path.relative('./', cwd);
+
+        console.log('Resetting Git submodule ' + relativeWorkingPath + '...');
+        if (shell.exec('cd "' + relativeWorkingPath + '" && git reset --hard HEAD').code != 0) {
+            shell.echo('Error: Git reset failed for ' + relativeWorkingPath);
+            shell.exit(1);
+        } else {
+            console.log('Cleaning Git submodule ' + relativeWorkingPath + '...');
+            if (shell.exec('cd "' + relativeWorkingPath + '" && git clean -fd').code != 0) {
+                shell.echo('Error: Git clean failed for ' + relativeWorkingPath);
+                shell.exit(1);
+            }
+        }
+    }
+
+    cb();
+});
+
+gulp.task('git-reset', ['git-submodule-reset'], function (cb) {
+    console.log('Resetting main module...');
+    git.reset('HEAD', {args:'--hard', cwd: './'}, function (err) {
+        if (!err) {
+            console.log('Cleaning main module...');
+            git.exec({ args: 'clean -fd', cwd: './' }, cb);
+        }
+    });
+});
+
 gulp.task('git-submodule-update-init', function (cb) {
     git.updateSubmodule({ args: '--init --recursive', cwd: './' }, cb);
 });
