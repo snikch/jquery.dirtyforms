@@ -1,22 +1,24 @@
-var gulp = require('gulp'),
-	uglify = require('gulp-uglify'),
+var del = require('del'),
+    fs = require('fs'),
+    glob = require('glob'),
+    gulp = require('gulp'),
+    bump = require('gulp-bump'),
+    git = require('gulp-git'),
+    gulpif = require('gulp-if'),
+    ignore = require('gulp-ignore'),
     jshint = require('gulp-jshint'),
-    stylish = require('jshint-stylish'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace'),
-    ignore = require('gulp-ignore'),
     sourcemaps = require('gulp-sourcemaps'),
-	request = require('request'),
-	merge = require('merge-stream'),
-    fs = require('fs'),
-	del = require('del'),
-    bump = require('gulp-bump'),
     tap = require('gulp-tap'),
-    runSequence = require('run-sequence'),
-    git = require('gulp-git'),
-    glob = require('glob'),
+	uglify = require('gulp-uglify'),
+    stylish = require('jshint-stylish'),
+    lazypipe = require('lazypipe'),
+    merge = require('merge-stream'),
     path = require('path'),
-    shell = require('shelljs');
+	request = require('request'),
+    runSequence = require('run-sequence'),
+	shell = require('shelljs');
 var args = require('yargs').argv;
 
 var settings = {
@@ -43,7 +45,7 @@ console.log('Debug mode: ' + settings.debug);
 
 
 // Builds the distribution files and packs them with NuGet
-gulp.task('default', function (cb) {
+gulp.task('default', ['clean', 'test'], function (cb) {
     runSequence(
         'git-checkout',
         'pack',
@@ -69,6 +71,10 @@ gulp.task('build', ['copy-minified'], function (cb) {
     del([settings.dest + '*.js', settings.dest + '*.map'], cb);
 });
 
+gulp.task('umd-build', ['umd-copy-minified'], function (cb) {
+    del([settings.dest + '*.js', settings.dest + '*.map'], cb);
+});
+
 // Tests the source files (smoke test)
 gulp.task('test', function () {
     return gulp.src(settings.src, { base: './' })
@@ -77,55 +83,23 @@ gulp.task('test', function () {
 });
 
 gulp.task('copy-minified', ['uglify', 'distribute-module-assets'], function () {
-    return gulp.src([settings.dest + '*.js', settings.dest + '*.map'], { base: './' })
-        .pipe(rename(function (path) {
-            console.log('moving: ' + path.basename)
-            path.dirname = path.basename.replace(/\.min(?:\.js)?/g, '');
-        }))
-        .pipe(gulp.dest(settings.dest))
-        .pipe(ignore.exclude(eval('/' + settings.baseProject + '\.min/')))
-        // Make a copy of the minified files in the /dist/plugins directory for 
-        // CDN distribution.
-        .pipe(rename(function (path) {
-            console.log('moving: ' + path.basename)
-            path.dirname = settings.baseProject + settings.dest_plugins;
-        }))
-        .pipe(gulp.dest(settings.dest));
+    return doCopyMinified(false);
 });
 
-gulp.task('uglify', ['clean', 'test'], function () {
-    return gulp.src(settings.src, { base: './' })
-        .pipe(rename(function (path) {
-            var baseName = path.basename;
-            var dirName = path.dirname;
-            if (dirName == 'helpers' || dirName == 'dialogs') {
-                path.basename = settings.baseProject + '.' + dirName + '.' + baseName;
-            }
-            path.dirname = path.basename;
-        }))
-        .pipe(gulp.dest(settings.dest))
-        // Remove log statements from minified code
-        .pipe(replace(eval('/\\/\\*\\s*?<log>\\s*?\\*\\/[\\s\\S]*?\\/\\*\\s*?<\\/log>\\s*?\\*\\//g'), ''))
-        .pipe(replace(eval('/(?:\\$\\.DirtyForms\\.)?dirtylog\\([\\s\\S]*?\\);/g'), ''))
-        .pipe(sourcemaps.init())
-        .pipe(rename(function (path) {
-            path.dirname = '';
-            path.extname = '.min.js';
-        }))
-        .pipe(uglify({
-            outSourceMap: true,
-            sourceRoot: '/',
-            preserveComments: 'some'
-        }))
-        .pipe(gulp.dest(settings.dest))
-        .pipe(sourcemaps.write('.', {
-            includeContent: true,
-            sourceRoot: '/'
-        }))
-        .pipe(gulp.dest(settings.dest));
+gulp.task('umd-copy-minified', ['umd-uglify', 'distribute-module-assets'], function () {
+    return doCopyMinified(true);
 });
 
-gulp.task('distribute-default-license', ['clean'], function () {
+gulp.task('uglify', function () {
+    return doUglify(false);
+});
+
+gulp.task('umd-uglify', function () {
+    return doUglify(true);
+});
+
+
+gulp.task('distribute-default-license', function () {
     var defaultLicense = './LICENSE*';
     var baseModule = gulp.src(defaultLicense, { base: './' })
         .pipe(rename(function (path) {
@@ -206,7 +180,7 @@ gulp.task('nuget-download', function () {
         .on('close', done);
 });
 
-gulp.task('npm-pack', ['build'], function (cb) {
+gulp.task('npm-pack', ['umd-build'], function (cb) {
     var modulesLength = settings.subModules.length;
     var relativeDestPath = path.relative('./', settings.dest);
     for (var i = 0; i < modulesLength; i++) {
@@ -226,8 +200,16 @@ gulp.task('npm-pack', ['build'], function (cb) {
     cb();
 });
 
-gulp.task('pack', ['nuget-pack', 'npm-pack'], function (cb) {
-    cb();
+gulp.task('pack', ['clean', 'test'], function (cb) {
+    // Because NPM distribution files will have UMD support,
+    // we run the whole sequence to package it up first, then
+    // run the command to package NuGet files (after which
+    // the directory structure will be correct for checking in
+    // and distributing to CDNs).
+    runSequence(
+        'npm-pack',
+        'nuget-pack',
+        cb);
 });
 
 
@@ -487,3 +469,64 @@ function getDebug() {
 
     return settings.debug;
 };
+
+function doUglify(isUmd) {
+    var getCommentRegEx = function (tagName) {
+        return '/(?: |\\t)*?\\/\\*\\s*?<' + tagName + '>\\s*?\\*\\/[\\s\\S]*?\\/\\*\\s*?<\\/' + tagName + '>\\s*?\\*\\//g';
+    };
+
+    return gulp.src(settings.src, { base: './' })
+        .pipe(rename(function (path) {
+            var baseName = path.basename;
+            var dirName = path.dirname;
+            if (dirName == 'helpers' || dirName == 'dialogs') {
+                path.basename = settings.baseProject + '.' + dirName + '.' + baseName;
+            }
+            path.dirname = path.basename;
+        }))
+        // If not UMD, remove the IIFE header and footer, and replace with 
+        // compact header and footer
+        .pipe(gulpif(!isUmd, replace(eval(getCommentRegEx('iife_head')), '(function($, window, document, undefined) {')))
+        .pipe(gulpif(!isUmd, replace(eval(getCommentRegEx('iife_foot')), '})(jQuery, window, document);')))
+
+        .pipe(gulp.dest(settings.dest))
+        // Remove log statements from minified code
+        .pipe(replace(eval(getCommentRegEx('log')), ''))
+        .pipe(replace(eval('/(?:\\$\\.DirtyForms\\.)?dirtylog\\([\\s\\S]*?\\);/g'), ''))
+        .pipe(sourcemaps.init())
+        .pipe(rename(function (path) {
+            path.dirname = '';
+            path.extname = '.min.js';
+        }))
+        .pipe(uglify({
+            outSourceMap: true,
+            sourceRoot: '/',
+            preserveComments: 'some'
+        }))
+        .pipe(gulp.dest(settings.dest))
+        .pipe(sourcemaps.write('.', {
+            includeContent: true,
+            sourceRoot: '/'
+        }))
+        .pipe(gulp.dest(settings.dest));
+}
+
+function doCopyMinified(isUmd) {
+    var copyToCdnChannel = lazypipe()
+        .pipe(function () { return ignore.exclude(eval('/' + settings.baseProject + '\.min/')); })
+        .pipe(function () {
+            return rename(function (path) {
+                console.log('moving: ' + path.basename)
+                path.dirname = settings.baseProject + settings.dest_plugins;
+            });
+        })
+        .pipe(function () { return gulp.dest(settings.dest); });
+
+    return gulp.src([settings.dest + '*.js', settings.dest + '*.map'], { base: './' })
+        .pipe(rename(function (path) {
+            console.log('moving: ' + path.basename)
+            path.dirname = path.basename.replace(/\.min(?:\.js)?/g, '');
+        }))
+        .pipe(gulp.dest(settings.dest))
+        .pipe(gulpif(!isUmd, copyToCdnChannel()));
+}
