@@ -217,14 +217,6 @@ If the target is a blank browser window, we assume that the page is not going to
 <a href="http://www.google.com" target="_blank">Go to Google</a>
 ```
 
-#### No HREF Attribute
-
-If the href attribute is missing, the link cannot navigate to another page. Note that if the href attribute is added dynamically, the anchor tag will automatically be un-ignored.
-
-```html
-<a>Go Nowhere</a>
-```
-
 #### onClick `return false;`
 
 If the onClick event returns `false`, the click will be ignored by Dirty Forms.
@@ -248,6 +240,8 @@ $('#google-link').click(function (event) {
 	event.preventDefault();
 });
 ```
+
+> **NOTE:** Anchor tags with no HREF were ignored in previous versions of Dirty Forms, but now these tags are included by default. We can't make any assumptions about what an anchor tag does whether or not it has an HREF tag. If you want to ignore them by default, add the `ignoreSelector: 'a:not([href])'`. 
 
 ## Options
 
