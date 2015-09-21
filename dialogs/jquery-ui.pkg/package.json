@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms.dialogs.jquery-ui",
-  "version": "2.0.0-beta00004",
+  "version": "2.0.0-beta00005",
   "description": "A module to enable automatic jQuery UI dialog support when using jQuery Dirty Forms.",
   "main": "jquery.dirtyforms.dialogs.jquery-ui.min.js",
   "files": [
