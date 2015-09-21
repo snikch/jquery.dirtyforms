@@ -1,7 +1,7 @@
 {
   "name": "jquery.dirtyforms.dialogs.facebox",
   "main": "jquery.dirtyforms.dialogs.facebox.min.js",
-  "version": "2.0.0-beta00004",
+  "version": "2.0.0-beta00005",
   "homepage": "https://github.com/snikch/jquery.dirtyforms",
   "authors": [
     "Shad Storhaug <shad@shadstorhaug.com>"
