@@ -10,7 +10,7 @@ License MIT
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery', 'window', 'document'], factory);
-    } else if (typeof exports === 'object') {
+    } else if (typeof module === 'object' && module.exports) {
         // Node/CommonJS
         module.exports = factory(require('jquery'), window, document);
     } else {
