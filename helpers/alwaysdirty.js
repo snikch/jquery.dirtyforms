@@ -6,6 +6,7 @@ License MIT
 
 // Example helper, the form is always considered dirty
 
+/*<iife_head>*/
 // Support for UMD: https://github.com/umdjs/umd/blob/master/jqueryPluginCommonjs.js
 // See: http://blog.npmjs.org/post/112712169830/making-your-jquery-plugin-work-better-with-npm for details.
 (function (factory) {
@@ -20,6 +21,7 @@ License MIT
         factory(jQuery, window, document);
     }
 }(function ($, window, document, undefined) {
+    /*</iife_head>*/
     // Can't use ECMAScript 5's strict mode because several apps 
     // including ASP.NET trace the stack via arguments.caller.callee 
     // and Firefox dies if you try to trace through "use strict" call chains. 
@@ -36,4 +38,7 @@ License MIT
     };
     // Push the new object onto the helpers array
     $.DirtyForms.helpers.push(alwaysDirty);
+
+    /*<iife_foot>*/
 }));
+/*</iife_foot>*/
