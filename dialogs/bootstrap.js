@@ -38,7 +38,7 @@ License MIT
         stayButtonText: 'Stay Here',
         dialogID: 'dirty-dialog',
         titleID: 'dirty-title',
-        messsageClass: 'dirty-message',
+        messageClass: 'dirty-message',
         preMessageText: '',
         postMessageText: '',
         replaceText: true,
@@ -60,7 +60,7 @@ License MIT
                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                                     '<h3 class="modal-title" id="' + this.titleID + '"></h3>' +
                                 '</div>' +
-                                '<div class="modal-body panel-body ' + this.messsageClass + '"></div>' +
+                                '<div class="modal-body panel-body ' + this.messageClass + '"></div>' +
                                 '<div class="modal-footer panel-footer">' +
                                     '<button type="button" class="' + this.proceedButtonClass + ' btn btn-danger" data-dismiss="modal"></button>' +
                                     '<button type="button" class="' + this.stayButtonClass + ' btn btn-default" data-dismiss="modal"></button>' +
@@ -78,7 +78,7 @@ License MIT
             if (this.replaceText) {
                 // Replace the text in the dialog (whether it is external or not).
                 $dialog.find('#' + this.titleID).html(this.title);
-                $dialog.find('.' + this.messsageClass).html(this.preMessageText + message + this.postMessageText);
+                $dialog.find('.' + this.messageClass).html(this.preMessageText + message + this.postMessageText);
                 $dialog.find('.' + this.proceedButtonClass).html(this.proceedButtonText);
                 $dialog.find('.' + this.stayButtonClass).html(this.stayButtonText);
             }
