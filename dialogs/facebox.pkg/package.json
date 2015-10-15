@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms.dialogs.facebox",
-  "version": "2.0.0-beta00005",
+  "version": "2.0.0-beta00006",
   "description": "A module to enable automatic Facebox dialog support when using JQuery Dirty Forms.",
   "main": "jquery.dirtyforms.dialogs.facebox.min.js",
   "files": [

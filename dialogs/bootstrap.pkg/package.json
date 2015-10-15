@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms.dialogs.bootstrap",
-  "version": "2.0.0-beta00005",
+  "version": "2.0.0-beta00006",
   "description": "A module to enable automatic Bootstrap Modal dialog support when using JQuery Dirty Forms.",
   "main": "jquery.dirtyforms.dialogs.bootstrap.min.js",
   "files": [
