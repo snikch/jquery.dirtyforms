@@ -29,7 +29,7 @@ License MIT
 
     var modal_overlay,
         notice,
-        isPN2 = typeof PNotify === 'function';
+        isPN1 = typeof PNotify !== 'function';
 
     $.DirtyForms.dialog = {
 
@@ -43,13 +43,36 @@ License MIT
 
         // Typical Dirty Forms Properties and Methods
         open: function (choice, message, ignoreClass) {
-            var content = {
+            var content = $.extend(true, {}, {
                 title: this.title,
                 hide: false,
                 styling: this.styling,
                 width: this.width,
 
-                // 2.x hide closer and sticker
+                // 3.x and 2.x confirm buttons
+                confirm: {
+                    confirm: true,
+                    align: 'center',
+                    buttons: [
+                        {
+                            text: this.proceedButtonText,
+                            addClass: 'dirty-proceed ' + ignoreClass
+                        },
+                        {
+                            text: this.stayButtonText,
+                            addClass: 'dirty-stay ' + ignoreClass
+                        }
+                    ]
+                },
+                // 3.x don't use history
+                history: {
+                    history: false
+                },
+                // 3.x modal dialog
+                addclass: 'stack-modal ' + this.class,
+                stack: { 'dir1': 'down', 'dir2': 'right', 'modal': true },
+
+                // 3.x and 2.x hide closer and sticker
                 buttons: {
                     closer: false,
                     sticker: false
@@ -58,15 +81,23 @@ License MIT
                 closer: false,
                 sticker: false,
 
-                text: '<span class="' + this.class + '">' +
+                // NOTE: Animate does not seem to work in 3.x in conjunction with confirm,
+                // but this is being added so the settings can be supplied externally should
+                // this issue be fixed. https://github.com/sciactive/pnotify/issues/224
+                animate: this.animate === undefined ? undefined : this.animate,
+
+                text: !isPN1 ? message :
+                    '<span class="' + this.class + '">' +
                         '<p>' + message + '</p>' +
                         '<span style="display:block;text-align:center;">' +
-                            '<button type="button" class="dirty-proceed ' + ignoreClass + '">' + this.proceedButtonText + '</button> ' +
-                            '<button type="button" class="dirty-stay ' + ignoreClass + '">' + this.stayButtonText + '</button>' +
+                            '<button type="button" class="btn btn-default dirty-proceed ' + ignoreClass + '">' + this.proceedButtonText + '</button> ' +
+                            '<button type="button" class="btn btn-default dirty-stay ' + ignoreClass + '">' + this.stayButtonText + '</button>' +
                         '</span>' +
                     '</span>',
+
+                // Not supported in 3.x
                 before_open: function (PNotify) {
-                    if (isPN2) {
+                    if (!isPN1) {
                         // Position this notice in the center of the screen.
                         PNotify.get().css({
                             "top": ($(window).height() / 2) - (PNotify.get().height() / 2),
@@ -88,10 +119,10 @@ License MIT
                         }
                     }).appendTo("body").fadeIn("fast");
                 }
-            };
+            });
 
             // Patch for PNotify 1.x
-            notice = isPN2 ? new PNotify(content) : $.pnotify(content);
+            notice = !isPN1 ? new PNotify(content) : $.pnotify(content);
 
             // Bind Events
             choice.bindEnterKey = true;
@@ -104,7 +135,7 @@ License MIT
                     return function (e) {
                         if (e.type !== 'keydown' || (e.type === 'keydown' && (e.which == 27 || e.which == 13))) {
                             notice.remove();
-                            modal_overlay.fadeOut("fast");
+                            if (modal_overlay) modal_overlay.fadeOut("fast");
                             decision(e);
                             return false;
                         }
@@ -119,7 +150,7 @@ License MIT
         },
         close: function () {
             notice.remove();
-            modal_overlay.fadeOut("fast");
+            if (modal_overlay) modal_overlay.fadeOut("fast");
         },
 
         // Support for Dirty Forms < 2.0
