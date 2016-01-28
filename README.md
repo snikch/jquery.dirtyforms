@@ -50,12 +50,12 @@ There are several different ways to get the code. Some examples below:
 #### CDN
 Dirty Forms is available over jsDelivr CDN and can directly be included on every page.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00007/jquery.dirtyforms.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00008/jquery.dirtyforms.min.js"></script>
 ```
 
 jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery and jquery.dirtyforms in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.dirtyforms@2.0.0-beta00007"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,jquery.dirtyforms@2.0.0-beta00008"></script>
 ```
 
 #### Self-Hosted
@@ -92,7 +92,7 @@ A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-
 #### CDN
 
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00007/jquery.dirtyforms.min.js.map"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00008/jquery.dirtyforms.min.js.map"></script>
 ```
 
 #### Package Managers

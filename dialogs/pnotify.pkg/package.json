@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms.dialogs.pnotify",
-  "version": "2.0.0-beta00007",
+  "version": "2.0.0-beta00008",
   "description": "A module to enable automatic PNotify dialog support when using jQuery Dirty Forms.",
   "main": "jquery.dirtyforms.dialogs.pnotify.min.js",
   "files": [

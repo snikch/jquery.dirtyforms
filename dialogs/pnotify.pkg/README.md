@@ -31,12 +31,12 @@ There are several different ways to get the code. Some examples below:
 #### CDN
 The PNotify dialog module is available over jsDelivr CDN and can directly be included on every page.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00007/jquery.dirtyforms.dialogs.pnotify.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00008/jquery.dirtyforms.dialogs.pnotify.min.js"></script>
 ```
 
 jsDelivr also supports [on-the-fly concatenation of files](https://github.com/jsdelivr/jsdelivr#load-multiple-files-with-single-http-request), so you can reference only 1 URL to get jQuery, PNotify, jquery.dirtyforms, and jquery.dirtyforms.dialogs.pnotify in one request.
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,pnotify@3.0.0(pnotify.js+pnotify.confirm.js+pnotify.history.js),jquery.dirtyforms@2.0.0-beta00007(jquery.dirtyforms.min.js+jquery.dirtyforms.dialogs.pnotify.min.js)"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/g/jquery@1.11.3,pnotify@3.0.0(pnotify.js+pnotify.confirm.js+pnotify.history.js),jquery.dirtyforms@2.0.0-beta00008(jquery.dirtyforms.min.js+jquery.dirtyforms.dialogs.pnotify.min.js)"></script>
 ```
 
 #### Self-Hosted
@@ -74,7 +74,7 @@ A [SourceMap](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-
 #### CDN
 
 ```HTML
-<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00007/jquery.dirtyforms.dialogs.pnotify.min.js.map"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00008/jquery.dirtyforms.dialogs.pnotify.min.js.map"></script>
 ```
 
 #### Package Managers
@@ -109,8 +109,8 @@ This dialog module is automatic. Simply include the reference to the dialog modu
 <script src="//cdn.jsdelivr.net/pnotify/3.0.0/pnotify.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/pnotify/3.0.0/pnotify.confirm.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/pnotify/3.0.0/pnotify.history.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00007/jquery.dirtyforms.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00007/jquery.dirtyforms.dialogs.pnotify.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00008/jquery.dirtyforms.min.js" type="text/javascript"></script>
+<script src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00008/jquery.dirtyforms.dialogs.pnotify.min.js" type="text/javascript"></script>
 ```
 
 > If not using a CDN, you need to apply the dependencies in the same order as in the example above.

@@ -1,5 +1,5 @@
 /*!
-PNotify dialog module (for jQuery Dirty Forms) | v2.0.0-beta00007 | github.com/snikch/jquery.dirtyforms
+PNotify dialog module (for jQuery Dirty Forms) | v2.0.0-beta00008 | github.com/snikch/jquery.dirtyforms
 (c) 2015 Shad Storhaug
 License MIT
 */

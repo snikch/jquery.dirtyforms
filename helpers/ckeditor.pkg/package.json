@@ -1,6 +1,6 @@
 {
   "name": "jquery.dirtyforms.helpers.ckeditor",
-  "version": "2.0.0-beta00007",
+  "version": "2.0.0-beta00008",
   "description": "A helper to enable CKEditor support when using JQuery Dirty Forms.",
   "main": "jquery.dirtyforms.helpers.ckeditor.min.js",
   "files": [
