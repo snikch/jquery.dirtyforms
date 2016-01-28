@@ -24,7 +24,7 @@ Prerequesites must be included in this order:
 There are several different ways to get the code. Some examples below:
 
 #### CDN
-The CKEditor helper is available over jsDelivr CDN and can directly included to every page.
+The CKEditor helper is available over jsDelivr CDN and can directly be included on every page.
 ```HTML
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00006/jquery.dirtyforms.helpers.ckeditor.min.js"></script>
 ```

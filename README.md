@@ -48,7 +48,7 @@ Existing solutions were not flexible enough, so Dirty Forms was created to suppo
 There are several different ways to get the code. Some examples below:
 
 #### CDN
-Dirty Forms is available over jsDelivr CDN and can directly included to every page.
+Dirty Forms is available over jsDelivr CDN and can directly be included on every page.
 ```HTML
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00006/jquery.dirtyforms.min.js"></script>
 ```

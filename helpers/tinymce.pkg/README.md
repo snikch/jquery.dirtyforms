@@ -29,7 +29,7 @@ Both of the TinyMCE files are included in the [TinyMCE jQuery package](http://ww
 There are several different ways to get the code. Some examples below:
 
 #### CDN
-The TinyMCE helper is available over jsDelivr CDN and can directly included to every page.
+The TinyMCE helper is available over jsDelivr CDN and can directly be included on every page.
 ```HTML
 <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.dirtyforms/2.0.0-beta00006/jquery.dirtyforms.helpers.tinymce.min.js"></script>
 ```
