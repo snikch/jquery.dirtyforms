@@ -48,12 +48,18 @@ Download and save one of two available files to include the PNotify dialog modul
 You can also conveniently get all of the latest Dirty Forms files in one [Zip Download](https://github.com/NightOwl888/jquery.dirtyforms.dist/archive/master.zip).
 
 #### Package Managers
-The PNotify dialog module is even available through [Bower](http://bower.io) and [NuGet](https://www.nuget.org/). Just use one of the following commands below to install the dialog module, including all dependencies.
+The PNotify dialog module is even available through [NPM](http://npmjs.org), [Bower](http://bower.io), and [NuGet](https://www.nuget.org/). Just use one of the following commands below to install the dialog module, including all dependencies.
 
+[![NPM version](https://badge.fury.io/js/jquery.dirtyforms.dialogs.pnotify.svg)](http://www.npmjs.org/package/jquery.dirtyforms.dialogs.pnotify)
 [![Bower version](https://badge.fury.io/bo/jquery.dirtyforms.dialogs.pnotify.svg)](http://bower.io/search/?q=jquery.dirtyforms.dialogs.pnotify)
 [![NuGet version](https://badge.fury.io/nu/jquery.dirtyforms.dialogs.pnotify.svg)](https://www.nuget.org/packages/jquery.dirtyforms.dialogs.pnotify/)
 
+[![NPM](https://nodei.co/npm/jquery.dirtyforms.dialogs.pnotify.png?compact=true)](https://nodei.co/npm/jquery.dirtyforms.dialogs.pnotify/)
+
 ```
+// NPM
+$ npm install jquery.dirtyforms.dialogs.pnotify
+
 // Bower
 $ bower install jquery.dirtyforms.dialogs.pnotify
 

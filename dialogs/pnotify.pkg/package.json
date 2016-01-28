@@ -1,0 +1,41 @@
+﻿{
+  "name": "jquery.dirtyforms.dialogs.pnotify",
+  "version": "2.0.0-beta00006",
+  "description": "A module to enable automatic PNotify dialog support when using jQuery Dirty Forms.",
+  "main": "jquery.dirtyforms.dialogs.pnotify.min.js",
+  "files": [
+    "jquery.dirtyforms.dialogs.pnotify.*",
+    "LICENSE*"
+  ],
+  "dependencies": {
+	"jquery": ">=1.6.4",
+    "jquery.dirtyforms": ">=1.0.0",
+    "pnotify": ">=1.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snikch/jquery.dirtyforms.git"
+  },
+  "keywords": [
+    "pnotify",
+    "jquery",
+    "plugin",
+    "dirty",
+    "forms",
+    "confirmation",
+    "validate",
+    "validation",
+    "areyousure",
+    "jquery-plugin",
+    "ecosystem:jquery"
+  ],
+  "author": "Shad Storhaug <shad@shadstorhaug.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/snikch/jquery.dirtyforms/issues"
+  },
+  "homepage": "https://github.com/snikch/jquery.dirtyforms#readme"
+}
