@@ -169,6 +169,65 @@ $(function() {
 
 ```
 
+## Setting a Form Dirty Manually
+
+> **NOTE:** This example shows how to set the state of a form dirty. However, it is generally recommended that each of the widgets (whether built by you or a 3rd party) have their own dirty/clean state. Instead of "pushing" the dirty state into Dirty Forms, you should aim to allow Dirty Forms to read the dirty state of each widget using one or more custom helpers. You can then opt to make each widget "undo" its dirty state when the user reverts their edits in the widget, which will provide a better user experience and make it similar to the rest of Dirty Forms state management behavior.
+
+In version 1.x, there was a `setDirty` method that allowed you to set the form dirty manually. In version 2.x, this method has been removed since this functionality is effectively a duplication of what a custom helper does. It is now recommended that you create a custom helper to set a form dirty manually. You will need to attach a piece of data to the form to track whether it is dirty. In this example, we use a CSS class `mydirty` for this purpose. Note that this class should not be the same value as `$.DirtyForms.dirtyClass` because Dirty Forms automatically removes this value when the user undoes their edits (which is probably not the behavior you are after).
+
+```
+$('#watched-form').dirtyForms({
+    helpers:
+        [
+            {
+                isDirty: function ($node, index) {
+                    if ($node.is('form')) {
+                        return $node.hasClass('mydirty');
+                    }
+                }
+            }
+        ]
+});
+```
+
+You can then use the jQuery [`addClass`](https://api.jquery.com/addclass/) and [`removeClass`](https://api.jquery.com/removeclass/) methods to get the same behavior as version 1.x.
+
+```
+function setDirty() {
+    $('#watched-form').addClass('mydirty');
+}
+
+function setClean() {
+    $('#watched-form').removeClass('mydirty');
+}
+```
+
+Or, you can improve the behavior of `setClean` by instead implementing the [`setClean` helper method](https://github.com/snikch/jquery.dirtyforms#setclean-node-index-excludeignored--optional) as needed by your application so it is automatically reset to clean when the [`dirtyForms('setClean')` method](https://github.com/snikch/jquery.dirtyforms#dirtyforms-setclean-excludeignored-excludehelpers-) is called.
+
+```
+$('#watched-form').dirtyForms({
+    helpers:
+        [
+            {
+                isDirty: function ($node, index) {
+                    if ($node.is('form')) {
+                        return $node.hasClass('mydirty');
+                    }
+                },
+				setClean: function($node, index, excludeIgnored) {
+					if ($node.is('form')) {
+						$node.removeClass('mydirty');
+					}
+				}
+            }
+        ]
+});
+```
+
+In that case, calling `$('#watched-form').dirtyForms('setClean')` will set both the fields/forms that are tracked by Dirty Forms and your custom `mydirty` class to a non-dirty state in one method call instead of having to call your custom `setClean` method separately.
+
+> **NOTE:** `dirtyForms('setClean')` is called automatically when a reset button is clicked by the user on a particular form.
+
 ## Ignoring Things
 
 Set the `ignoreSelector` option to ignore specific fields, anchors, or buttons.
