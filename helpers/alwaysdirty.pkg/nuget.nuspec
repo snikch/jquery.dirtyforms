@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>jquery.dirtyforms.helpers.alwaysdirty</id>
-		<title>Always dirty helper for JQuery Dirty Forms</title>
+		<title>Always dirty helper for jQuery Dirty Forms</title>
 		<version>$version$</version>
 		<authors>snikch, NightOwl888, Nitrodust, ssmiley483, gmcrist, hleumas</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>A helper to force forms to always be dirty when using JQuery Dirty Forms.</summary>
+		<summary>A helper to force forms to always be dirty when using jQuery Dirty Forms.</summary>
 		<description>Dirty Forms will alert a user when they attempt to leave a page without submitting a form they have entered data into. It alerts them in a modal popup box, and also falls back to the browser's default onBeforeUnload handler for events outside the scope of the document such as, but not limited to, page refreshes and browser navigation buttons.</description>
 		<language>en-US</language>
 		<tags>always dirty jquery plugin dirty forms confirmation validate validation areyousure</tags>

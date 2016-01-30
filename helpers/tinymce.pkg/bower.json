@@ -6,7 +6,7 @@
   "authors": [
     "Mal Curtis <mal@mal.co.nz>"
   ],
-  "description": "A helper to enable TinyMCE support when using JQuery Dirty Forms.",
+  "description": "A helper to enable TinyMCE support when using jQuery Dirty Forms.",
   "keywords": [
     "tinymce",
     "dirty",

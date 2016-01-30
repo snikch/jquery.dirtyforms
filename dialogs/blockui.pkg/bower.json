@@ -6,7 +6,7 @@
   "authors": [
     "Shad Storhaug <shad@shadstorhaug.com>"
   ],
-  "description": "A module to enable automatic BlockUI dialog support when using JQuery Dirty Forms.",
+  "description": "A module to enable automatic BlockUI dialog support when using jQuery Dirty Forms.",
   "keywords": [
     "blockui",
     "dirty",

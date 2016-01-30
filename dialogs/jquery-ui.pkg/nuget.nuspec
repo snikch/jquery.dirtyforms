@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>jquery.dirtyforms.dialogs.jquery-ui</id>
-		<title>jQuery UI dialog for JQuery Dirty Forms</title>
+		<title>jQuery UI dialog for jQuery Dirty Forms</title>
 		<version>$version$</version>
 		<authors>NightOwl888</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>

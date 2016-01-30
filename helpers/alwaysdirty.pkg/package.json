@@ -1,7 +1,7 @@
 {
   "name": "jquery.dirtyforms.helpers.alwaysdirty",
   "version": "2.0.0",
-  "description": "A helper to force forms to always be dirty when using JQuery Dirty Forms.",
+  "description": "A helper to force forms to always be dirty when using jQuery Dirty Forms.",
   "main": "jquery.dirtyforms.helpers.alwaysdirty.min.js",
   "files": [
     "jquery.dirtyforms.helpers.alwaysdirty.*",
