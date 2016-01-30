@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>jquery.dirtyforms</id>
-		<title>Dirty Forms</title>
+		<title>jQuery Dirty Forms</title>
 		<version>$version$</version>
 		<authors>snikch, NightOwl888, Nitrodust, ssmiley483, gmcrist, hleumas</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
