@@ -1,7 +1,7 @@
 {
   "name": "jquery.dirtyforms.dialogs.pnotify",
   "main": "jquery.dirtyforms.dialogs.pnotify.min.js",
-  "version": "2.0.0-beta00008",
+  "version": "2.0.0",
   "homepage": "https://github.com/snikch/jquery.dirtyforms",
   "authors": [
     "Shad Storhaug <shad@shadstorhaug.com>"
