@@ -1,6 +1,6 @@
 /*!
 TinyMCE helper module (for jQuery Dirty Forms) | v2.0.0 | github.com/snikch/jquery.dirtyforms
-(c) 2015 Mal Curtis
+(c) 2013-2016 Mal Curtis
 License MIT
 */
 

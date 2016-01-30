@@ -1,6 +1,6 @@
 /*!
 Dirty Forms jQuery Plugin | v2.0.0 | github.com/snikch/jquery.dirtyforms
-(c) 2010-2015 Mal Curtis
+(c) 2010-2016 Mal Curtis
 License MIT
 */
 

@@ -1,6 +1,6 @@
 /*!
 Bootstrap modal dialog (for jQuery Dirty Forms) | v2.0.0 | github.com/snikch/jquery.dirtyforms
-(c) 2015 Shad Storhaug
+(c) 2015-2016 Shad Storhaug
 License MIT
 */
 
